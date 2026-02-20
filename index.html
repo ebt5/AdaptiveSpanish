@@ -1,0 +1,651 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Conway's Game of Life</title>
+    <style>
+      :root {
+        --panel: #1f2937;
+        --text: #e5e7eb;
+        --muted: #9ca3af;
+        --accent: #22d3ee;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: radial-gradient(circle at top, #1f2937 0%, #0f172a 60%, #020617 100%);
+        color: var(--text);
+        display: grid;
+        place-items: center;
+        padding: 16px;
+      }
+
+      .app {
+        width: min(100%, 980px);
+        background: color-mix(in srgb, var(--panel) 88%, black 12%);
+        border: 1px solid #374151;
+        border-radius: 14px;
+        box-shadow: 0 14px 40px rgb(0 0 0 / 0.35);
+        overflow: hidden;
+      }
+
+      .controls {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
+        align-items: end;
+        padding: 14px;
+        border-bottom: 1px solid #374151;
+      }
+
+      label {
+        display: block;
+        font-size: 0.9rem;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+
+      input[type="range"],
+      input[type="number"],
+      input[type="color"],
+      select {
+        width: 100%;
+        height: 40px;
+        border: 1px solid #4b5563;
+        border-radius: 8px;
+        background: #0f172a;
+        color: var(--text);
+        padding: 0 10px;
+      }
+
+      input[type="range"] {
+        padding: 0;
+        border: 0;
+        background: transparent;
+      }
+
+      input[type="color"] {
+        cursor: pointer;
+      }
+
+      .buttons {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      button {
+        border: 1px solid #4b5563;
+        background: #0f172a;
+        color: var(--text);
+        padding: 10px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+
+      button:hover {
+        border-color: var(--accent);
+      }
+
+      .hint {
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+
+      .canvas-wrap,
+      .graph-wrap {
+        padding: 14px;
+        overflow: auto;
+      }
+
+      .graph-wrap {
+        border-top: 1px solid #334155;
+      }
+
+      .graph-title {
+        font-size: 0.85rem;
+        color: var(--muted);
+        margin-bottom: 8px;
+      }
+
+      canvas {
+        width: auto;
+        max-width: 100%;
+        height: auto;
+        image-rendering: pixelated;
+        display: block;
+        border-radius: 10px;
+        border: 1px solid #334155;
+        background: #020617;
+      }
+
+      #grid {
+        cursor: crosshair;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app">
+      <section class="controls">
+        <div>
+          <label for="speed">Iterations per second: <strong id="speedValue">10</strong></label>
+          <input id="speed" type="range" min="1" max="40" value="10" />
+        </div>
+
+        <div>
+          <label for="color">Draw color</label>
+          <input id="color" type="color" value="#22d3ee" />
+        </div>
+
+        <div>
+          <label for="shape">Brush shape</label>
+          <select id="shape">
+            <option value="single">Single Cell</option>
+            <option value="glider">Glider</option>
+            <option value="lwss">LWSS</option>
+            <option value="r-pentomino">R-pentomino</option>
+            <option value="acorn">Acorn</option>
+            <option value="diehard">Diehard</option>
+            <option value="b-heptomino">B-heptomino</option>
+            <option value="pi-heptomino">Pi-heptomino</option>
+            <option value="switch-engine">Switch Engine</option>
+            <option value="pentadecathlon">Pentadecathlon</option>
+            <option value="pulsar">Pulsar</option>
+            <option value="gosper-gun">Gosper Glider Gun</option>
+            <option value="gosper-gun-reverse">Gosper Gun (Mirrored)</option>
+            <option value="twin-gosper">Twin Gosper Guns</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="cols">Grid columns (max 5000)</label>
+          <input id="cols" type="number" min="20" max="5000" value="90" />
+        </div>
+
+        <div>
+          <label for="rows">Grid rows (max 5000)</label>
+          <input id="rows" type="number" min="20" max="5000" value="54" />
+        </div>
+
+        <div>
+          <label for="wrap">Wrap edges</label>
+          <select id="wrap">
+            <option value="on">On (Toroidal)</option>
+            <option value="off">Off (Hard boundaries)</option>
+          </select>
+        </div>
+
+        <div class="buttons">
+          <button id="applySize">Apply Size</button>
+          <button id="toggle">Pause</button>
+          <button id="step">Step</button>
+          <button id="randomize">Randomize</button>
+          <button id="clear">Clear</button>
+        </div>
+
+        <div class="hint">Live cells: <strong id="liveCount">0</strong></div>
+        <div class="hint">Iterations: <strong id="iterationCount">0</strong></div>
+
+        <div class="hint">
+          Left mouse paints/stamps shape. Right mouse erases with current shape. Graph auto-condenses to keep full history visible.
+        </div>
+      </section>
+
+      <section class="canvas-wrap">
+        <canvas id="grid" width="900" height="540"></canvas>
+      </section>
+
+      <section class="graph-wrap">
+        <div class="graph-title">Population Over Time</div>
+        <canvas id="popGraph" width="900" height="180"></canvas>
+      </section>
+    </main>
+
+    <script>
+      const canvas = document.getElementById("grid");
+      const ctx = canvas.getContext("2d");
+      const graphCanvas = document.getElementById("popGraph");
+      const graphCtx = graphCanvas.getContext("2d");
+
+      const speedInput = document.getElementById("speed");
+      const speedValue = document.getElementById("speedValue");
+      const colorInput = document.getElementById("color");
+      const shapeInput = document.getElementById("shape");
+      const colsInput = document.getElementById("cols");
+      const rowsInput = document.getElementById("rows");
+      const wrapInput = document.getElementById("wrap");
+      const applySizeBtn = document.getElementById("applySize");
+      const toggleBtn = document.getElementById("toggle");
+      const stepBtn = document.getElementById("step");
+      const randomizeBtn = document.getElementById("randomize");
+      const clearBtn = document.getElementById("clear");
+      const liveCount = document.getElementById("liveCount");
+      const iterationCountEl = document.getElementById("iterationCount");
+
+      const MIN_SIZE = 20;
+      const MAX_SIZE = 5000;
+      const MAX_CANVAS_WIDTH = 1400;
+      const MAX_CANVAS_HEIGHT = 900;
+
+      let cols = 90;
+      let rows = 54;
+      let wrapEdges = true;
+      let running = true;
+      let iterationsPerSecond = Number(speedInput.value);
+      let brushShape = shapeInput.value;
+      let drawing = false;
+      let eraseMode = false;
+      let lastTime = performance.now();
+      let accumulator = 0;
+      let iterationCount = 0;
+      let populationHistory = [0];
+
+      // Sparse grid: key "row,col" -> color
+      let alive = new Map();
+
+      const GOSPER_GUN = [
+        [0, 24],
+        [1, 22], [1, 24],
+        [2, 12], [2, 13], [2, 20], [2, 21], [2, 34], [2, 35],
+        [3, 11], [3, 15], [3, 20], [3, 21], [3, 34], [3, 35],
+        [4, 0], [4, 1], [4, 10], [4, 16], [4, 20], [4, 21],
+        [5, 0], [5, 1], [5, 10], [5, 14], [5, 16], [5, 17], [5, 22], [5, 24],
+        [6, 10], [6, 16], [6, 24],
+        [7, 11], [7, 15],
+        [8, 12], [8, 13],
+      ];
+
+      const GOSPER_GUN_REVERSE = GOSPER_GUN.map(([r, c]) => [r, 35 - c]);
+      const TWIN_GOSPER = [
+        ...GOSPER_GUN,
+        ...GOSPER_GUN_REVERSE.map(([r, c]) => [r + 12, c]),
+      ];
+
+      const PULSAR = (() => {
+        const points = [];
+        const arms = [2, 3, 4, 8, 9, 10];
+        for (const x of arms) {
+          points.push([0, x], [5, x], [7, x], [12, x]);
+          points.push([x, 0], [x, 5], [x, 7], [x, 12]);
+        }
+        return points;
+      })();
+
+      const SHAPES = {
+        single: [[0, 0]],
+        glider: [[0, 1], [1, 2], [2, 0], [2, 1], [2, 2]],
+        lwss: [[0, 1], [0, 2], [0, 3], [0, 4], [1, 0], [1, 4], [2, 4], [3, 0], [3, 3]],
+        "r-pentomino": [[0, 1], [0, 2], [1, 0], [1, 1], [2, 1]],
+        acorn: [[0, 1], [1, 3], [2, 0], [2, 1], [2, 4], [2, 5], [2, 6]],
+        diehard: [[0, 6], [1, 0], [1, 1], [2, 1], [2, 5], [2, 6], [2, 7]],
+        "b-heptomino": [[0, 1], [0, 2], [1, 0], [1, 1], [2, 1], [2, 2], [3, 1]],
+        "pi-heptomino": [[0, 0], [0, 1], [0, 2], [1, 0], [1, 2], [2, 0], [2, 2]],
+        "switch-engine": [[0, 1], [0, 2], [1, 0], [1, 2], [2, 2], [2, 3], [3, 0], [3, 2], [3, 3], [4, 1], [4, 3], [5, 3]],
+        pentadecathlon: [[1, 0], [1, 1], [1, 2], [1, 3], [1, 4], [1, 5], [1, 6], [1, 7], [1, 8], [1, 9], [0, 3], [2, 3], [0, 6], [2, 6]],
+        pulsar: PULSAR,
+        "gosper-gun": GOSPER_GUN,
+        "gosper-gun-reverse": GOSPER_GUN_REVERSE,
+        "twin-gosper": TWIN_GOSPER,
+      };
+
+      function keyFor(r, c) {
+        return `${r},${c}`;
+      }
+
+      function parseKey(key) {
+        const i = key.indexOf(",");
+        return [Number(key.slice(0, i)), Number(key.slice(i + 1))];
+      }
+
+      function clampSize(value) {
+        return Math.max(MIN_SIZE, Math.min(MAX_SIZE, Number.isFinite(value) ? value : MIN_SIZE));
+      }
+
+      function updateCanvasSize() {
+        const scale = Math.max(cols / MAX_CANVAS_WIDTH, rows / MAX_CANVAS_HEIGHT, 1);
+        canvas.width = Math.max(200, Math.floor(cols / scale));
+        canvas.height = Math.max(120, Math.floor(rows / scale));
+      }
+
+      function resizeGrid(nextRows, nextCols) {
+        const boundedRows = clampSize(nextRows);
+        const boundedCols = clampSize(nextCols);
+        const next = new Map();
+
+        for (const [key, color] of alive) {
+          let [r, c] = parseKey(key);
+          if (wrapEdges) {
+            r = (r + boundedRows) % boundedRows;
+            c = (c + boundedCols) % boundedCols;
+            next.set(keyFor(r, c), color);
+          } else if (r >= 0 && r < boundedRows && c >= 0 && c < boundedCols) {
+            next.set(key, color);
+          }
+        }
+
+        rows = boundedRows;
+        cols = boundedCols;
+        rowsInput.value = String(rows);
+        colsInput.value = String(cols);
+        alive = next;
+        updateCanvasSize();
+      }
+
+      function toGridCoord(clientX, clientY) {
+        const rect = canvas.getBoundingClientRect();
+        const x = (clientX - rect.left) * (canvas.width / rect.width);
+        const y = (clientY - rect.top) * (canvas.height / rect.height);
+        const c = Math.floor((x / canvas.width) * cols);
+        const r = Math.floor((y / canvas.height) * rows);
+        if (r < 0 || r >= rows || c < 0 || c >= cols) return null;
+        return [r, c];
+      }
+
+      function hexToRgb(hex) {
+        if (hex.startsWith("hsl")) {
+          const tmpCtx = document.createElement("canvas").getContext("2d");
+          tmpCtx.fillStyle = hex;
+          hex = tmpCtx.fillStyle;
+        }
+        const n = Number.parseInt(hex.slice(1), 16);
+        return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
+      }
+
+      function rgbToHex({ r, g, b }) {
+        return (
+          "#" +
+          [r, g, b]
+            .map((v) => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, "0"))
+            .join("")
+        );
+      }
+
+      function stampShape(row, col, erase) {
+        const shape = SHAPES[brushShape] || SHAPES.single;
+        for (const [dr, dc] of shape) {
+          let r = row + dr;
+          let c = col + dc;
+
+          if (wrapEdges) {
+            r = (r + rows) % rows;
+            c = (c + cols) % cols;
+          } else if (r < 0 || r >= rows || c < 0 || c >= cols) {
+            continue;
+          }
+
+          const key = keyFor(r, c);
+          if (erase) {
+            alive.delete(key);
+          } else {
+            alive.set(key, colorInput.value);
+          }
+        }
+      }
+
+      function paintFromEvent(event) {
+        const point = toGridCoord(event.clientX, event.clientY);
+        if (!point) return;
+        stampShape(point[0], point[1], eraseMode);
+        draw();
+      }
+
+      function step() {
+        const neighborCounts = new Map();
+        const neighborSums = new Map();
+
+        for (const [key, color] of alive) {
+          const [r, c] = parseKey(key);
+          const rgb = hexToRgb(color);
+
+          for (let dr = -1; dr <= 1; dr++) {
+            for (let dc = -1; dc <= 1; dc++) {
+              if (dr === 0 && dc === 0) continue;
+              let nr = r + dr;
+              let nc = c + dc;
+
+              if (wrapEdges) {
+                nr = (nr + rows) % rows;
+                nc = (nc + cols) % cols;
+              } else if (nr < 0 || nr >= rows || nc < 0 || nc >= cols) {
+                continue;
+              }
+
+              const nKey = keyFor(nr, nc);
+              neighborCounts.set(nKey, (neighborCounts.get(nKey) || 0) + 1);
+
+              const sum = neighborSums.get(nKey) || { r: 0, g: 0, b: 0, n: 0 };
+              sum.r += rgb.r;
+              sum.g += rgb.g;
+              sum.b += rgb.b;
+              sum.n += 1;
+              neighborSums.set(nKey, sum);
+            }
+          }
+        }
+
+        const next = new Map();
+
+        for (const [key, color] of alive) {
+          const count = neighborCounts.get(key) || 0;
+          if (count === 2 || count === 3) next.set(key, color);
+        }
+
+        for (const [key, count] of neighborCounts) {
+          if (count !== 3 || alive.has(key)) continue;
+          const sum = neighborSums.get(key);
+          if (!sum || sum.n === 0) continue;
+          next.set(
+            key,
+            rgbToHex({
+              r: sum.r / sum.n,
+              g: sum.g / sum.n,
+              b: sum.b / sum.n,
+            })
+          );
+        }
+
+        alive = next;
+        iterationCount += 1;
+        populationHistory.push(alive.size);
+      }
+
+      function condensedSeries(series, targetPoints) {
+        if (series.length <= targetPoints) return series;
+        const result = [];
+        const bucket = series.length / targetPoints;
+        for (let i = 0; i < targetPoints; i++) {
+          const start = Math.floor(i * bucket);
+          const end = Math.max(start + 1, Math.floor((i + 1) * bucket));
+          let sum = 0;
+          let n = 0;
+          for (let j = start; j < end && j < series.length; j++) {
+            sum += series[j];
+            n += 1;
+          }
+          result.push(n ? sum / n : 0);
+        }
+        return result;
+      }
+
+      function drawPopulationGraph() {
+        const w = graphCanvas.width;
+        const h = graphCanvas.height;
+        const pad = 24;
+        graphCtx.clearRect(0, 0, w, h);
+        graphCtx.fillStyle = "#020617";
+        graphCtx.fillRect(0, 0, w, h);
+
+        const plotW = w - pad * 2;
+        const plotH = h - pad * 2;
+        const points = condensedSeries(populationHistory, Math.max(2, plotW));
+        const maxY = Math.max(1, ...points);
+
+        graphCtx.strokeStyle = "#334155";
+        graphCtx.lineWidth = 1;
+        graphCtx.strokeRect(pad, pad, plotW, plotH);
+
+        graphCtx.beginPath();
+        for (let i = 0; i < points.length; i++) {
+          const x = pad + (i / Math.max(1, points.length - 1)) * plotW;
+          const y = pad + plotH - (points[i] / maxY) * plotH;
+          if (i === 0) graphCtx.moveTo(x, y);
+          else graphCtx.lineTo(x, y);
+        }
+        graphCtx.strokeStyle = "#22d3ee";
+        graphCtx.lineWidth = 2;
+        graphCtx.stroke();
+
+        graphCtx.fillStyle = "#9ca3af";
+        graphCtx.font = "12px Segoe UI";
+        graphCtx.fillText(`max ${Math.round(maxY)}`, 6, 14);
+        graphCtx.fillText(`0`, 6, h - 10);
+        graphCtx.fillText(`iter 0 -> ${iterationCount}`, w - 120, h - 10);
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const pixelW = canvas.width / cols;
+        const pixelH = canvas.height / rows;
+
+        for (const [key, color] of alive) {
+          const [r, c] = parseKey(key);
+          const x = Math.floor(c * pixelW);
+          const y = Math.floor(r * pixelH);
+          const w = Math.max(1, Math.ceil((c + 1) * pixelW) - x);
+          const h = Math.max(1, Math.ceil((r + 1) * pixelH) - y);
+          ctx.fillStyle = color;
+          ctx.fillRect(x, y, w, h);
+        }
+
+        if (cols <= 140 && rows <= 100) {
+          ctx.strokeStyle = "#1f2937";
+          ctx.lineWidth = 1;
+          for (let c = 0; c <= cols; c++) {
+            const x = Math.round(c * pixelW) + 0.5;
+            ctx.beginPath();
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, canvas.height);
+            ctx.stroke();
+          }
+          for (let r = 0; r <= rows; r++) {
+            const y = Math.round(r * pixelH) + 0.5;
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(canvas.width, y);
+            ctx.stroke();
+          }
+        }
+
+        liveCount.textContent = String(alive.size);
+        iterationCountEl.textContent = String(iterationCount);
+        drawPopulationGraph();
+      }
+
+      function randomize() {
+        const totalCells = rows * cols;
+        const targetAlive = Math.min(Math.floor(totalCells * 0.26), 180000);
+        const next = new Map();
+
+        while (next.size < targetAlive) {
+          const r = Math.floor(Math.random() * rows);
+          const c = Math.floor(Math.random() * cols);
+          const key = keyFor(r, c);
+          if (next.has(key)) continue;
+          const hue = Math.floor(Math.random() * 360);
+          next.set(key, `hsl(${hue} 90% 60%)`);
+        }
+
+        alive = next;
+      }
+
+      function tick(timestamp) {
+        const delta = timestamp - lastTime;
+        lastTime = timestamp;
+
+        if (running) {
+          accumulator += delta;
+          const frameDuration = 1000 / iterationsPerSecond;
+          while (accumulator >= frameDuration) {
+            step();
+            accumulator -= frameDuration;
+          }
+        }
+
+        draw();
+        requestAnimationFrame(tick);
+      }
+
+      speedInput.addEventListener("input", () => {
+        iterationsPerSecond = Number(speedInput.value);
+        speedValue.textContent = String(iterationsPerSecond);
+      });
+
+      shapeInput.addEventListener("change", () => {
+        brushShape = shapeInput.value;
+      });
+
+      wrapInput.addEventListener("change", () => {
+        wrapEdges = wrapInput.value === "on";
+      });
+
+      applySizeBtn.addEventListener("click", () => {
+        resizeGrid(Number(rowsInput.value), Number(colsInput.value));
+        draw();
+      });
+
+      toggleBtn.addEventListener("click", () => {
+        running = !running;
+        toggleBtn.textContent = running ? "Pause" : "Resume";
+      });
+
+      stepBtn.addEventListener("click", () => {
+        step();
+        draw();
+      });
+
+      randomizeBtn.addEventListener("click", () => {
+        randomize();
+        draw();
+      });
+
+      clearBtn.addEventListener("click", () => {
+        alive = new Map();
+        draw();
+      });
+
+      canvas.addEventListener("mousedown", (event) => {
+        drawing = true;
+        eraseMode = event.button === 2;
+        paintFromEvent(event);
+      });
+
+      canvas.addEventListener("mousemove", (event) => {
+        if (!drawing) return;
+        paintFromEvent(event);
+      });
+
+      window.addEventListener("mouseup", () => {
+        drawing = false;
+      });
+
+      canvas.addEventListener("contextmenu", (event) => {
+        event.preventDefault();
+      });
+
+      speedValue.textContent = String(iterationsPerSecond);
+      rowsInput.value = String(rows);
+      colsInput.value = String(cols);
+      updateCanvasSize();
+      draw();
+      requestAnimationFrame(tick);
+    </script>
+  </body>
+</html>
