@@ -1,0 +1,46 @@
+:root {
+  --bg-dark:      #0f172a;
+  --bg-panel:     #1e293b;
+  --bg-card:      #293548;
+  --border:       #334155;
+  --text:         #f1f5f9;
+  --text-muted:   #94a3b8;
+  --accent:       #f59e0b;       /* amber — Spanish warmth */
+  --accent-hover: #fbbf24;
+  --learning:     #3b82f6;       /* blue */
+  --learned:      #8b5cf6;       /* purple */
+  --mastered:     #10b981;       /* green */
+  --danger:       #ef4444;
+  --success:      #10b981;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--bg-dark);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+input {
+  font-family: inherit;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
