@@ -1,5 +1,6 @@
+'use client'
+
 import { useEffect, useReducer, useRef } from 'react'
-import './App.css'
 
 // ── Vocabulary dataset ────────────────────────────────────────────────────────
 
@@ -228,7 +229,7 @@ function cap(s: string) { return s.charAt(0).toUpperCase() + s.slice(1) }
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export default function App() {
+export default function DrillApp() {
   const [state, dispatch] = useReducer(reducer, undefined, buildInitialState)
   const inputRef   = useRef<HTMLInputElement>(null)
   const nextBtnRef = useRef<HTMLButtonElement>(null)

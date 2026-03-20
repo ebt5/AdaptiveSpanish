@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  vocabProgress UserVocabProgress[]
+  drillAttempts DrillAttempt[]
+}
+
+model DictionaryEntry {
+  id       String  @id @default(cuid())
+  english  String
+  spanish  String
+  emoji    String?
+  category String  @default("vocabulary")
+
+  vocabProgress UserVocabProgress[]
+  drillAttempts DrillAttempt[]
+}
+
+// Tracks which bucket a user has placed a given word in.
+// bucket: unseen | learning | learned | mastered
+model UserVocabProgress {
+  id        String   @id @default(cuid())
+  userId    String
+  entryId   String
+  bucket    String   @default("unseen")
+  updatedAt DateTime @updatedAt
+
+  user  User            @relation(fields: [userId], references: [id])
+  entry DictionaryEntry @relation(fields: [entryId], references: [id])
+
+  @@unique([userId, entryId])
+}
+
+// One row per drill attempt (correct or incorrect).
+model DrillAttempt {
+  id        String   @id @default(cuid())
+  userId    String
+  entryId   String
+  correct   Boolean
+  createdAt DateTime @default(now())
+
+  user  User            @relation(fields: [userId], references: [id])
+  entry DictionaryEntry @relation(fields: [entryId], references: [id])
+}
