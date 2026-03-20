@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
-const DEMO_EMAIL = 'demo@adaptive-spanish.local'
+const DEMO_EMAIL = 'eriktaylor@gmail.com'
 const LEARNING_TARGET = 20
 const VOCAB = [
   { sortOrder: 1, english: 'apple', spanish: 'manzana', emoji: '🍎' },

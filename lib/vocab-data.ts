@@ -1,5 +1,5 @@
 export const LEARNING_TARGET = 20
-export const DEMO_EMAIL = 'demo@adaptive-spanish.local'
+export const DEMO_EMAIL = 'eriktaylor@gmail.com'
 
 export interface SeedVocabItem {
   sortOrder: number
