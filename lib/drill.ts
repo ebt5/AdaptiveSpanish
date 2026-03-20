@@ -22,6 +22,13 @@ export interface DrillState {
   lastMoveType: MoveType
 }
 
+interface ProgressCounts {
+  learning: number
+  learned: number
+  mastered: number
+  unseen: number
+}
+
 function normalize(s: string) {
   return s.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
 }
@@ -62,12 +69,40 @@ async function getCurrentUser() {
   return user
 }
 
-async function fetchProgress(userId: string) {
-  const rows = await prisma.userVocabProgress.findMany({
+async function fetchCounts(userId: string): Promise<ProgressCounts> {
+  const grouped = await prisma.userVocabProgress.groupBy({
+    by: ['bucket'],
     where: { userId },
-    include: { entry: true },
+    _count: { _all: true },
   })
-  const items = rows.map((row) => ({
+  const counts: ProgressCounts = { learning: 0, learned: 0, mastered: 0, unseen: 0 }
+  for (const row of grouped) {
+    const bucket = row.bucket as keyof ProgressCounts
+    if (bucket in counts) counts[bucket] = row._count._all
+  }
+  return counts
+}
+
+async function fetchCandidateItems(userId: string, excludeId?: string | null) {
+  const [learning, learned, mastered] = await Promise.all([
+    prisma.userVocabProgress.findMany({
+      where: { userId, bucket: 'learning', ...(excludeId ? { NOT: { entryId: excludeId } } : {}) },
+      include: { entry: true },
+      take: 24,
+    }),
+    prisma.userVocabProgress.findMany({
+      where: { userId, bucket: 'learned', ...(excludeId ? { NOT: { entryId: excludeId } } : {}) },
+      include: { entry: true },
+      take: 18,
+    }),
+    prisma.userVocabProgress.findMany({
+      where: { userId, bucket: 'mastered', ...(excludeId ? { NOT: { entryId: excludeId } } : {}) },
+      include: { entry: true },
+      orderBy: [{ score: 'asc' }, { lastSeenAt: 'asc' }],
+      take: 24,
+    }),
+  ])
+  return [...learning, ...learned, ...mastered].map((row) => ({
     id: row.entry.id,
     english: row.entry.english,
     spanish: row.entry.spanish,
@@ -75,31 +110,23 @@ async function fetchProgress(userId: string) {
     bucket: row.bucket as Bucket,
     score: row.score,
   }))
-  const counts = {
-    learning: items.filter(i => i.bucket === 'learning').length,
-    learned: items.filter(i => i.bucket === 'learned').length,
-    mastered: items.filter(i => i.bucket === 'mastered').length,
-    unseen: items.filter(i => i.bucket === 'unseen').length,
-  }
-  return { items, counts }
-}
-
-async function sessionStats(userId: string) {
-  const attempts = await prisma.drillAttempt.findMany({
-    where: { userId },
-    orderBy: { createdAt: 'asc' },
-  })
-  const correct = attempts.filter(a => a.correct).length
-  const wrong = attempts.length - correct
-  return { correct, wrong, promoted: 0, demoted: 0 }
 }
 
 export async function initializeDrillState(): Promise<DrillState> {
   const user = await getCurrentUser()
-  const { items, counts } = await fetchProgress(user.id)
+  const [counts, items] = await Promise.all([
+    fetchCounts(user.id),
+    fetchCandidateItems(user.id),
+  ])
   const item = weightedPick(items)
-  const stats = await sessionStats(user.id)
-  return { item, counts, unseenCount: counts.unseen, stats, lastMove: null, lastMoveType: null }
+  return {
+    item,
+    counts,
+    unseenCount: counts.unseen,
+    stats: { correct: 0, wrong: 0, promoted: 0, demoted: 0 },
+    lastMove: null,
+    lastMoveType: null,
+  }
 }
 
 export async function submitAttempt(params: { entryId: string; answer: string; attemptNumber: number }) {
@@ -131,69 +158,78 @@ export async function submitAttempt(params: { entryId: string; answer: string; a
 }
 
 async function nextState(userId: string, entryId: string, success: boolean, immediateReveal: boolean) {
-  const progress = await prisma.userVocabProgress.findFirstOrThrow({ where: { userId, entryId }, include: { entry: true } })
+  const progress = await prisma.userVocabProgress.findFirstOrThrow({ where: { userId, entryId } })
   const currentBucket = progress.bucket as Bucket
   let lastMove: string | null = null
   let lastMoveType: MoveType = null
 
-  if (success) {
-    if (currentBucket === 'learning') {
-      await prisma.userVocabProgress.update({
-        where: { id: progress.id },
-        data: { bucket: 'learned', score: progress.score + 1, lastSeenAt: new Date() },
-      })
-      lastMove = '↑ Promoted to Learned'
-      lastMoveType = 'promote'
-      const learningCount = await prisma.userVocabProgress.count({ where: { userId, bucket: 'learning' } })
-      if (learningCount < LEARNING_TARGET) {
-        const unseen = await prisma.userVocabProgress.findFirst({ where: { userId, bucket: 'unseen' }, include: { entry: true }, orderBy: { entry: { sortOrder: 'asc' } } })
-        if (unseen) await prisma.userVocabProgress.update({ where: { id: unseen.id }, data: { bucket: 'learning', score: 0 } })
+  await prisma.$transaction(async (tx) => {
+    if (success) {
+      if (currentBucket === 'learning') {
+        await tx.userVocabProgress.update({
+          where: { id: progress.id },
+          data: { bucket: 'learned', score: progress.score + 1, lastSeenAt: new Date() },
+        })
+        lastMove = '↑ Promoted to Learned'
+        lastMoveType = 'promote'
+        const learningCount = await tx.userVocabProgress.count({ where: { userId, bucket: 'learning' } })
+        if (learningCount < LEARNING_TARGET) {
+          const unseen = await tx.userVocabProgress.findFirst({ where: { userId, bucket: 'unseen' }, orderBy: { entry: { sortOrder: 'asc' } } })
+          if (unseen) await tx.userVocabProgress.update({ where: { id: unseen.id }, data: { bucket: 'learning', score: 0 } })
+        }
+      } else if (currentBucket === 'learned') {
+        await tx.userVocabProgress.update({
+          where: { id: progress.id },
+          data: { bucket: 'mastered', score: progress.score + 1, lastSeenAt: new Date() },
+        })
+        lastMove = '★ Mastered!'
+        lastMoveType = 'master'
+      } else {
+        await tx.userVocabProgress.update({
+          where: { id: progress.id },
+          data: { score: progress.score + 1, lastSeenAt: new Date() },
+        })
       }
-    } else if (currentBucket === 'learned') {
-      await prisma.userVocabProgress.update({
-        where: { id: progress.id },
-        data: { bucket: 'mastered', score: progress.score + 1, lastSeenAt: new Date() },
-      })
-      lastMove = '★ Mastered!'
-      lastMoveType = 'master'
+    } else if (!immediateReveal || currentBucket !== 'learning') {
+      if (currentBucket === 'mastered') {
+        await tx.userVocabProgress.update({
+          where: { id: progress.id },
+          data: { bucket: 'learned', score: 0, lastSeenAt: new Date() },
+        })
+        lastMove = '↓ Demoted to Learned'
+        lastMoveType = 'demote'
+      } else if (currentBucket === 'learned') {
+        await tx.userVocabProgress.update({
+          where: { id: progress.id },
+          data: { bucket: 'learning', score: 0, lastSeenAt: new Date() },
+        })
+        lastMove = '↓ Demoted to Learning'
+        lastMoveType = 'demote'
+      } else {
+        await tx.userVocabProgress.update({
+          where: { id: progress.id },
+          data: { score: 0, lastSeenAt: new Date() },
+        })
+      }
     } else {
-      await prisma.userVocabProgress.update({
-        where: { id: progress.id },
-        data: { score: progress.score + 1, lastSeenAt: new Date() },
-      })
-    }
-  } else if (!immediateReveal || currentBucket !== 'learning') {
-    if (currentBucket === 'mastered') {
-      await prisma.userVocabProgress.update({
-        where: { id: progress.id },
-        data: { bucket: 'learned', score: 0, lastSeenAt: new Date() },
-      })
-      lastMove = '↓ Demoted to Learned'
-      lastMoveType = 'demote'
-    } else if (currentBucket === 'learned') {
-      await prisma.userVocabProgress.update({
-        where: { id: progress.id },
-        data: { bucket: 'learning', score: 0, lastSeenAt: new Date() },
-      })
-      lastMove = '↓ Demoted to Learning'
-      lastMoveType = 'demote'
-    } else {
-      await prisma.userVocabProgress.update({
+      await tx.userVocabProgress.update({
         where: { id: progress.id },
         data: { score: 0, lastSeenAt: new Date() },
       })
     }
-  } else {
-    await prisma.userVocabProgress.update({
-      where: { id: progress.id },
-      data: { score: 0, lastSeenAt: new Date() },
-    })
-  }
+  })
 
-  const { items, counts } = await fetchProgress(userId)
+  const [counts, items] = await Promise.all([
+    fetchCounts(userId),
+    fetchCandidateItems(userId, entryId),
+  ])
   const item = weightedPick(items, entryId)
-  const stats = await sessionStats(userId)
-  if (lastMoveType === 'promote' || lastMoveType === 'master') stats.promoted += 1
-  if (lastMoveType === 'demote') stats.demoted += 1
-  return { item, counts, unseenCount: counts.unseen, stats, lastMove, lastMoveType }
+  return {
+    item,
+    counts,
+    unseenCount: counts.unseen,
+    stats: { correct: 0, wrong: 0, promoted: lastMoveType === 'promote' || lastMoveType === 'master' ? 1 : 0, demoted: lastMoveType === 'demote' ? 1 : 0 },
+    lastMove,
+    lastMoveType,
+  }
 }
