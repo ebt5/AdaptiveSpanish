@@ -1,0 +1,206 @@
+:root {
+  --bg: #f8f7f4;
+  --surface: #ffffff;
+  --border: #e2e0db;
+  --text: #1a1a1a;
+  --text-muted: #6b6b6b;
+  --accent: #2563eb;
+  --accent-text: #ffffff;
+  --green: #16a34a;
+  --red: #dc2626;
+  --radius: 8px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111111;
+    --surface: #1e1e1e;
+    --border: #2e2e2e;
+    --text: #f0f0f0;
+    --text-muted: #888;
+  }
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.app {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-height: 100dvh;
+}
+
+.app-header {
+  text-align: center;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.app-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.tagline {
+  color: var(--text-muted);
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.app-main {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Shared card style */
+.bucket-header,
+.drill-panel,
+.progress-visuals,
+.mode-toggles {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow);
+}
+
+.section-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+/* Bucket header */
+.bucket-name {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.bucket-meta {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* Drill panel */
+.drill-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+.drill-prompt {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.drill-hint {
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.drill-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-wrong { background: #fee2e2; color: var(--red); }
+.btn-right  { background: #dcfce7; color: var(--green); }
+.btn:hover { opacity: 0.85; }
+
+/* Progress */
+.progress-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.progress-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.progress-row span:first-child {
+  width: 64px;
+  color: var(--text-muted);
+}
+
+.progress-row span:last-child {
+  width: 24px;
+  text-align: right;
+  color: var(--text-muted);
+}
+
+.bar {
+  flex: 1;
+  height: 8px;
+  background: var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 4px;
+  transition: width 0.3s;
+}
+
+/* Mode toggles */
+.toggle-group {
+  display: flex;
+  gap: 8px;
+}
+
+.toggle-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.toggle-btn.active {
+  background: var(--accent);
+  color: var(--accent-text);
+  border-color: var(--accent);
+}
+
+.toggle-btn:hover:not(.active) { background: var(--border); }
