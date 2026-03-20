@@ -106,6 +106,7 @@ async function fetchCandidateItems(userId: string, excludeId?: string | null) {
     id: row.entry.id,
     english: row.entry.english,
     spanish: row.entry.spanish,
+    spanishNormalized: normalize(row.entry.spanish),
     emoji: row.entry.emoji,
     bucket: row.bucket as Bucket,
     score: row.score,

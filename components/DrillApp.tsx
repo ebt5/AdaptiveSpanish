@@ -10,8 +10,10 @@ type DrillItem = {
   id: string
   english: string
   spanish: string
+  spanishNormalized?: string
   emoji: string | null
   bucket: Bucket
+  score?: number
 }
 
 type DrillState = {
@@ -33,6 +35,19 @@ const emptyState: DrillState = {
 }
 
 function cap(s: string) { return s.charAt(0).toUpperCase() + s.slice(1) }
+function normalize(s: string) { return s.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') }
+
+function optimisticAdvanceBucket(bucket: Bucket): Bucket {
+  if (bucket === 'learning') return 'learned'
+  if (bucket === 'learned') return 'mastered'
+  return bucket
+}
+
+function optimisticDemoteBucket(bucket: Bucket): Bucket {
+  if (bucket === 'mastered') return 'learned'
+  if (bucket === 'learned') return 'learning'
+  return 'learning'
+}
 
 export default function DrillApp() {
   const [drill, setDrill] = useState<DrillState>(emptyState)
@@ -40,7 +55,7 @@ export default function DrillApp() {
   const [input, setInput] = useState('')
   const [answer, setAnswer] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
-  const [submitting, setSubmitting] = useState(false)
+  const [pendingSync, setPendingSync] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const nextBtnRef = useRef<HTMLButtonElement>(null)
 
@@ -62,42 +77,155 @@ export default function DrillApp() {
     else inputRef.current?.focus()
   }, [isReviewing, phase, item?.id])
 
-  async function submitAttempt(attemptNumber: number) {
+  async function persistAndHydrate(answerValue: string, attemptNumber: number, optimisticPhase: Phase, optimisticAnswer: string | null, optimisticState?: Partial<DrillState>) {
     if (!item) return
-    setSubmitting(true)
-    const res = await fetch('/api/drill/submit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ entryId: item.id, answer: input, attemptNumber }),
-    })
-    const data = await res.json()
-    setSubmitting(false)
-    if (data.phase === 'wrong-first') {
-      setPhase('wrong-first')
-      setInput('')
-      return
+    if (optimisticState) {
+      setDrill(prev => ({ ...prev, ...optimisticState }))
     }
-    setDrill({
-      item: data.item,
-      counts: data.counts,
-      unseenCount: data.unseenCount,
-      stats: data.stats,
-      lastMove: data.lastMove,
-      lastMoveType: data.lastMoveType,
-    })
-    setPhase(data.phase)
-    setAnswer(data.answer)
+    setPhase(optimisticPhase)
+    setAnswer(optimisticAnswer)
     setInput('')
+    setPendingSync(true)
+
+    try {
+      const res = await fetch('/api/drill/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entryId: item.id, answer: answerValue, attemptNumber }),
+      })
+      const data = await res.json()
+      if (data.phase !== 'wrong-first') {
+        setDrill({
+          item: data.item,
+          counts: data.counts,
+          unseenCount: data.unseenCount,
+          stats: data.stats,
+          lastMove: data.lastMove,
+          lastMoveType: data.lastMoveType,
+        })
+        setPhase(data.phase)
+        setAnswer(data.answer)
+      }
+    } finally {
+      setPendingSync(false)
+    }
   }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    if (!item) return
     if (isReviewing) {
       setPhase('answering')
       setAnswer(null)
       return
     }
-    void submitAttempt(phase === 'wrong-first' ? 2 : 1)
+
+    const normalizedInput = normalize(input)
+    const expected = item.spanishNormalized ?? normalize(item.spanish)
+    const isBlank = normalizedInput === ''
+    const isCorrect = normalizedInput === expected
+
+    if (phase === 'answering') {
+      if (isBlank) {
+        const nextBucket = optimisticDemoteBucket(item.bucket)
+        const optimisticCounts = { ...drill.counts }
+        if (item.bucket === 'learned') {
+          optimisticCounts.learned -= 1
+          optimisticCounts.learning += 1
+        } else if (item.bucket === 'mastered') {
+          optimisticCounts.mastered -= 1
+          optimisticCounts.learned += 1
+        }
+        void persistAndHydrate('', 1, 'revealed', item.spanish, {
+          counts: optimisticCounts,
+          stats: { ...drill.stats, wrong: drill.stats.wrong + 1, demoted: drill.stats.demoted + (item.bucket === 'learning' ? 0 : 1) },
+          lastMove: item.bucket === 'learning' ? null : nextBucket === 'learned' ? '↓ Demoted to Learned' : '↓ Demoted to Learning',
+          lastMoveType: item.bucket === 'learning' ? null : 'demote',
+        })
+        return
+      }
+      if (!isCorrect) {
+        setPhase('wrong-first')
+        setInput('')
+        return
+      }
+
+      const nextBucket = optimisticAdvanceBucket(item.bucket)
+      const optimisticCounts = { ...drill.counts }
+      let lastMove: string | null = null
+      let lastMoveType: MoveType = null
+      if (item.bucket === 'learning') {
+        optimisticCounts.learning -= 1
+        optimisticCounts.learned += 1
+        if (drill.unseenCount > 0) {
+          optimisticCounts.learning += 1
+          optimisticCounts.unseen -= 1
+        }
+        lastMove = '↑ Promoted to Learned'
+        lastMoveType = 'promote'
+      } else if (item.bucket === 'learned') {
+        optimisticCounts.learned -= 1
+        optimisticCounts.mastered += 1
+        lastMove = '★ Mastered!'
+        lastMoveType = 'master'
+      }
+      void persistAndHydrate(input, 1, 'correct', item.spanish, {
+        counts: optimisticCounts,
+        unseenCount: optimisticCounts.unseen,
+        stats: { ...drill.stats, correct: drill.stats.correct + 1, promoted: drill.stats.promoted + (lastMoveType ? 1 : 0) },
+        lastMove,
+        lastMoveType,
+      })
+      return
+    }
+
+    if (phase === 'wrong-first') {
+      if (!isBlank && isCorrect) {
+        const nextBucket = optimisticAdvanceBucket(item.bucket)
+        const optimisticCounts = { ...drill.counts }
+        let lastMove: string | null = null
+        let lastMoveType: MoveType = null
+        if (item.bucket === 'learning') {
+          optimisticCounts.learning -= 1
+          optimisticCounts.learned += 1
+          if (drill.unseenCount > 0) {
+            optimisticCounts.learning += 1
+            optimisticCounts.unseen -= 1
+          }
+          lastMove = '↑ Promoted to Learned'
+          lastMoveType = 'promote'
+        } else if (item.bucket === 'learned') {
+          optimisticCounts.learned -= 1
+          optimisticCounts.mastered += 1
+          lastMove = '★ Mastered!'
+          lastMoveType = 'master'
+        }
+        void persistAndHydrate(input, 2, 'correct', item.spanish, {
+          counts: optimisticCounts,
+          unseenCount: optimisticCounts.unseen,
+          stats: { ...drill.stats, correct: drill.stats.correct + 1, promoted: drill.stats.promoted + (lastMoveType ? 1 : 0) },
+          lastMove,
+          lastMoveType,
+        })
+        return
+      }
+
+      const nextBucket = optimisticDemoteBucket(item.bucket)
+      const optimisticCounts = { ...drill.counts }
+      if (item.bucket === 'learned') {
+        optimisticCounts.learned -= 1
+        optimisticCounts.learning += 1
+      } else if (item.bucket === 'mastered') {
+        optimisticCounts.mastered -= 1
+        optimisticCounts.learned += 1
+      }
+      void persistAndHydrate(input, 2, 'revealed', item.spanish, {
+        counts: optimisticCounts,
+        stats: { ...drill.stats, wrong: drill.stats.wrong + 1, demoted: drill.stats.demoted + (item.bucket === 'learning' ? 0 : 1) },
+        lastMove: item.bucket === 'learning' ? null : nextBucket === 'learned' ? '↓ Demoted to Learned' : '↓ Demoted to Learning',
+        lastMoveType: item.bucket === 'learning' ? null : 'demote',
+      })
+    }
   }
 
   if (loading) return <div className="app"><p>Loading Adaptive Spanish…</p></div>
@@ -163,14 +291,14 @@ export default function DrillApp() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder={phase === 'wrong-first' ? 'Try again…' : 'Type Spanish…'}
-                disabled={isReviewing || submitting}
+                disabled={isReviewing}
                 autoComplete="off"
                 autoCorrect="off"
                 autoCapitalize="off"
                 spellCheck={false}
               />
-              <button ref={nextBtnRef} type="submit" className={`btn btn-submit${isReviewing ? ' btn-next' : ''}`} disabled={submitting}>
-                {isReviewing ? 'Next →' : submitting ? '...' : 'Check'}
+              <button ref={nextBtnRef} type="submit" className={`btn btn-submit${isReviewing ? ' btn-next' : ''}`}>
+                {isReviewing ? 'Next →' : pendingSync ? 'Saving…' : 'Check'}
               </button>
             </form>
 
