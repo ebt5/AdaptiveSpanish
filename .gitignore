@@ -34,3 +34,4 @@ prisma/generated
 *.njsproj
 *.sln
 *.sw?
+.vercel

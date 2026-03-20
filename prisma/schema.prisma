@@ -18,11 +18,12 @@ model User {
 }
 
 model DictionaryEntry {
-  id       String  @id @default(cuid())
-  english  String
-  spanish  String
-  emoji    String?
-  category String  @default("vocabulary")
+  id        String  @id @default(cuid())
+  sortOrder Int     @unique
+  english   String
+  spanish   String
+  emoji     String?
+  category  String  @default("vocabulary")
 
   vocabProgress UserVocabProgress[]
   drillAttempts DrillAttempt[]
