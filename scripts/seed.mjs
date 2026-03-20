@@ -50,7 +50,7 @@ async function main() {
     await prisma.userVocabProgress.upsert({
       where: { userId_entryId: { userId: user.id, entryId: entry.id } },
       update: {},
-      create: { userId: user.id, entryId: entry.id, bucket: index < LEARNING_TARGET ? 'learning' : 'unseen' },
+      create: { userId: user.id, entryId: entry.id, bucket: index < LEARNING_TARGET ? 'learning' : 'unseen', score: 0 },
     })
   }
   console.log(`Seeded ${entries.length} vocab entries for ${DEMO_EMAIL}`)
