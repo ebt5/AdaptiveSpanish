@@ -1,0 +1,3 @@
+# AdaptiveSpanish
+
+Repository intentionally cleared.
