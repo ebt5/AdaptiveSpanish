@@ -1,5 +1,5 @@
 import { prisma } from './prisma'
-import { DEMO_EMAIL, LEARNING_TARGET, VOCAB } from './vocab-data'
+import { DEMO_EMAIL, LEARNING_TARGET } from './vocab-data'
 
 export type Bucket = 'unseen' | 'learning' | 'learned' | 'mastered'
 export type Phase = 'answering' | 'wrong-first' | 'correct' | 'revealed'
@@ -54,36 +54,12 @@ function weightedPick(items: (DrillItem & { score: number })[], excludeId?: stri
   return draw[Math.floor(Math.random() * draw.length)]
 }
 
-async function ensureSeeded() {
-  for (const item of VOCAB) {
-    await prisma.dictionaryEntry.upsert({
-      where: { sortOrder: item.sortOrder },
-      update: { english: item.english, spanish: item.spanish, emoji: item.emoji, category: 'vocabulary' },
-      create: { sortOrder: item.sortOrder, english: item.english, spanish: item.spanish, emoji: item.emoji, category: 'vocabulary' },
-    })
+async function getCurrentUser() {
+  const user = await prisma.user.findUnique({ where: { email: DEMO_EMAIL } })
+  if (!user) {
+    throw new Error(`Current test user not found: ${DEMO_EMAIL}. Run the seed/init step first.`)
   }
-}
-
-async function ensureDemoUser() {
-  return prisma.user.upsert({
-    where: { email: DEMO_EMAIL },
-    update: {},
-    create: { email: DEMO_EMAIL },
-  })
-}
-
-async function ensureInitialProgress(userId: string) {
-  const entries = await prisma.dictionaryEntry.findMany({ where: { category: 'vocabulary' }, orderBy: { sortOrder: 'asc' } })
-  const existing = await prisma.userVocabProgress.count({ where: { userId } })
-  if (existing > 0) return
-  await prisma.userVocabProgress.createMany({
-    data: entries.map((entry, index) => ({
-      userId,
-      entryId: entry.id,
-      bucket: index < LEARNING_TARGET ? 'learning' : 'unseen',
-      score: 0,
-    })),
-  })
+  return user
 }
 
 async function fetchProgress(userId: string) {
@@ -119,9 +95,7 @@ async function sessionStats(userId: string) {
 }
 
 export async function initializeDrillState(): Promise<DrillState> {
-  await ensureSeeded()
-  const user = await ensureDemoUser()
-  await ensureInitialProgress(user.id)
+  const user = await getCurrentUser()
   const { items, counts } = await fetchProgress(user.id)
   const item = weightedPick(items)
   const stats = await sessionStats(user.id)
@@ -129,9 +103,7 @@ export async function initializeDrillState(): Promise<DrillState> {
 }
 
 export async function submitAttempt(params: { entryId: string; answer: string; attemptNumber: number }) {
-  await ensureSeeded()
-  const user = await ensureDemoUser()
-  await ensureInitialProgress(user.id)
+  const user = await getCurrentUser()
   const progress = await prisma.userVocabProgress.findFirstOrThrow({
     where: { userId: user.id, entryId: params.entryId },
     include: { entry: true },
