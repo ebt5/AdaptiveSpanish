@@ -44,12 +44,46 @@ const VOCAB: VocabItem[] = [
 ]
 
 const LEARNING_TARGET = 20
-const TOTAL = VOCAB.length
-const vocabById = Object.fromEntries(VOCAB.map(v => [v.id, v])) as Record<number, VocabItem>
+const TOTAL           = VOCAB.length
+const vocabById       = Object.fromEntries(VOCAB.map(v => [v.id, v])) as Record<number, VocabItem>
+
+// ── Weighted sampling ─────────────────────────────────────────────────────────
+//
+// Priority: Learning (3×) > Learned (2×) > Mastered (~20% of pool).
+// Mastered items are only included if there are active items to interleave with.
+// When everything is mastered, returns null (→ "all done" screen).
+
+type Bucket = 'unseen' | 'learning' | 'learned' | 'mastered'
+
+function pickNext(buckets: Record<number, Bucket>, excludeId: number | null): number | null {
+  const ids      = Object.keys(buckets).map(Number)
+  const learning = ids.filter(id => buckets[id] === 'learning')
+  const learned  = ids.filter(id => buckets[id] === 'learned')
+  const mastered = ids.filter(id => buckets[id] === 'mastered')
+
+  // Weighted active pool
+  const active: number[] = [
+    ...learning, ...learning, ...learning,
+    ...learned,  ...learned,
+  ]
+
+  // Sprinkle mastered items for occasional maintenance review (~1 per 4 active slots)
+  if (mastered.length > 0 && active.length > 0) {
+    const slots  = Math.max(1, Math.floor(active.length / 4))
+    const sample = mastered.slice().sort(() => Math.random() - 0.5).slice(0, slots)
+    active.push(...sample)
+  }
+
+  if (active.length === 0) return null // everything mastered → done
+
+  // Avoid immediate repeat when possible
+  const pool = excludeId !== null ? active.filter(id => id !== excludeId) : active
+  const draw  = pool.length > 0 ? pool : active
+  return draw[Math.floor(Math.random() * draw.length)]
+}
 
 // ── State / reducer ───────────────────────────────────────────────────────────
 
-type Bucket   = 'unseen' | 'learning' | 'learned' | 'mastered'
 type Phase    = 'answering' | 'wrong-first' | 'correct' | 'revealed'
 type MoveType = 'promote' | 'master' | 'demote' | null
 
@@ -62,8 +96,8 @@ interface SessionStats {
 
 interface State {
   buckets:      Record<number, Bucket>
-  queue:        number[]
   unseenPool:   number[]
+  currentId:    number | null
   phase:        Phase
   input:        string
   stats:        SessionStats
@@ -73,19 +107,19 @@ interface State {
 
 function buildInitialState(): State {
   const buckets: Record<number, Bucket> = {}
-  const queue: number[] = []
   const unseenPool: number[] = []
   VOCAB.forEach((item, i) => {
     if (i < LEARNING_TARGET) {
       buckets[item.id] = 'learning'
-      queue.push(item.id)
     } else {
       buckets[item.id] = 'unseen'
       unseenPool.push(item.id)
     }
   })
   return {
-    buckets, queue, unseenPool, phase: 'answering', input: '',
+    buckets, unseenPool,
+    currentId: pickNext(buckets, null),
+    phase: 'answering', input: '',
     stats: { correct: 0, wrong: 0, promoted: 0, demoted: 0 },
     lastMove: null, lastMoveType: null,
   }
@@ -101,15 +135,12 @@ type Action =
   | { type: 'NEXT' }
 
 function reducer(state: State, action: Action): State {
-  const { buckets, queue, unseenPool, phase, input, stats } = state
+  const { buckets, unseenPool, currentId, phase, input, stats } = state
 
-  if (action.type === 'SET_INPUT') {
-    return { ...state, input: action.value }
-  }
+  if (action.type === 'SET_INPUT') return { ...state, input: action.value }
 
-  if (queue.length === 0) return state
-  const currentId = queue[0]
-  const item      = vocabById[currentId]
+  if (currentId === null) return state
+  const item = vocabById[currentId]
 
   if (action.type === 'SUBMIT') {
     if (phase !== 'answering' && phase !== 'wrong-first') return state
@@ -118,11 +149,11 @@ function reducer(state: State, action: Action): State {
     const isCorrect = trimmed === normalize(item.spanish)
 
     if (phase === 'answering') {
-      if (isBlank)   return { ...state, phase: 'revealed',    input: '' }
-      if (isCorrect) return { ...state, phase: 'correct',     input: '' }
-      return               { ...state, phase: 'wrong-first',  input: '' }
+      if (isBlank)   return { ...state, phase: 'revealed',   input: '' }
+      if (isCorrect) return { ...state, phase: 'correct',    input: '' }
+      return               { ...state, phase: 'wrong-first', input: '' }
     }
-    // wrong-first: one more chance
+    // wrong-first: last chance
     if (isBlank || !isCorrect) return { ...state, phase: 'revealed', input: '' }
     return { ...state, phase: 'correct', input: '' }
   }
@@ -131,7 +162,6 @@ function reducer(state: State, action: Action): State {
     const success       = phase === 'correct'
     const currentBucket = buckets[currentId]
     const newBuckets    = { ...buckets }
-    let newQueue        = queue.slice(1)
     let newUnseenPool   = [...unseenPool]
     let lastMove: string | null = null
     let lastMoveType: MoveType  = null
@@ -141,17 +171,15 @@ function reducer(state: State, action: Action): State {
       newStats.correct++
       if (currentBucket === 'learning') {
         newBuckets[currentId] = 'learned'
-        newQueue = [...newQueue, currentId]
         lastMove     = '↑ Promoted to Learned'
         lastMoveType = 'promote'
         newStats.promoted++
-        // Replenish Learning toward target
+        // Keep Learning bucket near target by pulling from unseen
         const learningCount = Object.values(newBuckets).filter(b => b === 'learning').length
         if (learningCount < LEARNING_TARGET && newUnseenPool.length > 0) {
           const newId   = newUnseenPool[0]
           newUnseenPool = newUnseenPool.slice(1)
           newBuckets[newId] = 'learning'
-          newQueue = [...newQueue, newId]
         }
       } else if (currentBucket === 'learned') {
         newBuckets[currentId] = 'mastered'
@@ -159,6 +187,7 @@ function reducer(state: State, action: Action): State {
         lastMoveType = 'master'
         newStats.promoted++
       }
+      // mastered → stays mastered on correct review (no move message)
     } else {
       newStats.wrong++
       if (currentBucket === 'mastered') {
@@ -172,13 +201,13 @@ function reducer(state: State, action: Action): State {
         lastMoveType = 'demote'
         newStats.demoted++
       }
-      // learning stays learning — no demotion message needed
-      newQueue = [...newQueue, currentId]
+      // learning stays learning — no demotion message
     }
 
     return {
       ...state,
-      buckets: newBuckets, queue: newQueue, unseenPool: newUnseenPool,
+      buckets: newBuckets, unseenPool: newUnseenPool,
+      currentId: pickNext(newBuckets, currentId),
       phase: 'answering', input: '',
       stats: newStats, lastMove, lastMoveType,
     }
@@ -195,9 +224,7 @@ function countBuckets(buckets: Record<number, Bucket>) {
   return c
 }
 
-function cap(s: string) {
-  return s.charAt(0).toUpperCase() + s.slice(1)
-}
+function cap(s: string) { return s.charAt(0).toUpperCase() + s.slice(1) }
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
@@ -206,26 +233,26 @@ export default function App() {
   const inputRef   = useRef<HTMLInputElement>(null)
   const nextBtnRef = useRef<HTMLButtonElement>(null)
 
-  const { buckets, queue, unseenPool, phase, input, stats, lastMove, lastMoveType } = state
+  const { buckets, unseenPool, currentId, phase, input, stats, lastMove, lastMoveType } = state
   const counts        = countBuckets(buckets)
-  const currentId     = queue[0]
-  const item          = currentId !== undefined ? vocabById[currentId] : null
+  const item          = currentId != null ? vocabById[currentId] : null
   const currentBucket = item ? buckets[item.id] : null
   const isReviewing   = phase === 'correct' || phase === 'revealed'
   const anyStats      = stats.correct + stats.wrong > 0
+  const allDone       = currentId === null
 
   useEffect(() => {
-    if (isReviewing) {
-      nextBtnRef.current?.focus()
-    } else {
-      inputRef.current?.focus()
-    }
+    if (isReviewing) nextBtnRef.current?.focus()
+    else             inputRef.current?.focus()
   }, [phase, currentId, isReviewing])
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     dispatch({ type: isReviewing ? 'NEXT' : 'SUBMIT' })
   }
+
+  // Unique key for toast re-animation on each new move
+  const toastKey = lastMove ? `${lastMove}-${stats.promoted}-${stats.demoted}` : ''
 
   return (
     <div className="app">
@@ -236,16 +263,39 @@ export default function App() {
 
       <main className="app-main">
 
-        {/* ── Bucket cards ─────────────────────────────────────────────────── */}
+        {/* ── Drill category toggles ────────────────────────────────────── */}
+        <div className="category-toggles">
+          <button className="category-toggle category-toggle-active" type="button">
+            Vocabulary
+          </button>
+          <button className="category-toggle category-toggle-soon" type="button" disabled>
+            Phrases <span className="soon-badge">Soon</span>
+          </button>
+          <button className="category-toggle category-toggle-soon" type="button" disabled>
+            Verb Conjugation <span className="soon-badge">Soon</span>
+          </button>
+        </div>
+
+        {/* ── Bucket cards ─────────────────────────────────────────────── */}
         <div className="bucket-cards">
           {([
             ['Learning', 'learning', counts.learning],
             ['Learned',  'learned',  counts.learned ],
             ['Mastered', 'mastered', counts.mastered],
-          ] as [string, string, number][]).map(([label, key, count]) => (
+          ] as [string, string, number][]).map(([label, key, wordCount]) => (
             <div key={key} className={`bucket-card bucket-card-${key}`}>
-              <div className="bucket-count">{count}</div>
               <div className="bucket-name">{label}</div>
+              <div className="bucket-sub-counts">
+                <div className="bucket-sub">
+                  <span className="bucket-sub-num">{wordCount}</span>
+                  <span className="bucket-sub-label">words</span>
+                </div>
+                <div className="bucket-sub-divider" />
+                <div className="bucket-sub">
+                  <span className="bucket-sub-num bucket-sub-num-muted">0</span>
+                  <span className="bucket-sub-label">phrases</span>
+                </div>
+              </div>
             </div>
           ))}
         </div>
@@ -253,8 +303,8 @@ export default function App() {
           <p className="unseen-note">{unseenPool.length} words not yet introduced</p>
         )}
 
-        {/* ── Drill panel ───────────────────────────────────────────────────── */}
-        {queue.length === 0 ? (
+        {/* ── Drill panel ───────────────────────────────────────────────── */}
+        {allDone ? (
           <section className="drill-panel">
             <div className="all-done">
               <div className="all-done-icon">🎉</div>
@@ -269,9 +319,12 @@ export default function App() {
         ) : item && currentBucket ? (
           <section className="drill-panel">
 
-            {/* Move result from previous card */}
+            {/* Move toast — re-animates on each new move via key */}
             {lastMove && (
-              <div className={`move-toast move-toast-${lastMoveType}`}>
+              <div
+                key={toastKey}
+                className={`move-toast move-toast-${lastMoveType}`}
+              >
                 {lastMove}
               </div>
             )}
@@ -288,26 +341,30 @@ export default function App() {
             {/* Per-attempt feedback */}
             {phase === 'wrong-first' && (
               <div className="feedback feedback-wrong">
-                Not quite — one more try
+                <span className="feedback-icon">✗</span>
+                <span>Not quite — one more chance</span>
+                <span className="feedback-attempt">2 / 2</span>
               </div>
             )}
             {phase === 'correct' && (
               <div className="feedback feedback-correct">
-                Correct! <span className="answer-word">{item.spanish}</span>
+                <span className="feedback-icon">✓</span>
+                <span>Correct! <span className="answer-word">{item.spanish}</span></span>
               </div>
             )}
             {phase === 'revealed' && (
               <div className="feedback feedback-revealed">
-                Answer: <span className="answer-word">{item.spanish}</span>
+                <span className="feedback-icon">→</span>
+                <span>Answer: <span className="answer-word">{item.spanish}</span></span>
               </div>
             )}
 
-            {/* Input row */}
+            {/* Input + button */}
             <form onSubmit={handleSubmit} className="drill-form">
               <input
                 ref={inputRef}
                 type="text"
-                className={`drill-input${phase === 'wrong-first' ? ' input-shake' : ''}`}
+                className={`drill-input${phase === 'wrong-first' ? ' input-wrong' : ''}`}
                 value={input}
                 onChange={e => dispatch({ type: 'SET_INPUT', value: e.target.value })}
                 placeholder={phase === 'wrong-first' ? 'Try again…' : 'Type Spanish…'}
@@ -327,14 +384,14 @@ export default function App() {
             </form>
 
             <p className="drill-hint">
-              {phase === 'answering'   && 'Enter to check · blank Enter to reveal'}
-              {phase === 'wrong-first' && 'One more try · blank Enter to reveal'}
+              {phase === 'answering'   && 'Enter to check · blank Enter to skip & reveal'}
+              {phase === 'wrong-first' && 'Last chance · blank Enter to reveal answer'}
               {isReviewing             && 'Enter or click Next to continue'}
             </p>
           </section>
         ) : null}
 
-        {/* ── Session stats ────────────────────────────────────────────────── */}
+        {/* ── Session stats ─────────────────────────────────────────────── */}
         {anyStats && (
           <div className="session-stats">
             <span className="stat stat-correct">✓ {stats.correct}</span>

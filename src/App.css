@@ -9,6 +9,7 @@
   --green:       #16a34a;
   --red:         #dc2626;
   --orange:      #ea580c;
+  --amber:       #b45309;
   --gray:        #9ca3af;
   --radius:      8px;
   --shadow:      0 1px 3px rgba(0,0,0,0.08);
@@ -21,6 +22,7 @@
     --border:     #2e2e2e;
     --text:       #f0f0f0;
     --text-muted: #888;
+    --amber:      #fcd34d;
   }
 }
 
@@ -70,6 +72,51 @@ body {
   gap: 12px;
 }
 
+/* ── Category toggles ────────────────────────────────────────────────────── */
+
+.category-toggles {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.category-toggle {
+  padding: 6px 14px;
+  border-radius: 99px;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.12s, color 0.12s;
+}
+
+.category-toggle-active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  cursor: default;
+}
+
+.category-toggle-soon {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.soon-badge {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  background: rgba(0,0,0,0.10);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
 /* ── Bucket cards ────────────────────────────────────────────────────────── */
 
 .bucket-cards {
@@ -83,7 +130,7 @@ body {
   border: 1px solid var(--border);
   border-top: 3px solid transparent;
   border-radius: var(--radius);
-  padding: 14px 12px 12px;
+  padding: 12px 10px;
   text-align: center;
   box-shadow: var(--shadow);
 }
@@ -92,25 +139,57 @@ body {
 .bucket-card-learned  { border-top-color: var(--orange); }
 .bucket-card-mastered { border-top-color: var(--green);  }
 
-.bucket-count {
-  font-size: 34px;
+.bucket-name {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.bucket-sub-counts {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.bucket-sub {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.bucket-sub-num {
+  font-size: 22px;
   font-weight: 700;
   line-height: 1;
-  margin-bottom: 5px;
   font-variant-numeric: tabular-nums;
 }
 
-.bucket-card-learning .bucket-count { color: var(--accent); }
-.bucket-card-learned  .bucket-count { color: var(--orange); }
-.bucket-card-mastered .bucket-count { color: var(--green);  }
-
-.bucket-name {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-  color: var(--text-muted);
+.bucket-sub-num-muted {
+  color: var(--gray) !important;
 }
+
+.bucket-sub-label {
+  font-size: 9px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.bucket-sub-divider {
+  width: 1px;
+  height: 26px;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+.bucket-card-learning .bucket-sub-num { color: var(--accent); }
+.bucket-card-learned  .bucket-sub-num { color: var(--orange); }
+.bucket-card-mastered .bucket-sub-num { color: var(--green);  }
 
 .unseen-note {
   font-size: 12px;
@@ -132,22 +211,45 @@ body {
 /* ── Move toast ──────────────────────────────────────────────────────────── */
 
 .move-toast {
-  font-size: 13px;
-  font-weight: 600;
-  padding: 6px 10px;
-  border-radius: 6px;
-  margin-bottom: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 9px 14px;
+  border-radius: 8px;
+  margin-bottom: 14px;
   text-align: center;
+  border: 1px solid transparent;
+  animation: toast-in 0.25s ease;
 }
 
-.move-toast-promote { background: #dcfce7; color: #15803d; }
-.move-toast-master  { background: #dcfce7; color: #15803d; }
-.move-toast-demote  { background: #fee2e2; color: var(--red); }
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(-5px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+
+.move-toast-promote {
+  background: #dcfce7;
+  color: #15803d;
+  border-color: #bbf7d0;
+}
+
+.move-toast-master {
+  background: #fef9c3;
+  color: #854d0e;
+  border-color: #fde68a;
+  font-size: 16px;
+  letter-spacing: 0.1px;
+}
+
+.move-toast-demote {
+  background: #fee2e2;
+  color: var(--red);
+  border-color: #fecaca;
+}
 
 @media (prefers-color-scheme: dark) {
-  .move-toast-promote,
-  .move-toast-master  { background: #052e16; color: #86efac; }
-  .move-toast-demote  { background: #450a0a; color: #fca5a5; }
+  .move-toast-promote { background: #052e16; color: #86efac; border-color: #14532d; }
+  .move-toast-master  { background: #422006; color: #fcd34d; border-color: #78350f; }
+  .move-toast-demote  { background: #450a0a; color: #fca5a5; border-color: #7f1d1d; }
 }
 
 /* ── Drill card ──────────────────────────────────────────────────────────── */
@@ -205,7 +307,7 @@ body {
   margin-bottom: 12px;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
 .feedback-wrong    { background: #fee2e2; color: var(--red); }
@@ -216,6 +318,23 @@ body {
   .feedback-wrong    { background: #450a0a; color: #fca5a5; }
   .feedback-correct  { background: #052e16; color: #86efac; }
   .feedback-revealed { background: #422006; color: #fcd34d; }
+}
+
+.feedback-icon {
+  flex-shrink: 0;
+  font-size: 14px;
+  opacity: 0.85;
+}
+
+.feedback-attempt {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  background: rgba(0,0,0,0.10);
+  padding: 1px 7px;
+  border-radius: 4px;
+  flex-shrink: 0;
 }
 
 .answer-word {
@@ -253,15 +372,17 @@ body {
   cursor: not-allowed;
 }
 
-.input-shake {
+/* Persistent red border + one-shot shake on wrong first attempt */
+.input-wrong {
   border-color: var(--red) !important;
-  animation: shake 0.25s ease;
+  animation: shake 0.3s ease;
 }
 
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
-  25%       { transform: translateX(-4px); }
-  75%       { transform: translateX(4px); }
+  20%       { transform: translateX(-5px); }
+  60%       { transform: translateX(5px); }
+  80%       { transform: translateX(-3px); }
 }
 
 /* ── Buttons ─────────────────────────────────────────────────────────────── */
