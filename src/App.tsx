@@ -1,7 +1,7 @@
 import { useEffect, useReducer, useRef } from 'react'
 import './App.css'
 
-// ── Vocabulary dataset ──────────────────────────────────────────────────────
+// ── Vocabulary dataset ────────────────────────────────────────────────────────
 
 interface VocabItem {
   id: number
@@ -47,17 +47,28 @@ const LEARNING_TARGET = 20
 const TOTAL = VOCAB.length
 const vocabById = Object.fromEntries(VOCAB.map(v => [v.id, v])) as Record<number, VocabItem>
 
-// ── State / reducer ─────────────────────────────────────────────────────────
+// ── State / reducer ───────────────────────────────────────────────────────────
 
-type Bucket = 'unseen' | 'learning' | 'learned' | 'mastered'
-type Phase  = 'answering' | 'wrong-first' | 'correct' | 'revealed'
+type Bucket   = 'unseen' | 'learning' | 'learned' | 'mastered'
+type Phase    = 'answering' | 'wrong-first' | 'correct' | 'revealed'
+type MoveType = 'promote' | 'master' | 'demote' | null
+
+interface SessionStats {
+  correct:  number
+  wrong:    number
+  promoted: number
+  demoted:  number
+}
 
 interface State {
-  buckets:     Record<number, Bucket>
-  queue:       number[]   // ordered IDs to drill (learning + learned items)
-  unseenPool:  number[]   // not yet introduced
-  phase:       Phase
-  input:       string
+  buckets:      Record<number, Bucket>
+  queue:        number[]
+  unseenPool:   number[]
+  phase:        Phase
+  input:        string
+  stats:        SessionStats
+  lastMove:     string | null
+  lastMoveType: MoveType
 }
 
 function buildInitialState(): State {
@@ -73,7 +84,11 @@ function buildInitialState(): State {
       unseenPool.push(item.id)
     }
   })
-  return { buckets, queue, unseenPool, phase: 'answering', input: '' }
+  return {
+    buckets, queue, unseenPool, phase: 'answering', input: '',
+    stats: { correct: 0, wrong: 0, promoted: 0, demoted: 0 },
+    lastMove: null, lastMoveType: null,
+  }
 }
 
 function normalize(s: string): string {
@@ -86,7 +101,7 @@ type Action =
   | { type: 'NEXT' }
 
 function reducer(state: State, action: Action): State {
-  const { buckets, queue, unseenPool, phase, input } = state
+  const { buckets, queue, unseenPool, phase, input, stats } = state
 
   if (action.type === 'SET_INPUT') {
     return { ...state, input: action.value }
@@ -94,18 +109,18 @@ function reducer(state: State, action: Action): State {
 
   if (queue.length === 0) return state
   const currentId = queue[0]
-  const item = vocabById[currentId]
+  const item      = vocabById[currentId]
 
   if (action.type === 'SUBMIT') {
     if (phase !== 'answering' && phase !== 'wrong-first') return state
-    const trimmed  = normalize(input)
-    const isBlank  = trimmed === ''
+    const trimmed   = normalize(input)
+    const isBlank   = trimmed === ''
     const isCorrect = trimmed === normalize(item.spanish)
 
     if (phase === 'answering') {
-      if (isBlank)    return { ...state, phase: 'revealed',    input: '' }
-      if (isCorrect)  return { ...state, phase: 'correct',     input: '' }
-      return                  { ...state, phase: 'wrong-first', input: '' }
+      if (isBlank)   return { ...state, phase: 'revealed',    input: '' }
+      if (isCorrect) return { ...state, phase: 'correct',     input: '' }
+      return               { ...state, phase: 'wrong-first',  input: '' }
     }
     // wrong-first: one more chance
     if (isBlank || !isCorrect) return { ...state, phase: 'revealed', input: '' }
@@ -118,11 +133,18 @@ function reducer(state: State, action: Action): State {
     const newBuckets    = { ...buckets }
     let newQueue        = queue.slice(1)
     let newUnseenPool   = [...unseenPool]
+    let lastMove: string | null = null
+    let lastMoveType: MoveType  = null
+    const newStats = { ...stats }
 
     if (success) {
+      newStats.correct++
       if (currentBucket === 'learning') {
         newBuckets[currentId] = 'learned'
-        newQueue = [...newQueue, currentId] // keep for Learned→Mastered review
+        newQueue = [...newQueue, currentId]
+        lastMove     = '↑ Promoted to Learned'
+        lastMoveType = 'promote'
+        newStats.promoted++
         // Replenish Learning toward target
         const learningCount = Object.values(newBuckets).filter(b => b === 'learning').length
         if (learningCount < LEARNING_TARGET && newUnseenPool.length > 0) {
@@ -133,26 +155,39 @@ function reducer(state: State, action: Action): State {
         }
       } else if (currentBucket === 'learned') {
         newBuckets[currentId] = 'mastered'
-        // removed from queue — done!
+        lastMove     = '★ Mastered!'
+        lastMoveType = 'master'
+        newStats.promoted++
       }
     } else {
-      // fail: demote one bucket, move to back of queue
+      newStats.wrong++
       if (currentBucket === 'mastered') {
         newBuckets[currentId] = 'learned'
+        lastMove     = '↓ Demoted to Learned'
+        lastMoveType = 'demote'
+        newStats.demoted++
       } else if (currentBucket === 'learned') {
         newBuckets[currentId] = 'learning'
+        lastMove     = '↓ Demoted to Learning'
+        lastMoveType = 'demote'
+        newStats.demoted++
       }
-      // learning stays learning
+      // learning stays learning — no demotion message needed
       newQueue = [...newQueue, currentId]
     }
 
-    return { ...state, buckets: newBuckets, queue: newQueue, unseenPool: newUnseenPool, phase: 'answering', input: '' }
+    return {
+      ...state,
+      buckets: newBuckets, queue: newQueue, unseenPool: newUnseenPool,
+      phase: 'answering', input: '',
+      stats: newStats, lastMove, lastMoveType,
+    }
   }
 
   return state
 }
 
-// ── Helpers ─────────────────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
 function countBuckets(buckets: Record<number, Bucket>) {
   const c = { unseen: 0, learning: 0, learned: 0, mastered: 0 }
@@ -160,26 +195,24 @@ function countBuckets(buckets: Record<number, Bucket>) {
   return c
 }
 
-const BUCKET_LABEL: Record<Bucket, string> = {
-  unseen:   'Unseen',
-  learning: 'Learning',
-  learned:  'Learned',
-  mastered: 'Mastered',
+function cap(s: string) {
+  return s.charAt(0).toUpperCase() + s.slice(1)
 }
 
-// ── Component ────────────────────────────────────────────────────────────────
+// ── Component ─────────────────────────────────────────────────────────────────
 
 export default function App() {
   const [state, dispatch] = useReducer(reducer, undefined, buildInitialState)
   const inputRef   = useRef<HTMLInputElement>(null)
   const nextBtnRef = useRef<HTMLButtonElement>(null)
 
-  const { buckets, queue, unseenPool, phase, input } = state
-  const counts    = countBuckets(buckets)
-  const currentId = queue[0]
-  const item      = currentId !== undefined ? vocabById[currentId] : null
+  const { buckets, queue, unseenPool, phase, input, stats, lastMove, lastMoveType } = state
+  const counts        = countBuckets(buckets)
+  const currentId     = queue[0]
+  const item          = currentId !== undefined ? vocabById[currentId] : null
   const currentBucket = item ? buckets[item.id] : null
   const isReviewing   = phase === 'correct' || phase === 'revealed'
+  const anyStats      = stats.correct + stats.wrong > 0
 
   useEffect(() => {
     if (isReviewing) {
@@ -198,58 +231,64 @@ export default function App() {
     <div className="app">
       <header className="app-header">
         <h1>Adaptive Spanish</h1>
-        <p className="tagline">Smart drills that adapt to you</p>
+        <p className="tagline">Type the Spanish. Earn your way up.</p>
       </header>
 
       <main className="app-main">
 
-        {/* ── Progress ──────────────────────────────────────────────────── */}
-        <section className="progress-visuals">
-          <div className="section-label">
-            Progress — {counts.mastered} / {TOTAL} mastered
-          </div>
-          <div className="progress-bars">
-            {(
-              [
-                ['Learning', 'learning', 'bar-learning'],
-                ['Learned',  'learned',  'bar-learned' ],
-                ['Mastered', 'mastered', 'bar-mastered'],
-                ['Unseen',   'unseen',   'bar-unseen'  ],
-              ] as [string, Bucket, string][]
-            ).map(([label, key, cls]) => (
-              <div key={key} className="progress-row">
-                <span>{label}</span>
-                <div className="bar">
-                  <div className={`bar-fill ${cls}`} style={{ width: `${(counts[key] / TOTAL) * 100}%` }} />
-                </div>
-                <span>{counts[key]}</span>
-              </div>
-            ))}
-          </div>
-        </section>
+        {/* ── Bucket cards ─────────────────────────────────────────────────── */}
+        <div className="bucket-cards">
+          {([
+            ['Learning', 'learning', counts.learning],
+            ['Learned',  'learned',  counts.learned ],
+            ['Mastered', 'mastered', counts.mastered],
+          ] as [string, string, number][]).map(([label, key, count]) => (
+            <div key={key} className={`bucket-card bucket-card-${key}`}>
+              <div className="bucket-count">{count}</div>
+              <div className="bucket-name">{label}</div>
+            </div>
+          ))}
+        </div>
+        {unseenPool.length > 0 && (
+          <p className="unseen-note">{unseenPool.length} words not yet introduced</p>
+        )}
 
-        {/* ── Drill panel ───────────────────────────────────────────────── */}
+        {/* ── Drill panel ───────────────────────────────────────────────────── */}
         {queue.length === 0 ? (
           <section className="drill-panel">
             <div className="all-done">
               <div className="all-done-icon">🎉</div>
               <div className="all-done-text">All {TOTAL} words mastered!</div>
+              {anyStats && (
+                <div className="all-done-sub">
+                  {stats.correct} correct · {stats.wrong} wrong · {stats.promoted} promoted
+                </div>
+              )}
             </div>
           </section>
         ) : item && currentBucket ? (
           <section className="drill-panel">
+
+            {/* Move result from previous card */}
+            {lastMove && (
+              <div className={`move-toast move-toast-${lastMoveType}`}>
+                {lastMove}
+              </div>
+            )}
+
+            {/* Prompt card */}
             <div className="drill-card">
               <div className="drill-emoji">{item.emoji}</div>
               <div className="drill-prompt">{item.english}</div>
               <div className={`drill-bucket-tag bucket-tag-${currentBucket}`}>
-                {BUCKET_LABEL[currentBucket]}
+                {cap(currentBucket)}
               </div>
             </div>
 
-            {/* Feedback */}
+            {/* Per-attempt feedback */}
             {phase === 'wrong-first' && (
               <div className="feedback feedback-wrong">
-                Wrong — try again
+                Not quite — one more try
               </div>
             )}
             {phase === 'correct' && (
@@ -295,10 +334,18 @@ export default function App() {
           </section>
         ) : null}
 
-        {/* Queue info */}
-        <div className="queue-status">
-          {counts.learning + counts.learned} active · {unseenPool.length} unseen remaining
-        </div>
+        {/* ── Session stats ────────────────────────────────────────────────── */}
+        {anyStats && (
+          <div className="session-stats">
+            <span className="stat stat-correct">✓ {stats.correct}</span>
+            <span className="stat-sep">·</span>
+            <span className="stat stat-wrong">✗ {stats.wrong}</span>
+            <span className="stat-sep">·</span>
+            <span className="stat stat-promoted">↑ {stats.promoted}</span>
+            <span className="stat-sep">·</span>
+            <span className="stat stat-demoted">↓ {stats.demoted}</span>
+          </div>
+        )}
 
       </main>
     </div>

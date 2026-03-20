@@ -37,7 +37,7 @@ body {
 .app {
   max-width: 520px;
   margin: 0 auto;
-  padding: 24px 16px;
+  padding: 24px 16px 40px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -48,7 +48,7 @@ body {
 
 .app-header {
   text-align: center;
-  padding-bottom: 8px;
+  padding-bottom: 12px;
   border-bottom: 1px solid var(--border);
 }
 
@@ -67,13 +67,61 @@ body {
 .app-main {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
 }
 
-/* ── Shared card ─────────────────────────────────────────────────────────── */
+/* ── Bucket cards ────────────────────────────────────────────────────────── */
 
-.drill-panel,
-.progress-visuals {
+.bucket-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.bucket-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: 3px solid transparent;
+  border-radius: var(--radius);
+  padding: 14px 12px 12px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+.bucket-card-learning { border-top-color: var(--accent); }
+.bucket-card-learned  { border-top-color: var(--orange); }
+.bucket-card-mastered { border-top-color: var(--green);  }
+
+.bucket-count {
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.bucket-card-learning .bucket-count { color: var(--accent); }
+.bucket-card-learned  .bucket-count { color: var(--orange); }
+.bucket-card-mastered .bucket-count { color: var(--green);  }
+
+.bucket-name {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-muted);
+}
+
+.unseen-note {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: -4px;
+}
+
+/* ── Drill panel ─────────────────────────────────────────────────────────── */
+
+.drill-panel {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -81,60 +129,26 @@ body {
   box-shadow: var(--shadow);
 }
 
-.section-label {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  color: var(--text-muted);
-  margin-bottom: 10px;
-}
+/* ── Move toast ──────────────────────────────────────────────────────────── */
 
-/* ── Progress bars ───────────────────────────────────────────────────────── */
-
-.progress-bars {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-}
-
-.progress-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.move-toast {
   font-size: 13px;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  text-align: center;
 }
 
-.progress-row span:first-child {
-  width: 64px;
-  color: var(--text-muted);
-}
+.move-toast-promote { background: #dcfce7; color: #15803d; }
+.move-toast-master  { background: #dcfce7; color: #15803d; }
+.move-toast-demote  { background: #fee2e2; color: var(--red); }
 
-.progress-row span:last-child {
-  width: 24px;
-  text-align: right;
-  color: var(--text-muted);
-  font-variant-numeric: tabular-nums;
+@media (prefers-color-scheme: dark) {
+  .move-toast-promote,
+  .move-toast-master  { background: #052e16; color: #86efac; }
+  .move-toast-demote  { background: #450a0a; color: #fca5a5; }
 }
-
-.bar {
-  flex: 1;
-  height: 8px;
-  background: var(--border);
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.bar-fill {
-  height: 100%;
-  border-radius: 4px;
-  transition: width 0.35s ease;
-}
-
-.bar-learning { background: var(--accent); }
-.bar-learned  { background: var(--orange); }
-.bar-mastered { background: var(--green); }
-.bar-unseen   { background: var(--gray); }
 
 /* ── Drill card ──────────────────────────────────────────────────────────── */
 
@@ -142,21 +156,21 @@ body {
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 24px 20px 20px;
+  padding: 28px 20px 22px;
   text-align: center;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
 .drill-emoji {
-  font-size: 52px;
+  font-size: 60px;
   line-height: 1;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 .drill-prompt {
-  font-size: 26px;
+  font-size: 30px;
   font-weight: 700;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   letter-spacing: -0.3px;
 }
 
@@ -166,7 +180,7 @@ body {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.6px;
-  padding: 2px 8px;
+  padding: 2px 9px;
   border-radius: 99px;
 }
 
@@ -175,22 +189,34 @@ body {
 .bucket-tag-mastered { background: #dcfce7; color: #15803d; }
 .bucket-tag-unseen   { background: var(--border); color: var(--text-muted); }
 
+@media (prefers-color-scheme: dark) {
+  .bucket-tag-learning { background: #1e3a5f; color: #60a5fa; }
+  .bucket-tag-learned  { background: #431407; color: #fb923c; }
+  .bucket-tag-mastered { background: #14532d; color: #4ade80; }
+}
+
 /* ── Feedback ────────────────────────────────────────────────────────────── */
 
 .feedback {
   font-size: 15px;
   font-weight: 600;
-  padding: 8px 12px;
+  padding: 9px 12px;
   border-radius: var(--radius);
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
 .feedback-wrong    { background: #fee2e2; color: var(--red); }
-.feedback-correct  { background: #dcfce7; color: var(--green); }
+.feedback-correct  { background: #dcfce7; color: #15803d; }
 .feedback-revealed { background: #fef9c3; color: #854d0e; }
+
+@media (prefers-color-scheme: dark) {
+  .feedback-wrong    { background: #450a0a; color: #fca5a5; }
+  .feedback-correct  { background: #052e16; color: #86efac; }
+  .feedback-revealed { background: #422006; color: #fcd34d; }
+}
 
 .answer-word {
   font-size: 18px;
@@ -223,7 +249,7 @@ body {
 }
 
 .drill-input:disabled {
-  opacity: 0.5;
+  opacity: 0.45;
   cursor: not-allowed;
 }
 
@@ -250,17 +276,10 @@ body {
   white-space: nowrap;
 }
 
-.btn-submit {
-  background: var(--accent);
-  color: var(--accent-text);
-}
+.btn-submit { background: var(--accent); color: var(--accent-text); }
+.btn-next   { background: var(--green);  color: var(--accent-text); }
 
-.btn-next {
-  background: var(--green);
-  color: var(--accent-text);
-}
-
-.btn:hover { opacity: 0.88; }
+.btn:hover  { opacity: 0.88; }
 .btn:active { opacity: 0.75; }
 
 /* ── Hint line ───────────────────────────────────────────────────────────── */
@@ -271,13 +290,24 @@ body {
   text-align: center;
 }
 
-/* ── Queue status ────────────────────────────────────────────────────────── */
+/* ── Session stats ───────────────────────────────────────────────────────── */
 
-.queue-status {
-  font-size: 12px;
-  color: var(--text-muted);
-  text-align: center;
+.session-stats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 13px;
 }
+
+.stat-sep { color: var(--border); }
+
+.stat { font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.stat-correct  { color: var(--green); }
+.stat-wrong    { color: var(--red); }
+.stat-promoted { color: var(--accent); }
+.stat-demoted  { color: var(--orange); }
 
 /* ── All done ────────────────────────────────────────────────────────────── */
 
@@ -292,6 +322,12 @@ body {
 }
 
 .all-done-text {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.all-done-sub {
+  font-size: 14px;
+  color: var(--text-muted);
 }
