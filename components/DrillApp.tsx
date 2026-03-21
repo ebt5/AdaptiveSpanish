@@ -10,6 +10,7 @@ type DrillItem = {
   id: string
   english: string
   spanish: string
+  spanishDisplay?: string
   spanishNormalized?: string
   emoji: string | null
   bucket: Bucket
@@ -56,6 +57,7 @@ export default function DrillApp() {
   const [answer, setAnswer] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [pendingSync, setPendingSync] = useState(false)
+  const [queuedNext, setQueuedNext] = useState<DrillState | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const nextBtnRef = useRef<HTMLButtonElement>(null)
 
@@ -77,7 +79,7 @@ export default function DrillApp() {
     else inputRef.current?.focus()
   }, [isReviewing, phase, item?.id])
 
-  async function persistAndHydrate(answerValue: string, attemptNumber: number, optimisticPhase: Phase, optimisticAnswer: string | null, optimisticState?: Partial<DrillState>) {
+  async function persistAndQueue(answerValue: string, attemptNumber: number, optimisticPhase: Phase, optimisticAnswer: string | null, optimisticState?: Partial<DrillState>) {
     if (!item) return
     if (optimisticState) {
       setDrill(prev => ({ ...prev, ...optimisticState }))
@@ -95,7 +97,7 @@ export default function DrillApp() {
       })
       const data = await res.json()
       if (data.phase !== 'wrong-first') {
-        setDrill({
+        setQueuedNext({
           item: data.item,
           counts: data.counts,
           unseenCount: data.unseenCount,
@@ -103,20 +105,27 @@ export default function DrillApp() {
           lastMove: data.lastMove,
           lastMoveType: data.lastMoveType,
         })
-        setPhase(data.phase)
-        setAnswer(data.answer)
       }
     } finally {
       setPendingSync(false)
     }
   }
 
+  function advanceToQueued() {
+    if (queuedNext) {
+      setDrill(queuedNext)
+      setQueuedNext(null)
+    }
+    setPhase('answering')
+    setAnswer(null)
+    setInput('')
+  }
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!item) return
     if (isReviewing) {
-      setPhase('answering')
-      setAnswer(null)
+      advanceToQueued()
       return
     }
 
@@ -136,7 +145,7 @@ export default function DrillApp() {
           optimisticCounts.mastered -= 1
           optimisticCounts.learned += 1
         }
-        void persistAndHydrate('', 1, 'revealed', item.spanish, {
+        void persistAndQueue('', 1, 'revealed', item.spanishDisplay ?? item.spanish, {
           counts: optimisticCounts,
           stats: { ...drill.stats, wrong: drill.stats.wrong + 1, demoted: drill.stats.demoted + (item.bucket === 'learning' ? 0 : 1) },
           lastMove: item.bucket === 'learning' ? null : nextBucket === 'learned' ? '↓ Demoted to Learned' : '↓ Demoted to Learning',
@@ -150,7 +159,6 @@ export default function DrillApp() {
         return
       }
 
-      const nextBucket = optimisticAdvanceBucket(item.bucket)
       const optimisticCounts = { ...drill.counts }
       let lastMove: string | null = null
       let lastMoveType: MoveType = null
@@ -169,7 +177,7 @@ export default function DrillApp() {
         lastMove = '★ Mastered!'
         lastMoveType = 'master'
       }
-      void persistAndHydrate(input, 1, 'correct', item.spanish, {
+      void persistAndQueue(input, 1, 'correct', item.spanishDisplay ?? item.spanish, {
         counts: optimisticCounts,
         unseenCount: optimisticCounts.unseen,
         stats: { ...drill.stats, correct: drill.stats.correct + 1, promoted: drill.stats.promoted + (lastMoveType ? 1 : 0) },
@@ -181,7 +189,6 @@ export default function DrillApp() {
 
     if (phase === 'wrong-first') {
       if (!isBlank && isCorrect) {
-        const nextBucket = optimisticAdvanceBucket(item.bucket)
         const optimisticCounts = { ...drill.counts }
         let lastMove: string | null = null
         let lastMoveType: MoveType = null
@@ -200,7 +207,7 @@ export default function DrillApp() {
           lastMove = '★ Mastered!'
           lastMoveType = 'master'
         }
-        void persistAndHydrate(input, 2, 'correct', item.spanish, {
+        void persistAndQueue(input, 2, 'correct', item.spanishDisplay ?? item.spanish, {
           counts: optimisticCounts,
           unseenCount: optimisticCounts.unseen,
           stats: { ...drill.stats, correct: drill.stats.correct + 1, promoted: drill.stats.promoted + (lastMoveType ? 1 : 0) },
@@ -219,7 +226,7 @@ export default function DrillApp() {
         optimisticCounts.mastered -= 1
         optimisticCounts.learned += 1
       }
-      void persistAndHydrate(input, 2, 'revealed', item.spanish, {
+      void persistAndQueue(input, 2, 'revealed', item.spanishDisplay ?? item.spanish, {
         counts: optimisticCounts,
         stats: { ...drill.stats, wrong: drill.stats.wrong + 1, demoted: drill.stats.demoted + (item.bucket === 'learning' ? 0 : 1) },
         lastMove: item.bucket === 'learning' ? null : nextBucket === 'learned' ? '↓ Demoted to Learned' : '↓ Demoted to Learning',
@@ -298,14 +305,14 @@ export default function DrillApp() {
                 spellCheck={false}
               />
               <button ref={nextBtnRef} type="submit" className={`btn btn-submit${isReviewing ? ' btn-next' : ''}`}>
-                {isReviewing ? 'Next →' : pendingSync ? 'Saving…' : 'Check'}
+                {isReviewing ? (pendingSync ? 'Saving…' : 'Next →') : pendingSync ? 'Saving…' : 'Check'}
               </button>
             </form>
 
             <p className="drill-hint">
               {phase === 'answering' && 'Enter to check · blank Enter to skip & reveal'}
               {phase === 'wrong-first' && 'Last chance · blank Enter to reveal answer'}
-              {isReviewing && 'Enter or click Next to continue'}
+              {isReviewing && (pendingSync ? 'Saving result… then Enter for next word' : 'Enter or click Next to continue')}
             </p>
           </section>
         )}
