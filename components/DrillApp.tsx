@@ -122,6 +122,7 @@ export default function DrillApp() {
       setDrill(queuedNext)
       setQueuedNext(null)
     }
+    setMilestone(null)
     setPhase('answering')
     setAnswer(null)
     setInput('')
@@ -328,6 +329,15 @@ export default function DrillApp() {
             <span className="stat stat-wrong">✗ {drill.stats.wrong}</span>
             <span className="stat-sep">·</span>
             <span className="stat stat-promoted">↑ {drill.stats.promoted}</span>
+            <span className="stat-sep">·</span>
+            <span className="stat stat-demoted">↓ {drill.stats.demoted}</span>
+          </div>
+        )}
+      </main>
+    </div>
+  )
+}
+
             <span className="stat-sep">·</span>
             <span className="stat stat-demoted">↓ {drill.stats.demoted}</span>
           </div>
