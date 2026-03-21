@@ -10,7 +10,8 @@ datasource db {
 
 model User {
   id        String   @id @default(cuid())
-  email     String   @unique
+  email     String?  @unique
+  username  String?  @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -19,12 +20,14 @@ model User {
 }
 
 model DictionaryEntry {
-  id        String  @id @default(cuid())
-  sortOrder Int     @unique
-  english   String
-  spanish   String
-  emoji     String?
-  category  String  @default("vocabulary")
+  id                  String  @id @default(cuid())
+  sortOrder           Int     @unique
+  englishPrimary      String?
+  englishVariantsJson Json?
+  spanish             String
+  spanishDisplay      String?
+  emoji               String?
+  category            String  @default("vocabulary")
 
   vocabProgress UserVocabProgress[]
   drillAttempts DrillAttempt[]

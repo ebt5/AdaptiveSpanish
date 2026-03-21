@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { clearStoredUsername, getStoredUsername, setStoredUsername } from '@/lib/identity'
 
 type Bucket = 'unseen' | 'learning' | 'learned' | 'mastered'
 type MoveType = 'promote' | 'master' | 'demote' | null
@@ -38,19 +39,9 @@ const emptyState: DrillState = {
 function cap(s: string) { return s.charAt(0).toUpperCase() + s.slice(1) }
 function normalize(s: string) { return s.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') }
 
-function optimisticAdvanceBucket(bucket: Bucket): Bucket {
-  if (bucket === 'learning') return 'learned'
-  if (bucket === 'learned') return 'mastered'
-  return bucket
-}
-
-function optimisticDemoteBucket(bucket: Bucket): Bucket {
-  if (bucket === 'mastered') return 'learned'
-  if (bucket === 'learned') return 'learning'
-  return 'learning'
-}
-
 export default function DrillApp() {
+  const [username, setUsername] = useState<string | null>(null)
+  const [usernameInput, setUsernameInput] = useState('')
   const [drill, setDrill] = useState<DrillState>(emptyState)
   const [phase, setPhase] = useState<Phase>('answering')
   const [input, setInput] = useState('')
@@ -68,43 +59,58 @@ export default function DrillApp() {
   const toastKey = drill.lastMove ? `${drill.lastMove}-${drill.stats.promoted}-${drill.stats.demoted}` : ''
 
   useEffect(() => {
-    fetch('/api/drill/init').then(r => r.json()).then((data: DrillState) => {
+    const stored = getStoredUsername()
+    if (stored) setUsername(stored)
+    setLoading(false)
+  }, [])
+
+  useEffect(() => {
+    if (!username) return
+    setLoading(true)
+    fetch(`/api/drill/init?username=${encodeURIComponent(username)}`).then(r => r.json()).then((data: DrillState) => {
       setDrill(data)
       setLoading(false)
     })
-  }, [])
+  }, [username])
 
   useEffect(() => {
     if (isReviewing) nextBtnRef.current?.focus()
     else inputRef.current?.focus()
   }, [isReviewing, phase, item?.id])
 
-  async function persistAndQueue(answerValue: string, attemptNumber: number, optimisticPhase: Phase, optimisticAnswer: string | null, optimisticState?: Partial<DrillState>) {
-    if (!item) return
-    if (optimisticState) {
-      setDrill(prev => ({ ...prev, ...optimisticState }))
+  async function bootstrapUser(e: React.FormEvent) {
+    e.preventDefault()
+    const normalized = usernameInput.trim().toLowerCase()
+    if (!normalized) return
+    const res = await fetch('/api/user/bootstrap', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: normalized }),
+    })
+    const data = await res.json()
+    if (data.ok) {
+      setStoredUsername(data.username)
+      setUsername(data.username)
+      setUsernameInput('')
     }
+  }
+
+  async function persistAndQueue(answerValue: string, attemptNumber: number, optimisticPhase: Phase, optimisticAnswer: string | null, optimisticState?: Partial<DrillState>) {
+    if (!item || !username) return
+    if (optimisticState) setDrill(prev => ({ ...prev, ...optimisticState }))
     setPhase(optimisticPhase)
     setAnswer(optimisticAnswer)
     setInput('')
     setPendingSync(true)
-
     try {
       const res = await fetch('/api/drill/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ entryId: item.id, answer: answerValue, attemptNumber }),
+        body: JSON.stringify({ username, entryId: item.id, answer: answerValue, attemptNumber }),
       })
       const data = await res.json()
       if (data.phase !== 'wrong-first') {
-        setQueuedNext({
-          item: data.item,
-          counts: data.counts,
-          unseenCount: data.unseenCount,
-          stats: data.stats,
-          lastMove: data.lastMove,
-          lastMoveType: data.lastMoveType,
-        })
+        setQueuedNext({ item: data.item, counts: data.counts, unseenCount: data.unseenCount, stats: data.stats, lastMove: data.lastMove, lastMoveType: data.lastMoveType })
       }
     } finally {
       setPendingSync(false)
@@ -128,7 +134,6 @@ export default function DrillApp() {
       advanceToQueued()
       return
     }
-
     const normalizedInput = normalize(input)
     const expected = item.spanishNormalized ?? normalize(item.spanish)
     const isBlank = normalizedInput === ''
@@ -136,15 +141,10 @@ export default function DrillApp() {
 
     if (phase === 'answering') {
       if (isBlank) {
-        const nextBucket = optimisticDemoteBucket(item.bucket)
+        const nextBucket = item.bucket === 'mastered' ? 'learned' : item.bucket === 'learned' ? 'learning' : 'learning'
         const optimisticCounts = { ...drill.counts }
-        if (item.bucket === 'learned') {
-          optimisticCounts.learned -= 1
-          optimisticCounts.learning += 1
-        } else if (item.bucket === 'mastered') {
-          optimisticCounts.mastered -= 1
-          optimisticCounts.learned += 1
-        }
+        if (item.bucket === 'learned') { optimisticCounts.learned -= 1; optimisticCounts.learning += 1 }
+        else if (item.bucket === 'mastered') { optimisticCounts.mastered -= 1; optimisticCounts.learned += 1 }
         void persistAndQueue('', 1, 'revealed', item.spanishDisplay ?? item.spanish, {
           counts: optimisticCounts,
           stats: { ...drill.stats, wrong: drill.stats.wrong + 1, demoted: drill.stats.demoted + (item.bucket === 'learning' ? 0 : 1) },
@@ -153,29 +153,17 @@ export default function DrillApp() {
         })
         return
       }
-      if (!isCorrect) {
-        setPhase('wrong-first')
-        setInput('')
-        return
-      }
-
+      if (!isCorrect) { setPhase('wrong-first'); setInput(''); return }
       const optimisticCounts = { ...drill.counts }
       let lastMove: string | null = null
       let lastMoveType: MoveType = null
       if (item.bucket === 'learning') {
-        optimisticCounts.learning -= 1
-        optimisticCounts.learned += 1
-        if (drill.unseenCount > 0) {
-          optimisticCounts.learning += 1
-          optimisticCounts.unseen -= 1
-        }
-        lastMove = '↑ Promoted to Learned'
-        lastMoveType = 'promote'
+        optimisticCounts.learning -= 1; optimisticCounts.learned += 1
+        if (drill.unseenCount > 0) { optimisticCounts.learning += 1; optimisticCounts.unseen -= 1 }
+        lastMove = '↑ Promoted to Learned'; lastMoveType = 'promote'
       } else if (item.bucket === 'learned') {
-        optimisticCounts.learned -= 1
-        optimisticCounts.mastered += 1
-        lastMove = '★ Mastered!'
-        lastMoveType = 'master'
+        optimisticCounts.learned -= 1; optimisticCounts.mastered += 1
+        lastMove = '★ Mastered!'; lastMoveType = 'master'
       }
       void persistAndQueue(input, 1, 'correct', item.spanishDisplay ?? item.spanish, {
         counts: optimisticCounts,
@@ -193,19 +181,12 @@ export default function DrillApp() {
         let lastMove: string | null = null
         let lastMoveType: MoveType = null
         if (item.bucket === 'learning') {
-          optimisticCounts.learning -= 1
-          optimisticCounts.learned += 1
-          if (drill.unseenCount > 0) {
-            optimisticCounts.learning += 1
-            optimisticCounts.unseen -= 1
-          }
-          lastMove = '↑ Promoted to Learned'
-          lastMoveType = 'promote'
+          optimisticCounts.learning -= 1; optimisticCounts.learned += 1
+          if (drill.unseenCount > 0) { optimisticCounts.learning += 1; optimisticCounts.unseen -= 1 }
+          lastMove = '↑ Promoted to Learned'; lastMoveType = 'promote'
         } else if (item.bucket === 'learned') {
-          optimisticCounts.learned -= 1
-          optimisticCounts.mastered += 1
-          lastMove = '★ Mastered!'
-          lastMoveType = 'master'
+          optimisticCounts.learned -= 1; optimisticCounts.mastered += 1
+          lastMove = '★ Mastered!'; lastMoveType = 'master'
         }
         void persistAndQueue(input, 2, 'correct', item.spanishDisplay ?? item.spanish, {
           counts: optimisticCounts,
@@ -216,16 +197,10 @@ export default function DrillApp() {
         })
         return
       }
-
-      const nextBucket = optimisticDemoteBucket(item.bucket)
+      const nextBucket = item.bucket === 'mastered' ? 'learned' : item.bucket === 'learned' ? 'learning' : 'learning'
       const optimisticCounts = { ...drill.counts }
-      if (item.bucket === 'learned') {
-        optimisticCounts.learned -= 1
-        optimisticCounts.learning += 1
-      } else if (item.bucket === 'mastered') {
-        optimisticCounts.mastered -= 1
-        optimisticCounts.learned += 1
-      }
+      if (item.bucket === 'learned') { optimisticCounts.learned -= 1; optimisticCounts.learning += 1 }
+      else if (item.bucket === 'mastered') { optimisticCounts.mastered -= 1; optimisticCounts.learned += 1 }
       void persistAndQueue(input, 2, 'revealed', item.spanishDisplay ?? item.spanish, {
         counts: optimisticCounts,
         stats: { ...drill.stats, wrong: drill.stats.wrong + 1, demoted: drill.stats.demoted + (item.bucket === 'learning' ? 0 : 1) },
@@ -237,11 +212,45 @@ export default function DrillApp() {
 
   if (loading) return <div className="app"><p>Loading Adaptive Spanish…</p></div>
 
+  if (!username) {
+    return (
+      <div className="app">
+        <header className="app-header">
+          <h1>Adaptive Spanish</h1>
+          <p className="tagline">Choose a username to begin.</p>
+        </header>
+        <main className="app-main">
+          <section className="drill-panel">
+            <form onSubmit={bootstrapUser} className="drill-form">
+              <input
+                type="text"
+                className="drill-input"
+                value={usernameInput}
+                onChange={(e) => setUsernameInput(e.target.value)}
+                placeholder="username"
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
+                spellCheck={false}
+              />
+              <button type="submit" className="btn btn-submit">Continue</button>
+            </form>
+          </section>
+        </main>
+      </div>
+    )
+  }
+
   return (
     <div className="app">
       <header className="app-header">
         <h1>Adaptive Spanish</h1>
         <p className="tagline">Type the Spanish. Earn your way up.</p>
+        <div className="session-stats" style={{ marginTop: 8 }}>
+          <span className="stat">user: {username}</span>
+          <span className="stat-sep">·</span>
+          <button className="category-toggle category-toggle-soon" type="button" onClick={() => { clearStoredUsername(); setUsername(null); setDrill(emptyState); }}>switch user</button>
+        </div>
       </header>
 
       <main className="app-main">
@@ -271,12 +280,7 @@ export default function DrillApp() {
         {drill.unseenCount > 0 && <p className="unseen-note">{drill.unseenCount} words not yet introduced</p>}
 
         {!item ? (
-          <section className="drill-panel">
-            <div className="all-done">
-              <div className="all-done-icon">🎉</div>
-              <div className="all-done-text">All words mastered!</div>
-            </div>
-          </section>
+          <section className="drill-panel"><div className="all-done"><div className="all-done-icon">🎉</div><div className="all-done-text">All words mastered!</div></div></section>
         ) : (
           <section className="drill-panel">
             {drill.lastMove && <div key={toastKey} className={`move-toast move-toast-${drill.lastMoveType}`}>{drill.lastMove}</div>}
