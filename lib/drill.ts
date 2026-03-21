@@ -104,8 +104,9 @@ async function fetchCandidateItems(userId: string, excludeId?: string | null) {
   ])
   return [...learning, ...learned, ...mastered].map((row) => ({
     id: row.entry.id,
-    english: row.entry.english,
+    english: row.entry.englishPrimary ?? row.entry.spanish,
     spanish: row.entry.spanish,
+    spanishDisplay: row.entry.spanishDisplay ?? row.entry.spanish,
     spanishNormalized: normalize(row.entry.spanish),
     emoji: row.entry.emoji,
     bucket: row.bucket as Bucket,
