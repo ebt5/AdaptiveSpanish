@@ -149,11 +149,11 @@ export async function initializeVerbDrillState(username: string): Promise<VerbDr
 
 export async function submitVerbAttempt(params: { username: string; conjugationId: string; answer: string; attemptNumber: number }) {
   const user = await getCurrentUser(params.username)
-  const progress = await prisma.userVerbProgress.findFirstOrThrow({
-    where: { userId: user.id, conjugationId: params.conjugationId },
-    include: { conjugation: { include: { verb: true } } },
-  })
-  const expected = normalize(progress.conjugation.form)
+  const [progress, conjugation] = await Promise.all([
+    prisma.userVerbProgress.findFirstOrThrow({ where: { userId: user.id, conjugationId: params.conjugationId } }),
+    prisma.verbConjugation.findUniqueOrThrow({ where: { id: params.conjugationId } }),
+  ])
+  const expected = normalize(conjugation.form)
   const normalized = normalize(params.answer)
   const isBlank = normalized === ''
   const isCorrect = normalized === expected
@@ -162,7 +162,7 @@ export async function submitVerbAttempt(params: { username: string; conjugationI
     if (isBlank) {
       await prisma.verbAttempt.create({ data: { userId: user.id, conjugationId: params.conjugationId, correct: false } })
       const state = await nextVerbState(user.id, params.conjugationId, false, true)
-      return { phase: 'revealed' as Phase, correct: false, answer: progress.conjugation.form, ...state }
+      return { phase: 'revealed' as Phase, correct: false, answer: conjugation.form, ...state }
     }
     if (!isCorrect) return { phase: 'wrong-first' as Phase, correct: false, answer: null }
   }
@@ -170,14 +170,20 @@ export async function submitVerbAttempt(params: { username: string; conjugationI
   const success = !isBlank && isCorrect
   await prisma.verbAttempt.create({ data: { userId: user.id, conjugationId: params.conjugationId, correct: success } })
   const state = await nextVerbState(user.id, params.conjugationId, success, false)
-  return { phase: success ? ('correct' as Phase) : ('revealed' as Phase), correct: success, answer: progress.conjugation.form, ...state }
+  return { phase: success ? ('correct' as Phase) : ('revealed' as Phase), correct: success, answer: conjugation.form, ...state }
 }
 
 async function nextVerbState(userId: string, conjugationId: string, success: boolean, immediateReveal: boolean) {
-  const progress = await prisma.userVerbProgress.findFirstOrThrow({ where: { userId, conjugationId } })
+  const [progress, conjugation] = await Promise.all([
+    prisma.userVerbProgress.findFirstOrThrow({ where: { userId, conjugationId } }),
+    prisma.verbConjugation.findUniqueOrThrow({ where: { id: conjugationId } }),
+  ])
   const currentBucket = progress.bucket as Bucket
   let lastMove: string | null = null
   let lastMoveType: MoveType = null
+
+  const pronoun = conjugation.pronoun
+  const tense = conjugation.tense
 
   await prisma.$transaction(async (tx) => {
     if (success) {
@@ -198,6 +204,13 @@ async function nextVerbState(userId: string, conjugationId: string, success: boo
       } else {
         await tx.userVerbProgress.update({ where: { id: progress.id }, data: { score: Math.min(10, progress.score + 1), lastSeenAt: new Date() } })
       }
+      // Update pronoun+tense heatmap score
+      const existing = await tx.userPronounTenseScore.findUnique({ where: { userId_pronoun_tense: { userId, pronoun, tense } } })
+      await tx.userPronounTenseScore.upsert({
+        where: { userId_pronoun_tense: { userId, pronoun, tense } },
+        update: { score: Math.min(10, (existing?.score ?? 0) + 1) },
+        create: { userId, pronoun, tense, score: 1 },
+      })
     } else if (!immediateReveal || currentBucket !== 'learning') {
       if (currentBucket === 'mastered') {
         await tx.userVerbProgress.update({ where: { id: progress.id }, data: { bucket: 'learned', score: 0, lastSeenAt: new Date() } })
@@ -208,6 +221,13 @@ async function nextVerbState(userId: string, conjugationId: string, success: boo
       } else {
         await tx.userVerbProgress.update({ where: { id: progress.id }, data: { score: Math.max(0, progress.score - 1), lastSeenAt: new Date() } })
       }
+      // Update pronoun+tense heatmap score (penalize on wrong)
+      const existing = await tx.userPronounTenseScore.findUnique({ where: { userId_pronoun_tense: { userId, pronoun, tense } } })
+      await tx.userPronounTenseScore.upsert({
+        where: { userId_pronoun_tense: { userId, pronoun, tense } },
+        update: { score: Math.max(0, (existing?.score ?? 0) - 1) },
+        create: { userId, pronoun, tense, score: 0 },
+      })
     } else {
       await tx.userVerbProgress.update({ where: { id: progress.id }, data: { score: Math.max(0, progress.score - 1), lastSeenAt: new Date() } })
     }
@@ -228,35 +248,19 @@ async function nextVerbState(userId: string, conjugationId: string, success: boo
 export async function fetchVerbHeatmap(username: string) {
   const user = await getCurrentUser(username)
 
-  const progress = await prisma.userVerbProgress.findMany({
-    where: { userId: user.id, bucket: { not: 'unseen' } },
-    include: { conjugation: { include: { verb: true } } },
+  const rows = await prisma.userPronounTenseScore.findMany({
+    where: { userId: user.id },
   })
-
-  const verbs: string[] = []
-  const verbsSeen = new Set<string>()
-  const verbEnglish: Record<string, string> = {}
-
-  // Build ordered verb list
-  const allVerbs = await prisma.verb.findMany({ orderBy: { sortOrder: 'asc' } })
-  for (const v of allVerbs) {
-    verbs.push(v.infinitive)
-    verbEnglish[v.infinitive] = v.english
-    verbsSeen.add(v.infinitive)
-  }
 
   const pronouns = ['yo', 'tú', 'él', 'nosotros', 'vosotros', 'ellos']
   const tenses = ['present']
 
-  const scores: Record<string, Record<string, Record<string, number>>> = {}
-  for (const row of progress) {
-    const inf = row.conjugation.verb.infinitive
-    const tense = row.conjugation.tense
-    const pronoun = row.conjugation.pronoun
-    if (!scores[inf]) scores[inf] = {}
-    if (!scores[inf][tense]) scores[inf][tense] = {}
-    scores[inf][tense][pronoun] = row.score
+  // Build scores: { pronoun: { tense: score } }
+  const scores: Record<string, Record<string, number>> = {}
+  for (const row of rows) {
+    if (!scores[row.pronoun]) scores[row.pronoun] = {}
+    scores[row.pronoun][row.tense] = row.score
   }
 
-  return { verbs, pronouns, tenses, scores }
+  return { pronouns, tenses, scores }
 }

@@ -3,10 +3,9 @@
 import { useEffect, useState } from 'react'
 
 interface HeatmapData {
-  verbs: string[]
   pronouns: string[]
   tenses: string[]
-  scores: Record<string, Record<string, Record<string, number>>>
+  scores: Record<string, Record<string, number>>
 }
 
 function scoreToColor(score: number | null): string {
@@ -25,7 +24,7 @@ function scoreToTextColor(score: number | null): string {
   return score >= 4 ? '#fff' : '#94a3b8'
 }
 
-function tenselabel(tense: string) {
+function tenseLabel(tense: string) {
   const labels: Record<string, string> = {
     present: 'Present',
     preterite: 'Preterite',
@@ -48,38 +47,21 @@ export default function ConjugationHeatmap({ username, refreshKey }: { username:
 
   if (!data) return null
 
-  const { verbs, pronouns, tenses, scores } = data
-
-  // Build a summary: for each (pronoun, tense), compute average score across all verbs
-  // Also show individual verb breakdown below
-  function avgScore(pronoun: string, tense: string): number | null {
-    const vals: number[] = []
-    for (const verb of verbs) {
-      const s = scores[verb]?.[tense]?.[pronoun]
-      // only include rows that have been seen (exist in scores)
-      if (s !== undefined && scores[verb]?.[tense] !== undefined && pronoun in (scores[verb]?.[tense] ?? {})) {
-        vals.push(s)
-      }
-    }
-    if (vals.length === 0) return null
-    return Math.round(vals.reduce((a, b) => a + b, 0) / vals.length)
-  }
+  const { pronouns, tenses, scores } = data
 
   return (
     <div style={{ marginTop: 24 }}>
       <h2 style={{ fontSize: 13, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.6px', color: 'var(--text-muted)', marginBottom: 10 }}>
         Conjugation Progress
       </h2>
-
-      {/* Summary heatmap: rows = pronoun, columns = tense */}
-      <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', marginBottom: 24 }}>
+      <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
         <table style={{ borderCollapse: 'collapse', fontSize: 12, width: '100%' }}>
           <thead>
             <tr>
               <th style={{ textAlign: 'left', padding: '0 12px 4px 0', color: 'var(--text-muted)', fontWeight: 600, minWidth: 80 }}></th>
               {tenses.map(tense => (
                 <th key={tense} style={{ padding: '0 4px 4px', color: 'var(--text-muted)', fontWeight: 600, textAlign: 'center', minWidth: 72 }}>
-                  {tenselabel(tense)}
+                  {tenseLabel(tense)}
                 </th>
               ))}
             </tr>
@@ -91,7 +73,7 @@ export default function ConjugationHeatmap({ username, refreshKey }: { username:
                   {pronoun}
                 </td>
                 {tenses.map(tense => {
-                  const score = avgScore(pronoun, tense)
+                  const score = scores[pronoun]?.[tense] ?? null
                   return (
                     <td key={tense} style={{ padding: 3 }}>
                       <div style={{
@@ -117,10 +99,7 @@ export default function ConjugationHeatmap({ username, refreshKey }: { username:
           </tbody>
         </table>
       </div>
-
-
-
-      <p style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>Avg score 0–10 per pronoun × tense</p>
+      <p style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 6 }}>Score 0–10 per pronoun × tense</p>
     </div>
   )
 }
