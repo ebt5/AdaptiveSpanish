@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'username required' }, { status: 400 })
   }
 
-  const user = await prisma.user.findUnique({ where: { username } })
+  const user = await prisma.user.findFirst({ where: { username } })
   if (!user) {
     return NextResponse.json({ error: 'user not found' }, { status: 404 })
   }
