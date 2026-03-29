@@ -9,15 +9,34 @@ export default function MasteredChart() {
   const [data, setData] = useState<DayData[] | null>(null)
 
   useEffect(() => {
-    const username = getStoredUsername()
-    if (!username) return
+    let cancelled = false
 
-    fetch(`/api/stats/daily-mastered?username=${encodeURIComponent(username)}`)
-      .then((r) => r.json())
-      .then((json) => {
-        if (Array.isArray(json)) setData(json)
-      })
-      .catch(() => {})
+    function load() {
+      const username = getStoredUsername()
+      if (!username) return
+
+      fetch(`/api/stats/daily-mastered?username=${encodeURIComponent(username)}`)
+        .then((r) => r.json())
+        .then((json) => {
+          if (!cancelled && Array.isArray(json)) setData(json)
+        })
+        .catch(() => {})
+    }
+
+    // Try immediately
+    load()
+
+    // If username wasn't ready yet, retry a few times
+    const t1 = setTimeout(load, 500)
+    const t2 = setTimeout(load, 1500)
+    const t3 = setTimeout(load, 3000)
+
+    return () => {
+      cancelled = true
+      clearTimeout(t1)
+      clearTimeout(t2)
+      clearTimeout(t3)
+    }
   }, [])
 
   if (!data || data.length === 0) return null
