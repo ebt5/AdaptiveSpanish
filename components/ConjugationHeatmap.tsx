@@ -55,13 +55,26 @@ export default function ConjugationHeatmap({ username, refreshKey }: { username:
         Conjugation Progress
       </h2>
       <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-        <table style={{ borderCollapse: 'collapse', fontSize: 12, width: '100%' }}>
+        <table style={{ borderCollapse: 'collapse', fontSize: 12 }}>
           <thead>
             <tr>
-              <th style={{ textAlign: 'left', padding: '0 12px 4px 0', color: 'var(--text-muted)', fontWeight: 600, minWidth: 80 }}></th>
+              <th style={{ padding: '0 8px 0 0', minWidth: 72 }}></th>
               {tenses.map(tense => (
-                <th key={tense} style={{ padding: '0 4px 4px', color: 'var(--text-muted)', fontWeight: 600, textAlign: 'center', minWidth: 72 }}>
-                  {tenseLabel(tense)}
+                <th key={tense} style={{ padding: '0 3px', verticalAlign: 'bottom', width: 34 }}>
+                  <div style={{
+                    writingMode: 'vertical-rl',
+                    transform: 'rotate(180deg)',
+                    whiteSpace: 'nowrap',
+                    fontSize: 10,
+                    fontWeight: 600,
+                    color: 'var(--text-muted)',
+                    paddingBottom: 6,
+                    height: 72,
+                    display: 'flex',
+                    alignItems: 'center',
+                  }}>
+                    {tenseLabel(tense)}
+                  </div>
                 </th>
               ))}
             </tr>
@@ -69,7 +82,7 @@ export default function ConjugationHeatmap({ username, refreshKey }: { username:
           <tbody>
             {pronouns.map(pronoun => (
               <tr key={pronoun}>
-                <td style={{ padding: '3px 12px 3px 0', fontWeight: 600, color: 'var(--text)', whiteSpace: 'nowrap' }}>
+                <td style={{ padding: '3px 8px 3px 0', fontWeight: 600, color: 'var(--text)', whiteSpace: 'nowrap' }}>
                   {pronoun}
                 </td>
                 {tenses.map(tense => {
@@ -77,7 +90,7 @@ export default function ConjugationHeatmap({ username, refreshKey }: { username:
                   return (
                     <td key={tense} style={{ padding: 3 }}>
                       <div style={{
-                        minWidth: 60,
+                        width: 28,
                         height: 28,
                         borderRadius: 6,
                         background: scoreToColor(score),
