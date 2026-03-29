@@ -252,6 +252,8 @@ export default function DrillApp() {
         <div className="session-stats" style={{ marginTop: 8 }}>
           <span className="stat">user: {username}</span>
           <span className="stat-sep">·</span>
+          <a href="/verbs" className="category-toggle category-toggle-soon" style={{ textDecoration: 'none' }}>verbs →</a>
+          <span className="stat-sep">·</span>
           <button className="category-toggle category-toggle-soon" type="button" onClick={() => { clearStoredUsername(); setUsername(null); setDrill(emptyState); }}>switch user</button>
         </div>
       </header>

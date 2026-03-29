@@ -217,6 +217,8 @@ export default function VerbDrillApp({ onUsernameChange }: Props) {
         <p className="tagline">Type the conjugated form.</p>
         <div className="session-stats" style={{ marginTop: 8 }}>
           <span className="stat">user: {username}</span>
+          <span className="stat-sep">·</span>
+          <a href="/" className="category-toggle category-toggle-soon" style={{ textDecoration: 'none' }}>← vocab</a>
         </div>
       </header>
 
@@ -244,8 +246,8 @@ export default function VerbDrillApp({ onUsernameChange }: Props) {
         {!item ? (
           <section className="drill-panel">
             <div className="all-done">
-              <div className="all-done-icon">🎉</div>
-              <div className="all-done-text">All conjugations mastered!</div>
+              <div className="all-done-icon">{drill.unseenCount > 0 ? '⏳' : '🎉'}</div>
+              <div className="all-done-text">{drill.unseenCount > 0 ? 'Loading next form…' : 'All conjugations mastered!'}</div>
             </div>
           </section>
         ) : (
