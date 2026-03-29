@@ -98,7 +98,21 @@ async function fetchCandidateItems(userId: string, tenses: string[], excludeId?:
       take: 24,
     }),
   ])
-  return [...learning, ...learned, ...mastered].map((row) => ({
+  let allRows = [...learning, ...learned, ...mastered]
+  // If nothing drillable, pull from unseen as fallback and promote them
+  if (allRows.length === 0) {
+    const unseenRows = await prisma.userVerbProgress.findMany({
+      where: { userId, bucket: 'unseen', ...tenseFilter, ...excludeFilter },
+      include: { conjugation: { include: { verb: true } } },
+      take: VERB_LEARNING_TARGET,
+    })
+    for (const row of unseenRows) {
+      await prisma.userVerbProgress.update({ where: { id: row.id }, data: { bucket: 'learning' } })
+      row.bucket = 'learning'
+    }
+    allRows = unseenRows
+  }
+  return allRows.map((row) => ({
     id: row.conjugationId,
     infinitive: row.conjugation.verb.infinitive,
     english: row.conjugation.verb.english,
