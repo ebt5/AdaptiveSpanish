@@ -229,7 +229,7 @@ export async function fetchVerbHeatmap(username: string) {
   const user = await getCurrentUser(username)
 
   const progress = await prisma.userVerbProgress.findMany({
-    where: { userId: user.id },
+    where: { userId: user.id, bucket: { not: 'unseen' } },
     include: { conjugation: { include: { verb: true } } },
   })
 

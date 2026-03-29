@@ -56,7 +56,10 @@ export default function ConjugationHeatmap({ username, refreshKey }: { username:
     const vals: number[] = []
     for (const verb of verbs) {
       const s = scores[verb]?.[tense]?.[pronoun]
-      if (s !== undefined) vals.push(s)
+      // only include rows that have been seen (exist in scores)
+      if (s !== undefined && scores[verb]?.[tense] !== undefined && pronoun in (scores[verb]?.[tense] ?? {})) {
+        vals.push(s)
+      }
     }
     if (vals.length === 0) return null
     return Math.round(vals.reduce((a, b) => a + b, 0) / vals.length)
