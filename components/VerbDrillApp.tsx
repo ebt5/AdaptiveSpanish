@@ -253,7 +253,7 @@ export default function VerbDrillApp({ username, onAnswer }: Props) {
         <section className="drill-panel">
           {drill.lastMove && <div key={toastKey} className={`move-toast move-toast-${drill.lastMoveType}`}>{drill.lastMove}</div>}
           <div className="drill-card">
-            <div className="drill-prompt" style={{ fontSize: 22, marginBottom: 6 }}>
+            <div className="drill-prompt" style={{ fontSize: 36, fontWeight: 700, marginBottom: 6 }}>
               {item.infinitive}
             </div>
             <div style={{ fontSize: 14, color: 'var(--text-muted)', marginBottom: 8 }}>
@@ -264,8 +264,8 @@ export default function VerbDrillApp({ username, onAnswer }: Props) {
             </div>
             {item.exampleEs && (
               <div style={{ marginBottom: 10 }}>
-                <div style={{ fontSize: 13, fontStyle: 'italic', color: 'var(--text-muted)', marginBottom: 2 }}>{item.exampleEs}</div>
-                {item.exampleEn && <div style={{ fontSize: 11, color: 'var(--text-muted)', opacity: 0.7 }}>{item.exampleEn}</div>}
+                <div style={{ fontSize: 15, fontStyle: 'italic', color: 'var(--text-muted)', marginBottom: 3 }}>{item.exampleEs}</div>
+                {item.exampleEn && <div style={{ fontSize: 13, color: 'var(--text-muted)', opacity: 0.8 }}>{item.exampleEn}</div>}
               </div>
             )}
             <div className={`drill-bucket-tag bucket-tag-${currentBucket}`}>{cap(currentBucket!)}</div>

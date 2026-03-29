@@ -267,17 +267,17 @@ async function nextVerbState(userId: string, conjugationId: string, success: boo
         await tx.userVerbProgress.update({ where: { id: progress.id }, data: { bucket: 'learning', score: 0, lastSeenAt: new Date() } })
         lastMove = '↓ Demoted to Learning'; lastMoveType = 'demote'
       } else {
-        await tx.userVerbProgress.update({ where: { id: progress.id }, data: { score: Math.max(0, progress.score - 1), lastSeenAt: new Date() } })
+        await tx.userVerbProgress.update({ where: { id: progress.id }, data: { score: Math.max(0, progress.score - 2), lastSeenAt: new Date() } })
       }
       // Update pronoun+tense heatmap score (penalize on wrong)
       const existing = await tx.userPronounTenseScore.findUnique({ where: { userId_pronoun_tense: { userId, pronoun, tense } } })
       await tx.userPronounTenseScore.upsert({
         where: { userId_pronoun_tense: { userId, pronoun, tense } },
-        update: { score: Math.max(0, (existing?.score ?? 0) - 1) },
+        update: { score: Math.max(0, (existing?.score ?? 0) - 2) },
         create: { userId, pronoun, tense, score: 0 },
       })
     } else {
-      await tx.userVerbProgress.update({ where: { id: progress.id }, data: { score: Math.max(0, progress.score - 1), lastSeenAt: new Date() } })
+      await tx.userVerbProgress.update({ where: { id: progress.id }, data: { score: Math.max(0, progress.score - 2), lastSeenAt: new Date() } })
     }
   })
 
