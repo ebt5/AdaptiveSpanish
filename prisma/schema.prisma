@@ -17,6 +17,59 @@ model User {
 
   vocabProgress UserVocabProgress[]
   drillAttempts DrillAttempt[]
+  verbProgress  UserVerbProgress[]
+  verbAttempts  VerbAttempt[]
+}
+
+model Verb {
+  id          String   @id @default(cuid())
+  infinitive  String   @unique
+  english     String
+  isRegular   Boolean  @default(true)
+  sortOrder   Int      @unique
+
+  conjugations VerbConjugation[]
+}
+
+model VerbConjugation {
+  id         String @id @default(cuid())
+  verbId     String
+  tense      String
+  pronoun    String
+  form       String
+
+  verb     Verb               @relation(fields: [verbId], references: [id])
+  progress UserVerbProgress[]
+  attempts VerbAttempt[]
+
+  @@unique([verbId, tense, pronoun])
+}
+
+model UserVerbProgress {
+  id            String    @id @default(cuid())
+  userId        String
+  conjugationId String
+  bucket        String    @default("unseen")
+  score         Int       @default(0)
+  lastSeenAt    DateTime?
+  masteredAt    DateTime?
+  updatedAt     DateTime  @updatedAt
+
+  user        User            @relation(fields: [userId], references: [id])
+  conjugation VerbConjugation @relation(fields: [conjugationId], references: [id])
+
+  @@unique([userId, conjugationId])
+}
+
+model VerbAttempt {
+  id            String   @id @default(cuid())
+  userId        String
+  conjugationId String
+  correct       Boolean
+  createdAt     DateTime @default(now())
+
+  user        User            @relation(fields: [userId], references: [id])
+  conjugation VerbConjugation @relation(fields: [conjugationId], references: [id])
 }
 
 model DictionaryEntry {
