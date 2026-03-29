@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { clearStoredUsername, getStoredUsername, setStoredUsername } from '@/lib/identity'
+import MasteredChart from './MasteredChart'
 
 type Bucket = 'unseen' | 'learning' | 'learned' | 'mastered'
 type MoveType = 'promote' | 'master' | 'demote' | null
@@ -335,6 +336,7 @@ export default function DrillApp() {
           </div>
         )}
       </main>
+      <MasteredChart username={username} />
     </div>
   )
 }
