@@ -16,12 +16,12 @@ const TENSE_LABELS: Record<string, string> = {
   conditional: 'Conditional',
   present_subjunctive: 'Pres. Subj.',
   imperfect_subjunctive: 'Imp. Subj.',
-  present_perfect: 'Pres. Perf.',
+  present_perfect: 'Pres. Perfect',
   imperative: 'Imperative',
-  past_perfect: 'Past Perf.',
-  future_perfect: 'Fut. Perf.',
-  conditional_perfect: 'Cond. Perf.',
-  present_perfect_subjunctive: 'PP Subj.',
+  past_perfect: 'Past Perfect',
+  future_perfect: 'Future Perfect',
+  conditional_perfect: 'Cond. Perfect',
+  present_perfect_subjunctive: 'Pres. Perf. Subj.',
 }
 
 type VerbDrillItem = {

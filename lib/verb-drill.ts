@@ -143,10 +143,37 @@ async function bootstrapUser(userId: string, tenses: string[]) {
 export async function initializeVerbDrillState(username: string, tenses: string[] = ['present']): Promise<VerbDrillState> {
   const user = await getCurrentUser(username)
 
-  // Bootstrap if no progress exists yet
-  const existingCount = await prisma.userVerbProgress.count({ where: { userId: user.id } })
-  if (existingCount === 0) {
-    await bootstrapUser(user.id, tenses)
+  // Ensure progress rows exist for all conjugations in selected tenses
+  // (handles both first-time users and users adding new tenses)
+  const conjugationsForTenses = await prisma.verbConjugation.findMany({
+    where: { tense: { in: tenses } },
+    select: { id: true },
+  })
+  const existingProgress = await prisma.userVerbProgress.findMany({
+    where: { userId: user.id, conjugationId: { in: conjugationsForTenses.map(c => c.id) } },
+    select: { conjugationId: true },
+  })
+  const existingIds = new Set(existingProgress.map(p => p.conjugationId))
+  const missing = conjugationsForTenses.filter(c => !existingIds.has(c.id))
+
+  if (missing.length > 0) {
+    // Create unseen rows for new conjugations
+    await prisma.userVerbProgress.createMany({
+      data: missing.map(c => ({ userId: user.id, conjugationId: c.id, bucket: 'unseen', score: 0 })),
+      skipDuplicates: true,
+    })
+    // Move up to VERB_LEARNING_TARGET of them into learning if learning bucket is low
+    const learningCount = await prisma.userVerbProgress.count({ where: { userId: user.id, bucket: 'learning' } })
+    const needed = Math.max(0, VERB_LEARNING_TARGET - learningCount)
+    if (needed > 0) {
+      const unseenRows = await prisma.userVerbProgress.findMany({
+        where: { userId: user.id, bucket: 'unseen', conjugationId: { in: missing.map(c => c.id) } },
+        take: needed,
+      })
+      for (const row of unseenRows) {
+        await prisma.userVerbProgress.update({ where: { id: row.id }, data: { bucket: 'learning' } })
+      }
+    }
   }
 
   const [counts, items] = await Promise.all([fetchCounts(user.id), fetchCandidateItems(user.id, tenses)])
