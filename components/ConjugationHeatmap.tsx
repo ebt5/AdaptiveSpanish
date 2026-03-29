@@ -37,14 +37,14 @@ function tenselabel(tense: string) {
   return labels[tense] ?? tense
 }
 
-export default function ConjugationHeatmap({ username }: { username: string }) {
+export default function ConjugationHeatmap({ username, refreshKey }: { username: string; refreshKey?: number }) {
   const [data, setData] = useState<HeatmapData | null>(null)
 
   useEffect(() => {
     fetch(`/api/verbs/heatmap?username=${encodeURIComponent(username)}`)
       .then(r => r.json())
       .then(setData)
-  }, [username])
+  }, [username, refreshKey])
 
   if (!data) return null
 

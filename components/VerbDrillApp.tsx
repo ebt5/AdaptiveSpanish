@@ -53,6 +53,7 @@ export default function VerbDrillApp({ onUsernameChange }: Props) {
   const [loading, setLoading] = useState(true)
   const [pendingSync, setPendingSync] = useState(false)
   const [queuedNext, setQueuedNext] = useState<VerbDrillState | null>(null)
+  const [heatmapKey, setHeatmapKey] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
   const nextBtnRef = useRef<HTMLButtonElement>(null)
 
@@ -112,6 +113,7 @@ export default function VerbDrillApp({ onUsernameChange }: Props) {
       setDrill(queuedNext)
       setQueuedNext(null)
     }
+    setHeatmapKey(k => k + 1)
     setPhase('answering')
     setAnswer(null)
     setInput('')
@@ -313,7 +315,7 @@ export default function VerbDrillApp({ onUsernameChange }: Props) {
         )}
       </main>
 
-      <ConjugationHeatmap username={username} />
+      <ConjugationHeatmap username={username} refreshKey={heatmapKey} />
     </div>
   )
 }
