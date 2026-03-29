@@ -13,6 +13,8 @@ export interface VerbDrillItem {
   tense: string
   pronoun: string
   form: string
+  exampleEs: string | null
+  exampleEn: string | null
   bucket: Bucket
   score: number
 }
@@ -75,20 +77,22 @@ async function fetchCounts(userId: string) {
   return counts
 }
 
-async function fetchCandidateItems(userId: string, excludeId?: string | null): Promise<VerbDrillItem[]> {
+async function fetchCandidateItems(userId: string, tenses: string[], excludeId?: string | null): Promise<VerbDrillItem[]> {
+  const tenseFilter = { conjugation: { tense: { in: tenses } } }
+  const excludeFilter = excludeId ? { NOT: { conjugationId: excludeId } } : {}
   const [learning, learned, mastered] = await Promise.all([
     prisma.userVerbProgress.findMany({
-      where: { userId, bucket: 'learning', ...(excludeId ? { NOT: { conjugationId: excludeId } } : {}) },
+      where: { userId, bucket: 'learning', ...tenseFilter, ...excludeFilter },
       include: { conjugation: { include: { verb: true } } },
       take: 24,
     }),
     prisma.userVerbProgress.findMany({
-      where: { userId, bucket: 'learned', ...(excludeId ? { NOT: { conjugationId: excludeId } } : {}) },
+      where: { userId, bucket: 'learned', ...tenseFilter, ...excludeFilter },
       include: { conjugation: { include: { verb: true } } },
       take: 18,
     }),
     prisma.userVerbProgress.findMany({
-      where: { userId, bucket: 'mastered', ...(excludeId ? { NOT: { conjugationId: excludeId } } : {}) },
+      where: { userId, bucket: 'mastered', ...tenseFilter, ...excludeFilter },
       include: { conjugation: { include: { verb: true } } },
       orderBy: [{ score: 'asc' }, { lastSeenAt: 'asc' }],
       take: 24,
@@ -101,13 +105,16 @@ async function fetchCandidateItems(userId: string, excludeId?: string | null): P
     tense: row.conjugation.tense,
     pronoun: row.conjugation.pronoun,
     form: row.conjugation.form,
+    exampleEs: row.conjugation.exampleEs ?? null,
+    exampleEn: row.conjugation.exampleEn ?? null,
     bucket: row.bucket as Bucket,
     score: row.score,
   }))
 }
 
-async function bootstrapUser(userId: string) {
+async function bootstrapUser(userId: string, tenses: string[]) {
   const allConjugations = await prisma.verbConjugation.findMany({
+    where: { tense: { in: tenses } },
     include: { verb: true },
     orderBy: { verb: { sortOrder: 'asc' } },
   })
@@ -133,16 +140,16 @@ async function bootstrapUser(userId: string) {
   }
 }
 
-export async function initializeVerbDrillState(username: string): Promise<VerbDrillState> {
+export async function initializeVerbDrillState(username: string, tenses: string[] = ['present']): Promise<VerbDrillState> {
   const user = await getCurrentUser(username)
 
   // Bootstrap if no progress exists yet
   const existingCount = await prisma.userVerbProgress.count({ where: { userId: user.id } })
   if (existingCount === 0) {
-    await bootstrapUser(user.id)
+    await bootstrapUser(user.id, tenses)
   }
 
-  const [counts, items] = await Promise.all([fetchCounts(user.id), fetchCandidateItems(user.id)])
+  const [counts, items] = await Promise.all([fetchCounts(user.id), fetchCandidateItems(user.id, tenses)])
   const item = weightedPick(items)
   return { item, counts, unseenCount: counts.unseen, stats: { correct: 0, wrong: 0, promoted: 0, demoted: 0 }, lastMove: null, lastMoveType: null }
 }
@@ -233,7 +240,7 @@ async function nextVerbState(userId: string, conjugationId: string, success: boo
     }
   })
 
-  const [counts, items] = await Promise.all([fetchCounts(userId), fetchCandidateItems(userId, conjugationId)])
+  const [counts, items] = await Promise.all([fetchCounts(userId), fetchCandidateItems(userId, [conjugation.tense], conjugationId)])
   const item = weightedPick(items, conjugationId)
   return {
     item,
@@ -253,7 +260,7 @@ export async function fetchVerbHeatmap(username: string) {
   })
 
   const pronouns = ['yo', 'tú', 'él', 'nosotros', 'vosotros', 'ellos']
-  const tenses = ['present']
+  const tenses = ['present','preterite','imperfect','future','conditional','present_subjunctive','imperfect_subjunctive','present_perfect','imperative','past_perfect','future_perfect','conditional_perfect','present_perfect_subjunctive']
 
   // Build scores: { pronoun: { tense: score } }
   const scores: Record<string, Record<string, number>> = {}

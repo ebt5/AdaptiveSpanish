@@ -6,6 +6,24 @@ type Bucket = 'unseen' | 'learning' | 'learned' | 'mastered'
 type MoveType = 'promote' | 'master' | 'demote' | null
 type Phase = 'answering' | 'wrong-first' | 'correct' | 'revealed'
 
+const ALL_TENSES = ['present','preterite','imperfect','future','conditional','present_subjunctive','imperfect_subjunctive','present_perfect','imperative','past_perfect','future_perfect','conditional_perfect','present_perfect_subjunctive']
+
+const TENSE_LABELS: Record<string, string> = {
+  present: 'Present',
+  preterite: 'Preterite',
+  imperfect: 'Imperfect',
+  future: 'Future',
+  conditional: 'Conditional',
+  present_subjunctive: 'Pres. Subj.',
+  imperfect_subjunctive: 'Imp. Subj.',
+  present_perfect: 'Pres. Perf.',
+  imperative: 'Imperative',
+  past_perfect: 'Past Perf.',
+  future_perfect: 'Fut. Perf.',
+  conditional_perfect: 'Cond. Perf.',
+  present_perfect_subjunctive: 'PP Subj.',
+}
+
 type VerbDrillItem = {
   id: string
   infinitive: string
@@ -13,6 +31,8 @@ type VerbDrillItem = {
   tense: string
   pronoun: string
   form: string
+  exampleEs: string | null
+  exampleEn: string | null
   bucket: Bucket
   score: number
 }
@@ -51,6 +71,7 @@ export default function VerbDrillApp({ username, onAnswer }: Props) {
   const [loading, setLoading] = useState(true)
   const [pendingSync, setPendingSync] = useState(false)
   const [queuedNext, setQueuedNext] = useState<VerbDrillState | null>(null)
+  const [selectedTenses, setSelectedTenses] = useState<string[]>(['present'])
   const inputRef = useRef<HTMLInputElement>(null)
   const nextBtnRef = useRef<HTMLButtonElement>(null)
 
@@ -60,17 +81,28 @@ export default function VerbDrillApp({ username, onAnswer }: Props) {
   const anyStats = drill.stats.correct + drill.stats.wrong > 0
   const toastKey = drill.lastMove ? `${drill.lastMove}-${drill.stats.promoted}-${drill.stats.demoted}` : ''
 
+  function toggleTense(tense: string) {
+    setSelectedTenses(prev => {
+      if (prev.includes(tense)) {
+        const next = prev.filter(t => t !== tense)
+        return next.length === 0 ? prev : next // always keep at least one
+      }
+      return [...prev, tense]
+    })
+  }
+
   useEffect(() => {
     setLoading(true)
     setDrill(emptyState)
     setPhase('answering')
     setInput('')
     setAnswer(null)
-    fetch(`/api/verbs/drill/init?username=${encodeURIComponent(username)}`).then(r => r.json()).then((data: VerbDrillState) => {
+    const tensesParam = selectedTenses.join(',')
+    fetch(`/api/verbs/drill/init?username=${encodeURIComponent(username)}&tenses=${tensesParam}`).then(r => r.json()).then((data: VerbDrillState) => {
       setDrill(data)
       setLoading(false)
     })
-  }, [username])
+  }, [username, selectedTenses])
 
   useEffect(() => {
     if (isReviewing) nextBtnRef.current?.focus()
@@ -195,6 +227,21 @@ export default function VerbDrillApp({ username, onAnswer }: Props) {
 
   return (
     <>
+      {/* Tense filter checkboxes */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px 10px', marginBottom: 12 }}>
+        {ALL_TENSES.map(tense => (
+          <label key={tense} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: selectedTenses.includes(tense) ? 'var(--text)' : 'var(--text-muted)', cursor: 'pointer', userSelect: 'none' }}>
+            <input
+              type="checkbox"
+              checked={selectedTenses.includes(tense)}
+              onChange={() => toggleTense(tense)}
+              style={{ accentColor: 'var(--green)', width: 12, height: 12 }}
+            />
+            {TENSE_LABELS[tense]}
+          </label>
+        ))}
+      </div>
+
       {!item ? (
         <section className="drill-panel">
           <div className="all-done">
@@ -210,11 +257,17 @@ export default function VerbDrillApp({ username, onAnswer }: Props) {
               {item.infinitive}
             </div>
             <div style={{ fontSize: 14, color: 'var(--text-muted)', marginBottom: 8 }}>
-              {item.english} · {item.tense}
+              {item.english} · {TENSE_LABELS[item.tense] ?? item.tense}
             </div>
             <div style={{ fontSize: 36, fontWeight: 700, marginBottom: 12 }}>
               {item.pronoun}
             </div>
+            {item.exampleEs && (
+              <div style={{ marginBottom: 10 }}>
+                <div style={{ fontSize: 13, fontStyle: 'italic', color: 'var(--text-muted)', marginBottom: 2 }}>{item.exampleEs}</div>
+                {item.exampleEn && <div style={{ fontSize: 11, color: 'var(--text-muted)', opacity: 0.7 }}>{item.exampleEn}</div>}
+              </div>
+            )}
             <div className={`drill-bucket-tag bucket-tag-${currentBucket}`}>{cap(currentBucket!)}</div>
           </div>
 

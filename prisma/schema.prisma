@@ -33,11 +33,13 @@ model Verb {
 }
 
 model VerbConjugation {
-  id         String @id @default(cuid())
+  id         String  @id @default(cuid())
   verbId     String
   tense      String
   pronoun    String
   form       String
+  exampleEs  String? // example sentence in Spanish
+  exampleEn  String? // example sentence in English
 
   verb     Verb               @relation(fields: [verbId], references: [id])
   progress UserVerbProgress[]

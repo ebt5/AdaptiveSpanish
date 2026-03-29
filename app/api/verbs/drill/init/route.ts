@@ -4,6 +4,8 @@ import { initializeVerbDrillState } from '@/lib/verb-drill'
 export async function GET(request: NextRequest) {
   const username = request.nextUrl.searchParams.get('username')
   if (!username) return NextResponse.json({ error: 'username required' }, { status: 400 })
-  const state = await initializeVerbDrillState(username)
+  const tensesParam = request.nextUrl.searchParams.get('tenses')
+  const tenses = tensesParam ? tensesParam.split(',').filter(Boolean) : ['present']
+  const state = await initializeVerbDrillState(username, tenses)
   return NextResponse.json(state)
 }
