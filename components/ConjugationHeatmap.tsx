@@ -115,56 +115,7 @@ export default function ConjugationHeatmap({ username }: { username: string }) {
         </table>
       </div>
 
-      {/* Verb detail grid: rows = verb, columns = pronoun (for current tenses) */}
-      {tenses.map(tense => (
-        <div key={tense} style={{ marginBottom: 20 }}>
-          <h3 style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--text-muted)', marginBottom: 6 }}>
-            {tenselabel(tense)} — by verb
-          </h3>
-          <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-            <table style={{ borderCollapse: 'collapse', fontSize: 11 }}>
-              <thead>
-                <tr>
-                  <th style={{ textAlign: 'left', padding: '0 8px 3px 0', color: 'var(--text-muted)', fontWeight: 600, minWidth: 72 }}>verb</th>
-                  {pronouns.map(p => (
-                    <th key={p} style={{ padding: '0 2px 3px', color: 'var(--text-muted)', fontWeight: 600, textAlign: 'center', minWidth: 30 }}>{p}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {verbs.map(verb => (
-                  <tr key={verb}>
-                    <td style={{ padding: '2px 8px 2px 0', fontWeight: 600, whiteSpace: 'nowrap', color: 'var(--text)', fontSize: 12 }}>
-                      {verb}
-                    </td>
-                    {pronouns.map(pronoun => {
-                      const score = scores[verb]?.[tense]?.[pronoun] ?? null
-                      return (
-                        <td key={pronoun} style={{ padding: 2 }}>
-                          <div style={{
-                            width: 26,
-                            height: 20,
-                            borderRadius: 4,
-                            background: scoreToColor(score !== undefined ? score : null),
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontSize: 9,
-                            fontWeight: 700,
-                            color: scoreToTextColor(score !== undefined ? score : null),
-                          }}>
-                            {score !== null ? score : '·'}
-                          </div>
-                        </td>
-                      )
-                    })}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      ))}
+
 
       <p style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>Avg score 0–10 per pronoun × tense</p>
     </div>
