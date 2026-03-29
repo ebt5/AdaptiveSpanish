@@ -3,10 +3,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { clearStoredUsername, getStoredUsername, setStoredUsername } from '@/lib/identity'
 import MasteredChart from './MasteredChart'
+import ConjugationHeatmap from './ConjugationHeatmap'
+import VerbDrillApp from './VerbDrillApp'
 
 type Bucket = 'unseen' | 'learning' | 'learned' | 'mastered'
 type MoveType = 'promote' | 'master' | 'demote' | null
 type Phase = 'answering' | 'wrong-first' | 'correct' | 'revealed'
+type Mode = 'vocab' | 'verbs'
 
 type DrillItem = {
   id: string
@@ -51,6 +54,8 @@ export default function DrillApp() {
   const [pendingSync, setPendingSync] = useState(false)
   const [queuedNext, setQueuedNext] = useState<DrillState | null>(null)
   const [milestone, setMilestone] = useState<number | null>(null)
+  const [mode, setMode] = useState<Mode>('vocab')
+  const [heatmapKey, setHeatmapKey] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
   const nextBtnRef = useRef<HTMLButtonElement>(null)
 
@@ -76,9 +81,11 @@ export default function DrillApp() {
   }, [username])
 
   useEffect(() => {
-    if (isReviewing) nextBtnRef.current?.focus()
-    else inputRef.current?.focus()
-  }, [isReviewing, phase, item?.id])
+    if (mode === 'vocab') {
+      if (isReviewing) nextBtnRef.current?.focus()
+      else inputRef.current?.focus()
+    }
+  }, [isReviewing, phase, item?.id, mode])
 
   async function bootstrapUser(e: React.FormEvent) {
     e.preventDefault()
@@ -252,17 +259,26 @@ export default function DrillApp() {
         <div className="session-stats" style={{ marginTop: 8 }}>
           <span className="stat">user: {username}</span>
           <span className="stat-sep">·</span>
-          <a href="/verbs" className="category-toggle category-toggle-soon" style={{ textDecoration: 'none' }}>verbs →</a>
-          <span className="stat-sep">·</span>
           <button className="category-toggle category-toggle-soon" type="button" onClick={() => { clearStoredUsername(); setUsername(null); setDrill(emptyState); }}>switch user</button>
         </div>
       </header>
 
       <main className="app-main">
         <div className="category-toggles">
-          <button className="category-toggle category-toggle-active" type="button">Vocabulary</button>
-          <button className="category-toggle category-toggle-soon" type="button" disabled>Phrases <span className="soon-badge">Soon</span></button>
-          <button className="category-toggle category-toggle-soon" type="button" disabled>Verb Conjugation <span className="soon-badge">Soon</span></button>
+          <button
+            className={`category-toggle${mode === 'vocab' ? ' category-toggle-active' : ' category-toggle-soon'}`}
+            type="button"
+            onClick={() => setMode('vocab')}
+          >
+            Vocab
+          </button>
+          <button
+            className={`category-toggle${mode === 'verbs' ? ' category-toggle-active' : ' category-toggle-soon'}`}
+            type="button"
+            onClick={() => setMode('verbs')}
+          >
+            Verbs
+          </button>
         </div>
 
         <div className="bucket-cards">
@@ -282,63 +298,71 @@ export default function DrillApp() {
           ))}
         </div>
 
-        {drill.unseenCount > 0 && <p className="unseen-note">{drill.unseenCount} words not yet introduced</p>}
+        {mode === 'vocab' && drill.unseenCount > 0 && <p className="unseen-note">{drill.unseenCount} words not yet introduced</p>}
 
-        {!item ? (
-          <section className="drill-panel"><div className="all-done"><div className="all-done-icon">🎉</div><div className="all-done-text">All words mastered!</div></div></section>
+        {mode === 'vocab' ? (
+          <>
+            {!item ? (
+              <section className="drill-panel"><div className="all-done"><div className="all-done-icon">🎉</div><div className="all-done-text">All words mastered!</div></div></section>
+            ) : (
+              <section className="drill-panel">
+                {drill.lastMove && <div key={toastKey} className={`move-toast move-toast-${drill.lastMoveType}`}>{drill.lastMove}</div>}
+                <div className="drill-card">
+                  <div className="drill-emoji">{item.emoji}</div>
+                  <div className="drill-prompt">{item.english}</div>
+                  <div className={`drill-bucket-tag bucket-tag-${currentBucket}`}>{cap(currentBucket!)}</div>
+                </div>
+
+                {phase === 'wrong-first' && <div className="feedback feedback-wrong"><span className="feedback-icon">✗</span><span>Not quite — one more chance</span><span className="feedback-attempt">2 / 2</span></div>}
+                {phase === 'correct' && <div className="feedback feedback-correct"><span className="feedback-icon">✓</span><span>Correct! <span className="answer-word">{answer}</span></span></div>}
+                {phase === 'revealed' && <div className="feedback feedback-revealed"><span className="feedback-icon">→</span><span>Answer: <span className="answer-word">{answer}</span></span></div>}
+
+                <form onSubmit={handleSubmit} className="drill-form">
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    className={`drill-input${phase === 'wrong-first' ? ' input-wrong' : ''}`}
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    placeholder={phase === 'wrong-first' ? 'Try again…' : 'Type Spanish…'}
+                    disabled={isReviewing}
+                    autoComplete="off"
+                    autoCorrect="off"
+                    autoCapitalize="off"
+                    spellCheck={false}
+                  />
+                  <button ref={nextBtnRef} type="submit" className={`btn btn-submit${isReviewing ? ' btn-next' : ''}`}>
+                    {isReviewing ? (pendingSync ? 'Saving…' : 'Next →') : pendingSync ? 'Saving…' : 'Check'}
+                  </button>
+                </form>
+
+                <p className="drill-hint">
+                  {phase === 'answering' && 'Enter to check · blank Enter to skip & reveal'}
+                  {phase === 'wrong-first' && 'Last chance · blank Enter to reveal answer'}
+                  {isReviewing && (pendingSync ? 'Saving result… then Enter for next word' : 'Enter or click Next to continue')}
+                </p>
+              </section>
+            )}
+
+            {anyStats && (
+              <div className="session-stats">
+                <span className="stat stat-correct">✓ {drill.stats.correct}</span>
+                <span className="stat-sep">·</span>
+                <span className="stat stat-wrong">✗ {drill.stats.wrong}</span>
+                <span className="stat-sep">·</span>
+                <span className="stat stat-promoted">↑ {drill.stats.promoted}</span>
+                <span className="stat-sep">·</span>
+                <span className="stat stat-demoted">↓ {drill.stats.demoted}</span>
+              </div>
+            )}
+          </>
         ) : (
-          <section className="drill-panel">
-            {drill.lastMove && <div key={toastKey} className={`move-toast move-toast-${drill.lastMoveType}`}>{drill.lastMove}</div>}
-            <div className="drill-card">
-              <div className="drill-emoji">{item.emoji}</div>
-              <div className="drill-prompt">{item.english}</div>
-              <div className={`drill-bucket-tag bucket-tag-${currentBucket}`}>{cap(currentBucket!)}</div>
-            </div>
-
-            {phase === 'wrong-first' && <div className="feedback feedback-wrong"><span className="feedback-icon">✗</span><span>Not quite — one more chance</span><span className="feedback-attempt">2 / 2</span></div>}
-            {phase === 'correct' && <div className="feedback feedback-correct"><span className="feedback-icon">✓</span><span>Correct! <span className="answer-word">{answer}</span></span></div>}
-            {phase === 'revealed' && <div className="feedback feedback-revealed"><span className="feedback-icon">→</span><span>Answer: <span className="answer-word">{answer}</span></span></div>}
-
-            <form onSubmit={handleSubmit} className="drill-form">
-              <input
-                ref={inputRef}
-                type="text"
-                className={`drill-input${phase === 'wrong-first' ? ' input-wrong' : ''}`}
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder={phase === 'wrong-first' ? 'Try again…' : 'Type Spanish…'}
-                disabled={isReviewing}
-                autoComplete="off"
-                autoCorrect="off"
-                autoCapitalize="off"
-                spellCheck={false}
-              />
-              <button ref={nextBtnRef} type="submit" className={`btn btn-submit${isReviewing ? ' btn-next' : ''}`}>
-                {isReviewing ? (pendingSync ? 'Saving…' : 'Next →') : pendingSync ? 'Saving…' : 'Check'}
-              </button>
-            </form>
-
-            <p className="drill-hint">
-              {phase === 'answering' && 'Enter to check · blank Enter to skip & reveal'}
-              {phase === 'wrong-first' && 'Last chance · blank Enter to reveal answer'}
-              {isReviewing && (pendingSync ? 'Saving result… then Enter for next word' : 'Enter or click Next to continue')}
-            </p>
-          </section>
-        )}
-
-        {anyStats && (
-          <div className="session-stats">
-            <span className="stat stat-correct">✓ {drill.stats.correct}</span>
-            <span className="stat-sep">·</span>
-            <span className="stat stat-wrong">✗ {drill.stats.wrong}</span>
-            <span className="stat-sep">·</span>
-            <span className="stat stat-promoted">↑ {drill.stats.promoted}</span>
-            <span className="stat-sep">·</span>
-            <span className="stat stat-demoted">↓ {drill.stats.demoted}</span>
-          </div>
+          <VerbDrillApp username={username} onAnswer={() => setHeatmapKey(k => k + 1)} />
         )}
       </main>
+
       <MasteredChart username={username} />
+      <ConjugationHeatmap username={username} refreshKey={heatmapKey} />
     </div>
   )
 }

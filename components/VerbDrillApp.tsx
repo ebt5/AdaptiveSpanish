@@ -1,8 +1,6 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { getStoredUsername } from '@/lib/identity'
-import ConjugationHeatmap from './ConjugationHeatmap'
 
 type Bucket = 'unseen' | 'learning' | 'learned' | 'mastered'
 type MoveType = 'promote' | 'master' | 'demote' | null
@@ -41,11 +39,11 @@ function cap(s: string) { return s.charAt(0).toUpperCase() + s.slice(1) }
 function normalize(s: string) { return s.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') }
 
 interface Props {
-  onUsernameChange?: (username: string | null) => void
+  username: string
+  onAnswer: () => void
 }
 
-export default function VerbDrillApp({ onUsernameChange }: Props) {
-  const [username, setUsername] = useState<string | null>(null)
+export default function VerbDrillApp({ username, onAnswer }: Props) {
   const [drill, setDrill] = useState<VerbDrillState>(emptyState)
   const [phase, setPhase] = useState<Phase>('answering')
   const [input, setInput] = useState('')
@@ -53,7 +51,6 @@ export default function VerbDrillApp({ onUsernameChange }: Props) {
   const [loading, setLoading] = useState(true)
   const [pendingSync, setPendingSync] = useState(false)
   const [queuedNext, setQueuedNext] = useState<VerbDrillState | null>(null)
-  const [heatmapKey, setHeatmapKey] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
   const nextBtnRef = useRef<HTMLButtonElement>(null)
 
@@ -64,17 +61,11 @@ export default function VerbDrillApp({ onUsernameChange }: Props) {
   const toastKey = drill.lastMove ? `${drill.lastMove}-${drill.stats.promoted}-${drill.stats.demoted}` : ''
 
   useEffect(() => {
-    const stored = getStoredUsername()
-    if (stored) {
-      setUsername(stored)
-      onUsernameChange?.(stored)
-    }
-    setLoading(false)
-  }, [])
-
-  useEffect(() => {
-    if (!username) return
     setLoading(true)
+    setDrill(emptyState)
+    setPhase('answering')
+    setInput('')
+    setAnswer(null)
     fetch(`/api/verbs/drill/init?username=${encodeURIComponent(username)}`).then(r => r.json()).then((data: VerbDrillState) => {
       setDrill(data)
       setLoading(false)
@@ -87,7 +78,7 @@ export default function VerbDrillApp({ onUsernameChange }: Props) {
   }, [isReviewing, phase, item?.id])
 
   async function persistAndQueue(answerValue: string, attemptNumber: number, optimisticPhase: Phase, optimisticAnswer: string | null, optimisticState?: Partial<VerbDrillState>) {
-    if (!item || !username) return
+    if (!item) return
     if (optimisticState) setDrill(prev => ({ ...prev, ...optimisticState }))
     setPhase(optimisticPhase)
     setAnswer(optimisticAnswer)
@@ -113,7 +104,7 @@ export default function VerbDrillApp({ onUsernameChange }: Props) {
       setDrill(queuedNext)
       setQueuedNext(null)
     }
-    setHeatmapKey(k => k + 1)
+    onAnswer()
     setPhase('answering')
     setAnswer(null)
     setInput('')
@@ -200,122 +191,75 @@ export default function VerbDrillApp({ onUsernameChange }: Props) {
     }
   }
 
-  if (loading) return <div className="app"><p>Loading…</p></div>
-
-  if (!username) {
-    return (
-      <div className="app">
-        <p className="unseen-note" style={{ textAlign: 'center', marginTop: 24 }}>
-          Please set your username on the <a href="/" style={{ color: 'var(--accent)' }}>vocabulary page</a> first.
-        </p>
-      </div>
-    )
-  }
+  if (loading) return <section className="drill-panel"><p style={{ textAlign: 'center', color: 'var(--text-muted)' }}>Loading verbs…</p></section>
 
   return (
-    <div className="app">
-      <header className="app-header">
-        <h1>Verb Conjugation</h1>
-        <p className="tagline">Type the conjugated form.</p>
-        <div className="session-stats" style={{ marginTop: 8 }}>
-          <span className="stat">user: {username}</span>
-          <span className="stat-sep">·</span>
-          <a href="/" className="category-toggle category-toggle-soon" style={{ textDecoration: 'none' }}>← vocab</a>
-        </div>
-      </header>
-
-      <main className="app-main">
-        <div className="bucket-cards">
-          {([
-            ['Learning', 'learning', drill.counts.learning],
-            ['Learned', 'learned', drill.counts.learned],
-            ['Mastered', 'mastered', drill.counts.mastered],
-          ] as [string, string, number][]).map(([label, key, count]) => (
-            <div key={key} className={`bucket-card bucket-card-${key}`}>
-              <div className="bucket-name">{label}</div>
-              <div className="bucket-sub-counts">
-                <div className="bucket-sub">
-                  <span className="bucket-sub-num">{count}</span>
-                  <span className="bucket-sub-label">forms</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {drill.unseenCount > 0 && <p className="unseen-note">{drill.unseenCount} forms not yet introduced</p>}
-
-        {!item ? (
-          <section className="drill-panel">
-            <div className="all-done">
-              <div className="all-done-icon">{drill.unseenCount > 0 ? '⏳' : '🎉'}</div>
-              <div className="all-done-text">{drill.unseenCount > 0 ? 'Loading next form…' : 'All conjugations mastered!'}</div>
-            </div>
-          </section>
-        ) : (
-          <section className="drill-panel">
-            {drill.lastMove && <div key={toastKey} className={`move-toast move-toast-${drill.lastMoveType}`}>{drill.lastMove}</div>}
-            <div className="drill-card">
-              <div className="drill-prompt" style={{ fontSize: 22, marginBottom: 6 }}>
-                {item.infinitive}
-              </div>
-              <div style={{ fontSize: 14, color: 'var(--text-muted)', marginBottom: 8 }}>
-                {item.english} · {item.tense}
-              </div>
-              <div style={{ fontSize: 36, fontWeight: 700, marginBottom: 12 }}>
-                {item.pronoun}
-              </div>
-              <div style={{ display: 'flex', gap: 8, justifyContent: 'center', alignItems: 'center' }}>
-                <div className={`drill-bucket-tag bucket-tag-${currentBucket}`}>{cap(currentBucket!)}</div>
-                <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>score: {item.score}/10</div>
-              </div>
-            </div>
-
-            {phase === 'wrong-first' && <div className="feedback feedback-wrong"><span className="feedback-icon">✗</span><span>Not quite — one more chance</span><span className="feedback-attempt">2 / 2</span></div>}
-            {phase === 'correct' && <div className="feedback feedback-correct"><span className="feedback-icon">✓</span><span>Correct! <span className="answer-word">{answer}</span></span></div>}
-            {phase === 'revealed' && <div className="feedback feedback-revealed"><span className="feedback-icon">→</span><span>Answer: <span className="answer-word">{answer}</span></span></div>}
-
-            <form onSubmit={handleSubmit} className="drill-form">
-              <input
-                ref={inputRef}
-                type="text"
-                className={`drill-input${phase === 'wrong-first' ? ' input-wrong' : ''}`}
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder={phase === 'wrong-first' ? 'Try again…' : 'Type conjugation…'}
-                disabled={isReviewing}
-                autoComplete="off"
-                autoCorrect="off"
-                autoCapitalize="off"
-                spellCheck={false}
-              />
-              <button ref={nextBtnRef} type="submit" className={`btn btn-submit${isReviewing ? ' btn-next' : ''}`}>
-                {isReviewing ? (pendingSync ? 'Saving…' : 'Next →') : pendingSync ? 'Saving…' : 'Check'}
-              </button>
-            </form>
-
-            <p className="drill-hint">
-              {phase === 'answering' && 'Enter to check · blank Enter to skip & reveal'}
-              {phase === 'wrong-first' && 'Last chance · blank Enter to reveal answer'}
-              {isReviewing && (pendingSync ? 'Saving result…' : 'Enter or click Next to continue')}
-            </p>
-          </section>
-        )}
-
-        {anyStats && (
-          <div className="session-stats">
-            <span className="stat stat-correct">✓ {drill.stats.correct}</span>
-            <span className="stat-sep">·</span>
-            <span className="stat stat-wrong">✗ {drill.stats.wrong}</span>
-            <span className="stat-sep">·</span>
-            <span className="stat stat-promoted">↑ {drill.stats.promoted}</span>
-            <span className="stat-sep">·</span>
-            <span className="stat stat-demoted">↓ {drill.stats.demoted}</span>
+    <>
+      {!item ? (
+        <section className="drill-panel">
+          <div className="all-done">
+            <div className="all-done-icon">{drill.unseenCount > 0 ? '⏳' : '🎉'}</div>
+            <div className="all-done-text">{drill.unseenCount > 0 ? 'Loading next form…' : 'All conjugations mastered!'}</div>
           </div>
-        )}
-      </main>
+        </section>
+      ) : (
+        <section className="drill-panel">
+          {drill.lastMove && <div key={toastKey} className={`move-toast move-toast-${drill.lastMoveType}`}>{drill.lastMove}</div>}
+          <div className="drill-card">
+            <div className="drill-prompt" style={{ fontSize: 22, marginBottom: 6 }}>
+              {item.infinitive}
+            </div>
+            <div style={{ fontSize: 14, color: 'var(--text-muted)', marginBottom: 8 }}>
+              {item.english} · {item.tense}
+            </div>
+            <div style={{ fontSize: 36, fontWeight: 700, marginBottom: 12 }}>
+              {item.pronoun}
+            </div>
+            <div className={`drill-bucket-tag bucket-tag-${currentBucket}`}>{cap(currentBucket!)}</div>
+          </div>
 
-      <ConjugationHeatmap username={username} refreshKey={heatmapKey} />
-    </div>
+          {phase === 'wrong-first' && <div className="feedback feedback-wrong"><span className="feedback-icon">✗</span><span>Not quite — one more chance</span><span className="feedback-attempt">2 / 2</span></div>}
+          {phase === 'correct' && <div className="feedback feedback-correct"><span className="feedback-icon">✓</span><span>Correct! <span className="answer-word">{answer}</span></span></div>}
+          {phase === 'revealed' && <div className="feedback feedback-revealed"><span className="feedback-icon">→</span><span>Answer: <span className="answer-word">{answer}</span></span></div>}
+
+          <form onSubmit={handleSubmit} className="drill-form">
+            <input
+              ref={inputRef}
+              type="text"
+              className={`drill-input${phase === 'wrong-first' ? ' input-wrong' : ''}`}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder={phase === 'wrong-first' ? 'Try again…' : 'Type conjugation…'}
+              disabled={isReviewing}
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck={false}
+            />
+            <button ref={nextBtnRef} type="submit" className={`btn btn-submit${isReviewing ? ' btn-next' : ''}`}>
+              {isReviewing ? (pendingSync ? 'Saving…' : 'Next →') : pendingSync ? 'Saving…' : 'Check'}
+            </button>
+          </form>
+
+          <p className="drill-hint">
+            {phase === 'answering' && 'Enter to check · blank Enter to skip & reveal'}
+            {phase === 'wrong-first' && 'Last chance · blank Enter to reveal answer'}
+            {isReviewing && (pendingSync ? 'Saving result…' : 'Enter or click Next to continue')}
+          </p>
+        </section>
+      )}
+
+      {anyStats && (
+        <div className="session-stats">
+          <span className="stat stat-correct">✓ {drill.stats.correct}</span>
+          <span className="stat-sep">·</span>
+          <span className="stat stat-wrong">✗ {drill.stats.wrong}</span>
+          <span className="stat-sep">·</span>
+          <span className="stat stat-promoted">↑ {drill.stats.promoted}</span>
+          <span className="stat-sep">·</span>
+          <span className="stat stat-demoted">↓ {drill.stats.demoted}</span>
+        </div>
+      )}
+    </>
   )
 }
