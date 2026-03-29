@@ -13,13 +13,14 @@ export async function GET(request: NextRequest) {
   }
 
   const rows = await prisma.userVocabProgress.findMany({
-    where: { userId: user.id, bucket: 'mastered' },
-    select: { updatedAt: true },
+    where: { userId: user.id, bucket: 'mastered', masteredAt: { not: null } },
+    select: { masteredAt: true },
   })
 
   const counts: Record<string, number> = {}
   for (const row of rows) {
-    const date = row.updatedAt.toISOString().slice(0, 10)
+    if (!row.masteredAt) continue
+    const date = row.masteredAt.toISOString().slice(0, 10)
     counts[date] = (counts[date] ?? 0) + 1
   }
 

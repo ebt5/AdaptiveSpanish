@@ -144,7 +144,7 @@ async function nextState(userId: string, entryId: string, success: boolean, imme
           if (unseen) await tx.userVocabProgress.update({ where: { id: unseen.id }, data: { bucket: 'learning', score: 0 } })
         }
       } else if (currentBucket === 'learned') {
-        await tx.userVocabProgress.update({ where: { id: progress.id }, data: { bucket: 'mastered', score: progress.score + 1, lastSeenAt: new Date() } })
+        await tx.userVocabProgress.update({ where: { id: progress.id }, data: { bucket: 'mastered', score: progress.score + 1, lastSeenAt: new Date(), masteredAt: progress.masteredAt ?? new Date() } })
         lastMove = '★ Mastered!'; lastMoveType = 'master'
       } else {
         await tx.userVocabProgress.update({ where: { id: progress.id }, data: { score: progress.score + 1, lastSeenAt: new Date() } })
