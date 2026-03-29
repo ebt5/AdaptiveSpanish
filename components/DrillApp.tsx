@@ -49,6 +49,7 @@ export default function DrillApp() {
   const [loading, setLoading] = useState(true)
   const [pendingSync, setPendingSync] = useState(false)
   const [queuedNext, setQueuedNext] = useState<DrillState | null>(null)
+  const [milestone, setMilestone] = useState<number | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const nextBtnRef = useRef<HTMLButtonElement>(null)
 
@@ -329,15 +330,6 @@ export default function DrillApp() {
             <span className="stat stat-wrong">✗ {drill.stats.wrong}</span>
             <span className="stat-sep">·</span>
             <span className="stat stat-promoted">↑ {drill.stats.promoted}</span>
-            <span className="stat-sep">·</span>
-            <span className="stat stat-demoted">↓ {drill.stats.demoted}</span>
-          </div>
-        )}
-      </main>
-    </div>
-  )
-}
-
             <span className="stat-sep">·</span>
             <span className="stat stat-demoted">↓ {drill.stats.demoted}</span>
           </div>
