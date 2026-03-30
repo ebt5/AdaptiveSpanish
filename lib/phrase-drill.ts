@@ -27,10 +27,10 @@ export interface PhraseDrillState {
 
 function normalize(s: string) {
   return s.trim().toLowerCase().normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')  // strip accent marks
-    .replace(/[¿¡]/g, '')             // strip inverted punctuation
-    .replace(/[.,!?;:"""'']/g, '')    // strip common punctuation
-    .replace(/\s+/g, ' ')             // normalize spaces
+    .replace(/[\u0300-\u036f]/g, '')                  // strip accent marks
+    .replace(/[\u00bf\u00a1]/g, '')                   // strip ¿ and ¡
+    .replace(/[.,!?;:\u201c\u201d\u2018\u2019'"]/g, '') // strip punctuation
+    .replace(/\s+/g, ' ')                             // normalize spaces
     .trim()
 }
 
