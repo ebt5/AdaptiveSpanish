@@ -254,7 +254,6 @@ export default function VerbDrillApp({ username, onAnswer }: Props) {
         </section>
       ) : (
         <section className="drill-panel">
-          {drill.lastMove && <div key={toastKey} className={`move-toast move-toast-${drill.lastMoveType}`}>{drill.lastMove}</div>}
           <div className="drill-card">
             <div className="drill-prompt" style={{ fontSize: 36, fontWeight: 700, marginBottom: 6 }}>
               {item.infinitive}
@@ -271,7 +270,6 @@ export default function VerbDrillApp({ username, onAnswer }: Props) {
                 {item.exampleEn && <div style={{ fontSize: 13, color: 'var(--text-muted)', opacity: 0.8 }}>{item.exampleEn}</div>}
               </div>
             )}
-            <div className={`drill-bucket-tag bucket-tag-${currentBucket}`}>{cap(currentBucket!)}</div>
           </div>
 
           {phase === 'wrong-first' && <div className="feedback feedback-wrong"><span className="feedback-icon">✗</span><span>Not quite — one more chance</span><span className="feedback-attempt">2 / 2</span></div>}
@@ -310,10 +308,6 @@ export default function VerbDrillApp({ username, onAnswer }: Props) {
           <span className="stat stat-correct">✓ {drill.stats.correct}</span>
           <span className="stat-sep">·</span>
           <span className="stat stat-wrong">✗ {drill.stats.wrong}</span>
-          <span className="stat-sep">·</span>
-          <span className="stat stat-promoted">↑ {drill.stats.promoted}</span>
-          <span className="stat-sep">·</span>
-          <span className="stat stat-demoted">↓ {drill.stats.demoted}</span>
         </div>
       )}
         </div>{/* end drill pane */}
