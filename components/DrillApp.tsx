@@ -151,14 +151,13 @@ export default function DrillApp() {
 
     if (phase === 'answering') {
       if (isBlank) {
-        const nextBucket = item.bucket === 'mastered' ? 'learned' : item.bucket === 'learned' ? 'learning' : 'learning'
         const optimisticCounts = { ...drill.counts }
         if (item.bucket === 'learned') { optimisticCounts.learned -= 1; optimisticCounts.learning += 1 }
-        else if (item.bucket === 'mastered') { optimisticCounts.mastered -= 1; optimisticCounts.learned += 1 }
+        else if (item.bucket === 'mastered') { optimisticCounts.mastered -= 1; optimisticCounts.learning += 1 }
         void persistAndQueue('', 1, 'revealed', item.spanishDisplay ?? item.spanish, {
           counts: optimisticCounts,
           stats: { ...drill.stats, wrong: drill.stats.wrong + 1, demoted: drill.stats.demoted + (item.bucket === 'learning' ? 0 : 1) },
-          lastMove: item.bucket === 'learning' ? null : nextBucket === 'learned' ? '↓ Demoted to Learned' : '↓ Demoted to Learning',
+          lastMove: item.bucket === 'learning' ? null : '↓ Demoted to Learning',
           lastMoveType: item.bucket === 'learning' ? null : 'demote',
         })
         return
@@ -207,14 +206,13 @@ export default function DrillApp() {
         })
         return
       }
-      const nextBucket = item.bucket === 'mastered' ? 'learned' : item.bucket === 'learned' ? 'learning' : 'learning'
       const optimisticCounts = { ...drill.counts }
       if (item.bucket === 'learned') { optimisticCounts.learned -= 1; optimisticCounts.learning += 1 }
-      else if (item.bucket === 'mastered') { optimisticCounts.mastered -= 1; optimisticCounts.learned += 1 }
+      else if (item.bucket === 'mastered') { optimisticCounts.mastered -= 1; optimisticCounts.learning += 1 }
       void persistAndQueue(input, 2, 'revealed', item.spanishDisplay ?? item.spanish, {
         counts: optimisticCounts,
         stats: { ...drill.stats, wrong: drill.stats.wrong + 1, demoted: drill.stats.demoted + (item.bucket === 'learning' ? 0 : 1) },
-        lastMove: item.bucket === 'learning' ? null : nextBucket === 'learned' ? '↓ Demoted to Learned' : '↓ Demoted to Learning',
+        lastMove: item.bucket === 'learning' ? null : '↓ Demoted to Learning',
         lastMoveType: item.bucket === 'learning' ? null : 'demote',
       })
     }
