@@ -434,8 +434,9 @@ export default function DrillApp() {
           username={username}
           bucket={hoveredBucket}
           mode={mode === 'phrases' ? 'phrases' : 'vocab'}
-          excludeId={item?.id ?? null}
+          excludeId={null}
           anchorRect={popoverAnchorRect}
+          currentItem={item ? { spanish: item.spanish ?? item.english, english: item.english } : null}
         />
       )}
     </div>

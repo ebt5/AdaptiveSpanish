@@ -14,6 +14,7 @@ interface Props {
   mode: 'vocab' | 'phrases'
   excludeId: string | null
   anchorRect: DOMRect | null
+  currentItem?: { spanish: string; english: string } | null // currently drilled item — show without translation
 }
 
 const BUCKET_LABELS: Record<string, string> = {
@@ -22,7 +23,7 @@ const BUCKET_LABELS: Record<string, string> = {
   mastered: 'Mastered',
 }
 
-export default function BucketPopover({ username, bucket, mode, excludeId, anchorRect }: Props) {
+export default function BucketPopover({ username, bucket, mode, excludeId, anchorRect, currentItem }: Props) {
   const [items, setItems] = useState<BucketItem[]>([])
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(false)
@@ -41,7 +42,7 @@ export default function BucketPopover({ username, bucket, mode, excludeId, ancho
         limit: '30',
         offset: String(currentOffset),
       })
-      if (excludeId) params.set('exclude', excludeId)
+      // Don't exclude current item — we show it but hide its translation
       const res = await fetch(`${apiPath}?${params}`)
       const data = await res.json()
       if (data.items) {
@@ -110,25 +111,34 @@ export default function BucketPopover({ username, bucket, mode, excludeId, ancho
         {items.length === 0 && !loading && (
           <div style={{ padding: '12px', fontSize: 12, color: 'var(--text-muted)', textAlign: 'center' }}>Nothing here</div>
         )}
-        {items.map((item, i) => (
-          <div
-            key={i}
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'baseline',
-              padding: '5px 12px',
-              borderBottom: i < items.length - 1 ? '1px solid var(--border)' : undefined,
-              gap: 8,
-            }}
-          >
-            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', flexShrink: 0, maxWidth: '50%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.spanish}</span>
-            <span style={{ fontSize: 12, color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'right', flexGrow: 1 }}>{item.english}</span>
-            {bucket === 'mastered' && (
-              <span style={{ fontSize: 10, color: 'var(--text-muted)', flexShrink: 0, marginLeft: 4 }}>{item.score}</span>
-            )}
-          </div>
-        ))}
+        {items.map((item, i) => {
+          const isCurrentItem = currentItem && item.spanish === currentItem.spanish
+          return (
+            <div
+              key={i}
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'baseline',
+                padding: '5px 12px',
+                borderBottom: i < items.length - 1 ? '1px solid var(--border)' : undefined,
+                gap: 8,
+                background: isCurrentItem ? 'var(--border)' : undefined,
+              }}
+            >
+              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', flexShrink: 0, maxWidth: isCurrentItem ? '100%' : '50%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {item.spanish}
+                {isCurrentItem && <span style={{ fontSize: 10, color: 'var(--text-muted)', marginLeft: 6, fontWeight: 400 }}>← drilling now</span>}
+              </span>
+              {!isCurrentItem && (
+                <span style={{ fontSize: 12, color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'right', flexGrow: 1 }}>{item.english}</span>
+              )}
+              {bucket === 'mastered' && !isCurrentItem && (
+                <span style={{ fontSize: 10, color: 'var(--text-muted)', flexShrink: 0, marginLeft: 4 }}>{item.score}</span>
+              )}
+            </div>
+          )
+        })}
         {loading && (
           <div style={{ padding: '8px', textAlign: 'center', fontSize: 11, color: 'var(--text-muted)' }}>Loading…</div>
         )}
