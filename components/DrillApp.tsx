@@ -128,7 +128,7 @@ export default function DrillApp() {
 
   function advanceToQueued() {
     if (queuedNext) {
-      setDrill(queuedNext)
+      setDrill({ ...queuedNext, lastMove: null, lastMoveType: null })
       setQueuedNext(null)
     }
     setMilestone(null)
