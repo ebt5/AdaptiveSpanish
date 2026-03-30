@@ -5,11 +5,12 @@ import { clearStoredUsername, getStoredUsername, setStoredUsername } from '@/lib
 import MasteredChart from './MasteredChart'
 import ConjugationHeatmap from './ConjugationHeatmap'
 import VerbDrillApp from './VerbDrillApp'
+import PhraseDrillApp from './PhraseDrillApp'
 
 type Bucket = 'unseen' | 'learning' | 'learned' | 'mastered'
 type MoveType = 'promote' | 'master' | 'demote' | null
 type Phase = 'answering' | 'wrong-first' | 'correct' | 'revealed'
-type Mode = 'vocab' | 'verbs'
+type Mode = 'vocab' | 'verbs' | 'phrases'
 
 type DrillItem = {
   id: string
@@ -56,6 +57,7 @@ export default function DrillApp() {
   const [milestone, setMilestone] = useState<number | null>(null)
   const [mode, setMode] = useState<Mode>('vocab')
   const [heatmapKey, setHeatmapKey] = useState(0)
+  const [phraseCounts, setPhraseCounts] = useState<{ learning: number; learned: number; mastered: number; unseen: number }>({ learning: 0, learned: 0, mastered: 0, unseen: 0 })
   const inputRef = useRef<HTMLInputElement>(null)
   const nextBtnRef = useRef<HTMLButtonElement>(null)
 
@@ -86,6 +88,13 @@ export default function DrillApp() {
       else inputRef.current?.focus()
     }
   }, [isReviewing, phase, item?.id, mode])
+
+  useEffect(() => {
+    if (!username || mode !== 'phrases') return
+    fetch(`/api/phrases/drill/init?username=${encodeURIComponent(username)}`).then(r => r.json()).then((data: { counts: typeof phraseCounts }) => {
+      setPhraseCounts(data.counts)
+    })
+  }, [username, mode])
 
   async function bootstrapUser(e: React.FormEvent) {
     e.preventDefault()
@@ -279,26 +288,47 @@ export default function DrillApp() {
           >
             Verbs
           </button>
+          <button
+            className={`category-toggle${mode === 'phrases' ? ' category-toggle-active' : ' category-toggle-soon'}`}
+            type="button"
+            onClick={() => setMode('phrases')}
+          >
+            Phrases
+          </button>
         </div>
 
         <div className="bucket-cards">
           {([
-            ['Learning', 'learning', drill.counts.learning],
-            ['Learned', 'learned', drill.counts.learned],
-            ['Mastered', 'mastered', drill.counts.mastered],
-          ] as [string, string, number][]).map(([label, key, wordCount]) => (
-            <div key={key} className={`bucket-card bucket-card-${key}`}>
-              <div className="bucket-name">{label}</div>
-              <div className="bucket-sub-counts">
-                <div className="bucket-sub"><span className="bucket-sub-num">{wordCount}</span><span className="bucket-sub-label">words</span></div>
-                <div className="bucket-sub-divider" />
-                <div className="bucket-sub"><span className="bucket-sub-num bucket-sub-num-muted">0</span><span className="bucket-sub-label">phrases</span></div>
+            ['Learning', 'learning'],
+            ['Learned', 'learned'],
+            ['Mastered', 'mastered'],
+          ] as [string, string][]).map(([label, key]) => {
+            const bucketKey = key as 'learning' | 'learned' | 'mastered'
+            if (mode === 'phrases') {
+              return (
+                <div key={key} className={`bucket-card bucket-card-${key}`}>
+                  <div className="bucket-name">{label}</div>
+                  <div className="bucket-sub-counts">
+                    <div className="bucket-sub"><span className="bucket-sub-num">{phraseCounts[bucketKey]}</span><span className="bucket-sub-label">phrases</span></div>
+                  </div>
+                </div>
+              )
+            }
+            return (
+              <div key={key} className={`bucket-card bucket-card-${key}`}>
+                <div className="bucket-name">{label}</div>
+                <div className="bucket-sub-counts">
+                  <div className="bucket-sub"><span className="bucket-sub-num">{drill.counts[bucketKey]}</span><span className="bucket-sub-label">words</span></div>
+                  <div className="bucket-sub-divider" />
+                  <div className="bucket-sub"><span className="bucket-sub-num bucket-sub-num-muted">{phraseCounts[bucketKey]}</span><span className="bucket-sub-label">phrases</span></div>
+                </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
 
         {mode === 'vocab' && drill.unseenCount > 0 && <p className="unseen-note">{drill.unseenCount} words not yet introduced</p>}
+        {mode === 'phrases' && phraseCounts.unseen > 0 && <p className="unseen-note">{phraseCounts.unseen} phrases not yet introduced</p>}
 
         {mode === 'vocab' ? (
           <>
@@ -356,8 +386,10 @@ export default function DrillApp() {
               </div>
             )}
           </>
-        ) : (
+        ) : mode === 'verbs' ? (
           <VerbDrillApp username={username} onAnswer={() => setHeatmapKey(k => k + 1)} />
+        ) : (
+          <PhraseDrillApp username={username} onCounts={setPhraseCounts} />
         )}
       </main>
 
