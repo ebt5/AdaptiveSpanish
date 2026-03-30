@@ -6,6 +6,7 @@ import MasteredChart from './MasteredChart'
 import ConjugationHeatmap from './ConjugationHeatmap'
 import VerbDrillApp from './VerbDrillApp'
 import PhraseDrillApp from './PhraseDrillApp'
+import BucketPopover from './BucketPopover'
 
 type Bucket = 'unseen' | 'learning' | 'learned' | 'mastered'
 type MoveType = 'promote' | 'master' | 'demote' | null
@@ -58,6 +59,9 @@ export default function DrillApp() {
   const [mode, setMode] = useState<Mode>('vocab')
   const [heatmapKey, setHeatmapKey] = useState(0)
   const [phraseCounts, setPhraseCounts] = useState<{ learning: number; learned: number; mastered: number; unseen: number }>({ learning: 0, learned: 0, mastered: 0, unseen: 0 })
+  const [hoveredBucket, setHoveredBucket] = useState<'learning' | 'learned' | 'mastered' | null>(null)
+  const [popoverAnchorRect, setPopoverAnchorRect] = useState<DOMRect | null>(null)
+  const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const nextBtnRef = useRef<HTMLButtonElement>(null)
 
@@ -306,16 +310,48 @@ export default function DrillApp() {
             const bucketKey = key as 'learning' | 'learned' | 'mastered'
             const wordsPrimary = mode !== 'phrases'
             return (
-              <div key={key} className={`bucket-card bucket-card-${key}`}>
+              <div
+                key={key}
+                className={`bucket-card bucket-card-${key}`}
+                onMouseLeave={() => {
+                  hoverTimeoutRef.current = setTimeout(() => {
+                    setHoveredBucket(null)
+                    setPopoverAnchorRect(null)
+                  }, 200)
+                }}
+                onMouseEnter={() => {
+                  if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current)
+                }}
+              >
                 <div className="bucket-name">{label}</div>
                 <div className="bucket-sub-counts">
                   <div className="bucket-sub">
-                    <span className={`bucket-sub-num${wordsPrimary ? '' : ' bucket-sub-num-muted'}`}>{drill.counts[bucketKey]}</span>
+                    <span
+                      className={`bucket-sub-num${wordsPrimary ? '' : ' bucket-sub-num-muted'}`}
+                      style={{ cursor: drill.counts[bucketKey] > 0 ? 'pointer' : 'default' }}
+                      onMouseEnter={e => {
+                        if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current)
+                        if (drill.counts[bucketKey] > 0) {
+                          setHoveredBucket(bucketKey)
+                          setPopoverAnchorRect((e.target as HTMLElement).getBoundingClientRect())
+                        }
+                      }}
+                    >{drill.counts[bucketKey]}</span>
                     <span className="bucket-sub-label">words</span>
                   </div>
                   <div className="bucket-sub-divider" />
                   <div className="bucket-sub">
-                    <span className={`bucket-sub-num${wordsPrimary ? ' bucket-sub-num-muted' : ''}`}>{phraseCounts[bucketKey]}</span>
+                    <span
+                      className={`bucket-sub-num${wordsPrimary ? ' bucket-sub-num-muted' : ''}`}
+                      style={{ cursor: phraseCounts[bucketKey] > 0 ? 'pointer' : 'default' }}
+                      onMouseEnter={e => {
+                        if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current)
+                        if (phraseCounts[bucketKey] > 0) {
+                          setHoveredBucket(bucketKey)
+                          setPopoverAnchorRect((e.target as HTMLElement).getBoundingClientRect())
+                        }
+                      }}
+                    >{phraseCounts[bucketKey]}</span>
                     <span className="bucket-sub-label">phrases</span>
                   </div>
                 </div>
@@ -392,6 +428,16 @@ export default function DrillApp() {
 
       <MasteredChart username={username} />
       <ConjugationHeatmap username={username} refreshKey={heatmapKey} />
+
+      {hoveredBucket && popoverAnchorRect && (
+        <BucketPopover
+          username={username}
+          bucket={hoveredBucket}
+          mode={mode === 'phrases' ? 'phrases' : 'vocab'}
+          excludeId={item?.id ?? null}
+          anchorRect={popoverAnchorRect}
+        />
+      )}
     </div>
   )
 }
