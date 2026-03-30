@@ -141,6 +141,8 @@ export default function DrillApp() {
     e.preventDefault()
     if (!item) return
     if (isReviewing) {
+      // Don't advance until the queued next item is ready
+      if (pendingSync) return
       advanceToQueued()
       return
     }
