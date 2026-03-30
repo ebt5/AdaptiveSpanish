@@ -130,12 +130,18 @@ export default function BucketPopover({ username, bucket, mode, excludeId, ancho
                 background: isCurrentItem ? 'var(--border)' : undefined,
               }}
             >
-              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', flexShrink: 0, maxWidth: isCurrentItem ? '100%' : '50%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {item.spanish}
-                {isCurrentItem && <span style={{ fontSize: 10, color: 'var(--text-muted)', marginLeft: 6, fontWeight: 400 }}>← drilling now</span>}
-              </span>
-              {!isCurrentItem && (
-                <span style={{ fontSize: 12, color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'right', flexGrow: 1 }}>{item.english}</span>
+              {isCurrentItem ? (
+                <>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {item.english}
+                  </span>
+                  <span style={{ fontSize: 10, color: 'var(--text-muted)', flexShrink: 0, marginLeft: 6, fontWeight: 400 }}>← drilling now</span>
+                </>
+              ) : (
+                <>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', flexShrink: 0, maxWidth: '50%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.spanish}</span>
+                  <span style={{ fontSize: 12, color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'right', flexGrow: 1 }}>{item.english}</span>
+                </>
               )}
               {bucket === 'mastered' && !isCurrentItem && (
                 <span style={{ fontSize: 10, color: 'var(--text-muted)', flexShrink: 0, marginLeft: 4 }}>{item.score}</span>
