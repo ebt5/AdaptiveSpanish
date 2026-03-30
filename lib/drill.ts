@@ -61,10 +61,10 @@ function weightedPick(items: (DrillItem & { score: number })[], excludeId?: stri
     if (picked) return picked
   }
 
-  // Otherwise pick from learning (3x) and learned (2x) pool
+  // Otherwise pick uniformly from learning + learned combined — natural proportionality by count
   const nonMastered: (DrillItem & { score: number })[] = [
-    ...learning, ...learning, ...learning,
-    ...learned, ...learned,
+    ...learning,
+    ...learned,
   ]
   if (nonMastered.length === 0) {
     // Nothing in learning/learned — fall back to mastered
