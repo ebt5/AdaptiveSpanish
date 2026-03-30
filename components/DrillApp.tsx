@@ -438,6 +438,15 @@ export default function DrillApp() {
           excludeId={null}
           anchorRect={popoverAnchorRect}
           currentItem={item ? { spanish: item.spanish ?? item.english, english: item.english } : null}
+          onMouseEnter={() => {
+            if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current)
+          }}
+          onMouseLeave={() => {
+            hoverTimeoutRef.current = setTimeout(() => {
+              setHoveredBucket(null)
+              setPopoverAnchorRect(null)
+            }, 200)
+          }}
         />
       )}
     </div>

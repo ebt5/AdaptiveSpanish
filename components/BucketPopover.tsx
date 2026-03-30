@@ -14,7 +14,9 @@ interface Props {
   mode: 'vocab' | 'phrases'
   excludeId: string | null
   anchorRect: DOMRect | null
-  currentItem?: { spanish: string; english: string } | null // currently drilled item — show without translation
+  currentItem?: { spanish: string; english: string } | null
+  onMouseEnter?: () => void
+  onMouseLeave?: () => void
 }
 
 const BUCKET_LABELS: Record<string, string> = {
@@ -23,7 +25,7 @@ const BUCKET_LABELS: Record<string, string> = {
   mastered: 'Mastered',
 }
 
-export default function BucketPopover({ username, bucket, mode, excludeId, anchorRect, currentItem }: Props) {
+export default function BucketPopover({ username, bucket, mode, excludeId, anchorRect, currentItem, onMouseEnter, onMouseLeave }: Props) {
   const [items, setItems] = useState<BucketItem[]>([])
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(false)
@@ -84,6 +86,8 @@ export default function BucketPopover({ username, bucket, mode, excludeId, ancho
 
   return (
     <div
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       style={{
         position: 'absolute',
         top,
