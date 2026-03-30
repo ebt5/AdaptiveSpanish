@@ -34,28 +34,44 @@ function normalize(s: string) {
   return s.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
 }
 
-function weightedPick(items: (DrillItem & { score: number })[], excludeId?: string | null) {
+// Pick a mastered word using inverse-score weighting: weight = 1/(score+1).
+// Lower score = higher probability. No score is ever zero probability.
+function pickFromMastered(mastered: (DrillItem & { score: number })[], excludeId?: string | null) {
+  const pool = excludeId ? mastered.filter(i => i.id !== excludeId) : mastered
+  const candidates = pool.length > 0 ? pool : mastered
+  if (candidates.length === 0) return null
+  const weights = candidates.map(i => 1 / (i.score + 1))
+  const total = weights.reduce((a, b) => a + b, 0)
+  let rand = Math.random() * total
+  for (let i = 0; i < candidates.length; i++) {
+    rand -= weights[i]
+    if (rand <= 0) return candidates[i]
+  }
+  return candidates[candidates.length - 1]
+}
+
+function weightedPick(items: (DrillItem & { score: number })[], excludeId?: string | null, forceMastered = false) {
   const learning = items.filter(i => i.bucket === 'learning')
   const learned = items.filter(i => i.bucket === 'learned')
   const mastered = items.filter(i => i.bucket === 'mastered')
-  const weighted: (DrillItem & { score: number })[] = [
+
+  // If forced to pick mastered (escalation after a miss), or 20% random chance
+  if (mastered.length > 0 && (forceMastered || Math.random() < 0.20)) {
+    const picked = pickFromMastered(mastered, excludeId)
+    if (picked) return picked
+  }
+
+  // Otherwise pick from learning (3x) and learned (2x) pool
+  const nonMastered: (DrillItem & { score: number })[] = [
     ...learning, ...learning, ...learning,
     ...learned, ...learned,
   ]
-  if (mastered.length > 0 && weighted.length > 0) {
-    const masteredWeights = mastered.flatMap((item) => {
-      const weight = Math.max(1, 12 - item.score)
-      return Array.from({ length: weight }, () => item)
-    })
-    const masteredDrawCount = Math.max(1, Math.floor(weighted.length / 4))
-    for (let i = 0; i < masteredDrawCount; i += 1) {
-      const picked = masteredWeights[Math.floor(Math.random() * masteredWeights.length)]
-      if (picked) weighted.push(picked)
-    }
+  if (nonMastered.length === 0) {
+    // Nothing in learning/learned — fall back to mastered
+    return pickFromMastered(mastered, excludeId)
   }
-  if (weighted.length === 0) return null
-  const pool = excludeId ? weighted.filter(i => i.id !== excludeId) : weighted
-  const draw = pool.length > 0 ? pool : weighted
+  const pool = excludeId ? nonMastered.filter(i => i.id !== excludeId) : nonMastered
+  const draw = pool.length > 0 ? pool : nonMastered
   return draw[Math.floor(Math.random() * draw.length)]
 }
 
@@ -147,12 +163,14 @@ async function nextState(userId: string, entryId: string, success: boolean, imme
         await tx.userVocabProgress.update({ where: { id: progress.id }, data: { bucket: 'mastered', score: progress.score + 1, lastSeenAt: new Date(), masteredAt: progress.masteredAt ?? new Date() } })
         lastMove = '★ Mastered!'; lastMoveType = 'master'
       } else {
+        // Mastered correct — score grows unbounded
         await tx.userVocabProgress.update({ where: { id: progress.id }, data: { score: progress.score + 1, lastSeenAt: new Date() } })
       }
     } else if (!immediateReveal || currentBucket !== 'learning') {
       if (currentBucket === 'mastered') {
-        await tx.userVocabProgress.update({ where: { id: progress.id }, data: { bucket: 'learned', score: 0, lastSeenAt: new Date() } })
-        lastMove = '↓ Demoted to Learned'; lastMoveType = 'demote'
+        // Mastered wrong → all the way back to Learning
+        await tx.userVocabProgress.update({ where: { id: progress.id }, data: { bucket: 'learning', score: 0, lastSeenAt: new Date() } })
+        lastMove = '↓ Demoted to Learning'; lastMoveType = 'demote'
       } else if (currentBucket === 'learned') {
         await tx.userVocabProgress.update({ where: { id: progress.id }, data: { bucket: 'learning', score: 0, lastSeenAt: new Date() } })
         lastMove = '↓ Demoted to Learning'; lastMoveType = 'demote'
@@ -164,7 +182,9 @@ async function nextState(userId: string, entryId: string, success: boolean, imme
     }
   })
 
+  // If a mastered word was just missed, escalate: force next pick from mastered
+  const forceMastered = !success && currentBucket === 'mastered'
   const [counts, items] = await Promise.all([fetchCounts(userId), fetchCandidateItems(userId, entryId)])
-  const item = weightedPick(items, entryId)
+  const item = weightedPick(items, entryId, forceMastered)
   return { item, counts, unseenCount: counts.unseen, stats: { correct: 0, wrong: 0, promoted: lastMoveType === 'promote' || lastMoveType === 'master' ? 1 : 0, demoted: lastMoveType === 'demote' ? 1 : 0 }, lastMove, lastMoveType }
 }
