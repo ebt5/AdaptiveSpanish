@@ -26,7 +26,12 @@ export interface PhraseDrillState {
 }
 
 function normalize(s: string) {
-  return s.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+  return s.trim().toLowerCase().normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')  // strip accent marks
+    .replace(/[¿¡]/g, '')             // strip inverted punctuation
+    .replace(/[.,!?;:"""'']/g, '')    // strip common punctuation
+    .replace(/\s+/g, ' ')             // normalize spaces
+    .trim()
 }
 
 function pickFromMastered(mastered: PhraseDrillItem[], excludeId?: string | null) {
