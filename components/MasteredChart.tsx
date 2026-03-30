@@ -89,16 +89,26 @@ export default function MasteredChart({ username }: { username: string | null })
               const w = 8
               const y = barAreaHeight - barH
               return (
-                <rect
-                  key={d.date}
-                  x={x}
-                  y={y}
-                  width={w}
-                  height={barH}
-                  fill="var(--green)"
-                  opacity="0.75"
-                  rx="1"
-                />
+                <g key={d.date}>
+                  <rect
+                    x={x}
+                    y={y}
+                    width={w}
+                    height={barH}
+                    fill="var(--green)"
+                    opacity="0.75"
+                    rx="1"
+                  />
+                  <title>{d.date}: {d.count > 0 ? '+' : ''}{d.count}</title>
+                  {/* Invisible hit area for hover */}
+                  <rect
+                    x={x}
+                    y={0}
+                    width={w}
+                    height={barAreaHeight}
+                    fill="transparent"
+                  />
+                </g>
               )
             })}
           </svg>
