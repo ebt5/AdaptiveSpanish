@@ -93,12 +93,13 @@ export default function DrillApp() {
     }
   }, [isReviewing, phase, item?.id, mode])
 
+  // Always fetch phrase counts so bucket cards show correct numbers in all modes
   useEffect(() => {
-    if (!username || mode !== 'phrases') return
+    if (!username) return
     fetch(`/api/phrases/drill/init?username=${encodeURIComponent(username)}`).then(r => r.json()).then((data: { counts: typeof phraseCounts }) => {
-      setPhraseCounts(data.counts)
-    })
-  }, [username, mode])
+      if (data.counts) setPhraseCounts(data.counts)
+    }).catch(() => {})
+  }, [username])
 
   async function bootstrapUser(e: React.FormEvent) {
     e.preventDefault()

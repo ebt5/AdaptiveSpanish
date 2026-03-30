@@ -89,7 +89,7 @@ export default function BucketPopover({ username, bucket, mode, excludeId, ancho
         top,
         left,
         width: popoverWidth,
-        background: 'var(--card)',
+        background: 'var(--surface, #1a1a1a)',
         border: '1px solid var(--border)',
         borderRadius: 10,
         boxShadow: '0 8px 24px rgba(0,0,0,0.18)',
