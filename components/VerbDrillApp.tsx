@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import TenseGuideModal from './TenseGuideModal'
 
 type Bucket = 'unseen' | 'learning' | 'learned' | 'mastered'
 type MoveType = 'promote' | 'master' | 'demote' | null
@@ -72,6 +73,7 @@ export default function VerbDrillApp({ username, onAnswer }: Props) {
   const [pendingSync, setPendingSync] = useState(false)
   const [queuedNext, setQueuedNext] = useState<VerbDrillState | null>(null)
   const [selectedTenses, setSelectedTenses] = useState<string[]>(['present'])
+  const [guideOpen, setGuideOpen] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const nextBtnRef = useRef<HTMLButtonElement>(null)
 
@@ -231,15 +233,21 @@ export default function VerbDrillApp({ username, onAnswer }: Props) {
         {/* Tense filter — vertical sidebar */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 5, paddingTop: 4, flexShrink: 0 }}>
           {ALL_TENSES.map(tense => (
-            <label key={tense} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: selectedTenses.includes(tense) ? 'var(--text)' : 'var(--text-muted)', cursor: 'pointer', userSelect: 'none', whiteSpace: 'nowrap' }}>
+            <div key={tense} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
               <input
                 type="checkbox"
                 checked={selectedTenses.includes(tense)}
                 onChange={() => toggleTense(tense)}
-                style={{ accentColor: 'var(--green)', width: 12, height: 12, flexShrink: 0 }}
+                style={{ accentColor: 'var(--green)', width: 12, height: 12, flexShrink: 0, cursor: 'pointer' }}
               />
-              {TENSE_LABELS[tense]}
-            </label>
+              <span
+                onClick={() => setGuideOpen(tense)}
+                style={{ fontSize: 11, color: selectedTenses.includes(tense) ? 'var(--text)' : 'var(--text-muted)', cursor: 'pointer', userSelect: 'none', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 3 }}
+              >
+                {TENSE_LABELS[tense]}
+                <span style={{ fontSize: 10, opacity: 0.5, lineHeight: 1 }}>ℹ</span>
+              </span>
+            </div>
           ))}
         </div>
 
@@ -312,6 +320,7 @@ export default function VerbDrillApp({ username, onAnswer }: Props) {
       )}
         </div>{/* end drill pane */}
       </div>{/* end sidebar+drill flex row */}
+      <TenseGuideModal tense={guideOpen} onClose={() => setGuideOpen(null)} />
     </>
   )
 }
