@@ -272,10 +272,16 @@ export default function VerbDrillApp({ username, onAnswer }: Props) {
             <div style={{ fontSize: 36, fontWeight: 700, marginBottom: 12 }}>
               {item.pronoun}
             </div>
-            {item.exampleEs && (
+            {/* Show English example as prompt hint; reveal Spanish after answering */}
+            {item.exampleEn && !isReviewing && (
               <div style={{ marginBottom: 10 }}>
-                <div style={{ fontSize: 15, fontStyle: 'italic', color: 'var(--text-muted)', marginBottom: 3 }}>{item.exampleEs}</div>
-                {item.exampleEn && <div style={{ fontSize: 13, color: 'var(--text-muted)', opacity: 0.8 }}>{item.exampleEn}</div>}
+                <div style={{ fontSize: 13, color: 'var(--text-muted)', opacity: 0.8, fontStyle: 'italic' }}>{item.exampleEn}</div>
+              </div>
+            )}
+            {item.exampleEs && isReviewing && (
+              <div style={{ marginBottom: 10 }}>
+                <div style={{ fontSize: 14, fontStyle: 'italic', color: 'var(--text-muted)', marginBottom: 2 }}>{item.exampleEs}</div>
+                {item.exampleEn && <div style={{ fontSize: 12, color: 'var(--text-muted)', opacity: 0.7 }}>{item.exampleEn}</div>}
               </div>
             )}
           </div>
