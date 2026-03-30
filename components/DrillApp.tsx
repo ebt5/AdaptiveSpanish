@@ -304,25 +304,20 @@ export default function DrillApp() {
             ['Mastered', 'mastered'],
           ] as [string, string][]).map(([label, key]) => {
             const bucketKey = key as 'learning' | 'learned' | 'mastered'
-            if (mode === 'phrases') {
-              return (
-                <div key={key} className={`bucket-card bucket-card-${key}`}>
-                  <div className="bucket-name">{label}</div>
-                  <div className="bucket-sub-counts">
-                    <div className="bucket-sub"><span className="bucket-sub-num">{drill.counts[bucketKey]}</span><span className="bucket-sub-label">words</span></div>
-                    <div className="bucket-sub-divider" />
-                    <div className="bucket-sub"><span className="bucket-sub-num bucket-sub-num-muted">{phraseCounts[bucketKey]}</span><span className="bucket-sub-label">phrases</span></div>
-                  </div>
-                </div>
-              )
-            }
+            const wordsPrimary = mode !== 'phrases'
             return (
               <div key={key} className={`bucket-card bucket-card-${key}`}>
                 <div className="bucket-name">{label}</div>
                 <div className="bucket-sub-counts">
-                  <div className="bucket-sub"><span className="bucket-sub-num">{drill.counts[bucketKey]}</span><span className="bucket-sub-label">words</span></div>
+                  <div className="bucket-sub">
+                    <span className={`bucket-sub-num${wordsPrimary ? '' : ' bucket-sub-num-muted'}`}>{drill.counts[bucketKey]}</span>
+                    <span className="bucket-sub-label">words</span>
+                  </div>
                   <div className="bucket-sub-divider" />
-                  <div className="bucket-sub"><span className="bucket-sub-num bucket-sub-num-muted">{phraseCounts[bucketKey]}</span><span className="bucket-sub-label">phrases</span></div>
+                  <div className="bucket-sub">
+                    <span className={`bucket-sub-num${wordsPrimary ? ' bucket-sub-num-muted' : ''}`}>{phraseCounts[bucketKey]}</span>
+                    <span className="bucket-sub-label">phrases</span>
+                  </div>
                 </div>
               </div>
             )
