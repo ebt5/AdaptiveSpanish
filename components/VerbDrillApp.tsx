@@ -227,21 +227,24 @@ export default function VerbDrillApp({ username, onAnswer }: Props) {
 
   return (
     <>
-      {/* Tense filter checkboxes */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px 10px', marginBottom: 12 }}>
-        {ALL_TENSES.map(tense => (
-          <label key={tense} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: selectedTenses.includes(tense) ? 'var(--text)' : 'var(--text-muted)', cursor: 'pointer', userSelect: 'none' }}>
-            <input
-              type="checkbox"
-              checked={selectedTenses.includes(tense)}
-              onChange={() => toggleTense(tense)}
-              style={{ accentColor: 'var(--green)', width: 12, height: 12 }}
-            />
-            {TENSE_LABELS[tense]}
-          </label>
-        ))}
-      </div>
+      <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
+        {/* Tense filter — vertical sidebar */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 5, paddingTop: 4, flexShrink: 0 }}>
+          {ALL_TENSES.map(tense => (
+            <label key={tense} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: selectedTenses.includes(tense) ? 'var(--text)' : 'var(--text-muted)', cursor: 'pointer', userSelect: 'none', whiteSpace: 'nowrap' }}>
+              <input
+                type="checkbox"
+                checked={selectedTenses.includes(tense)}
+                onChange={() => toggleTense(tense)}
+                style={{ accentColor: 'var(--green)', width: 12, height: 12, flexShrink: 0 }}
+              />
+              {TENSE_LABELS[tense]}
+            </label>
+          ))}
+        </div>
 
+        {/* Drill pane */}
+        <div style={{ flex: 1, minWidth: 0 }}>
       {!item ? (
         <section className="drill-panel">
           <div className="all-done">
@@ -313,6 +316,8 @@ export default function VerbDrillApp({ username, onAnswer }: Props) {
           <span className="stat stat-demoted">↓ {drill.stats.demoted}</span>
         </div>
       )}
+        </div>{/* end drill pane */}
+      </div>{/* end sidebar+drill flex row */}
     </>
   )
 }
