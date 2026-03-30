@@ -12,19 +12,18 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'user not found' }, { status: 404 })
   }
 
-  const rows = await prisma.userVocabProgress.findMany({
-    where: { userId: user.id, bucket: 'mastered', masteredAt: { not: null } },
-    select: { masteredAt: true },
+  const rows = await prisma.masteredNetLog.findMany({
+    where: { userId: user.id },
+    select: { delta: true, createdAt: true },
   })
 
-  const counts: Record<string, number> = {}
+  const netByDate: Record<string, number> = {}
   for (const row of rows) {
-    if (!row.masteredAt) continue
-    const date = row.masteredAt.toISOString().slice(0, 10)
-    counts[date] = (counts[date] ?? 0) + 1
+    const date = row.createdAt.toISOString().slice(0, 10)
+    netByDate[date] = (netByDate[date] ?? 0) + row.delta
   }
 
-  const data = Object.entries(counts)
+  const data = Object.entries(netByDate)
     .map(([date, count]) => ({ date, count }))
     .sort((a, b) => a.date.localeCompare(b.date))
 

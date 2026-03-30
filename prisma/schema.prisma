@@ -20,6 +20,7 @@ model User {
   verbProgress       UserVerbProgress[]
   verbAttempts       VerbAttempt[]
   pronounTenseScores UserPronounTenseScore[]
+  masteredNetLog     MasteredNetLog[]
 }
 
 model Verb {
@@ -85,8 +86,9 @@ model DictionaryEntry {
   emoji               String?
   category            String  @default("vocabulary")
 
-  vocabProgress UserVocabProgress[]
-  drillAttempts DrillAttempt[]
+  vocabProgress  UserVocabProgress[]
+  drillAttempts  DrillAttempt[]
+  masteredNetLog MasteredNetLog[]
 }
 
 // Tracks which bucket a user has placed a given word in.
@@ -105,6 +107,19 @@ model UserVocabProgress {
   entry DictionaryEntry @relation(fields: [entryId], references: [id])
 
   @@unique([userId, entryId])
+}
+
+// Net mastered event log: +1 when promoted to mastered, -1 when demoted from mastered.
+// Used to compute net mastered-per-day for the bar chart.
+model MasteredNetLog {
+  id        String   @id @default(cuid())
+  userId    String
+  entryId   String
+  delta     Int      // +1 or -1
+  createdAt DateTime @default(now())
+
+  user  User            @relation(fields: [userId], references: [id])
+  entry DictionaryEntry @relation(fields: [entryId], references: [id])
 }
 
 // Aggregated score per user × pronoun × tense for the heatmap.

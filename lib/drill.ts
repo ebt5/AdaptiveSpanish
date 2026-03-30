@@ -161,6 +161,7 @@ async function nextState(userId: string, entryId: string, success: boolean, imme
         }
       } else if (currentBucket === 'learned') {
         await tx.userVocabProgress.update({ where: { id: progress.id }, data: { bucket: 'mastered', score: progress.score + 1, lastSeenAt: new Date(), masteredAt: progress.masteredAt ?? new Date() } })
+        await tx.masteredNetLog.create({ data: { userId, entryId, delta: 1 } })
         lastMove = '★ Mastered!'; lastMoveType = 'master'
       } else {
         // Mastered correct — score grows unbounded
@@ -170,6 +171,7 @@ async function nextState(userId: string, entryId: string, success: boolean, imme
       if (currentBucket === 'mastered') {
         // Mastered wrong → all the way back to Learning
         await tx.userVocabProgress.update({ where: { id: progress.id }, data: { bucket: 'learning', score: 0, lastSeenAt: new Date() } })
+        await tx.masteredNetLog.create({ data: { userId, entryId, delta: -1 } })
         lastMove = '↓ Demoted to Learning'; lastMoveType = 'demote'
       } else if (currentBucket === 'learned') {
         await tx.userVocabProgress.update({ where: { id: progress.id }, data: { bucket: 'learning', score: 0, lastSeenAt: new Date() } })
