@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import GrammarGuideModal from './GrammarGuideModal'
 
 interface CategoryStat {
   tag: string
@@ -23,6 +24,7 @@ const COLORS = {
 export default function GrammarHeatmap({ username, refreshKey }: { username: string; refreshKey?: number }) {
   const [categories, setCategories] = useState<CategoryStat[] | null>(null)
   const [tooltip, setTooltip] = useState<{ cat: CategoryStat; x: number; y: number } | null>(null)
+  const [guideOpen, setGuideOpen] = useState<string | null>(null)
 
   useEffect(() => {
     fetch(`/api/phrases/grammar-heatmap?username=${encodeURIComponent(username)}`)
@@ -61,8 +63,13 @@ export default function GrammarHeatmap({ username, refreshKey }: { username: str
 
           return (
             <div key={cat.tag} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{ width: 152, flexShrink: 0, fontSize: 12, color: cat.seen > 0 ? 'var(--text)' : 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {cat.label}
+              <div style={{ width: 152, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 4 }}>
+                <span style={{ fontSize: 12, color: cat.seen > 0 ? 'var(--text)' : 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1 }}>{cat.label}</span>
+                <button
+                  onClick={() => setGuideOpen(cat.tag)}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', fontSize: 11, padding: '0 2px', flexShrink: 0, lineHeight: 1 }}
+                  title={`Learn about ${cat.label}`}
+                >ℹ</button>
               </div>
               {/* Stacked bar */}
               <div
@@ -91,6 +98,8 @@ export default function GrammarHeatmap({ username, refreshKey }: { username: str
           )
         })}
       </div>
+
+      <GrammarGuideModal tag={guideOpen} onClose={() => setGuideOpen(null)} />
 
       {/* Tooltip */}
       {tooltip && (
