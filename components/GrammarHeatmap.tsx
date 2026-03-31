@@ -13,24 +13,16 @@ interface CategoryStat {
   learning: number
 }
 
-function scoreToColor(score: number, seen: number): string {
-  if (seen === 0) return 'var(--border)'
-  const pct = Math.min(score / 10, 1)
-  if (pct === 0) return '#1e293b'
-  if (pct <= 0.2) return '#164e63'
-  if (pct <= 0.4) return '#0f6b3d'
-  if (pct <= 0.6) return '#15803d'
-  if (pct <= 0.8) return '#16a34a'
-  return '#22c55e'
-}
-
-function scoreToTextColor(score: number, seen: number): string {
-  if (seen === 0) return 'var(--text-muted)'
-  return score >= 4 ? '#fff' : '#94a3b8'
+const COLORS = {
+  mastered: '#16a34a',
+  learned: '#f97316',
+  learning: '#3b82f6',
+  unseen: 'var(--border)',
 }
 
 export default function GrammarHeatmap({ username, refreshKey }: { username: string; refreshKey?: number }) {
   const [categories, setCategories] = useState<CategoryStat[] | null>(null)
+  const [tooltip, setTooltip] = useState<{ cat: CategoryStat; x: number; y: number } | null>(null)
 
   useEffect(() => {
     fetch(`/api/phrases/grammar-heatmap?username=${encodeURIComponent(username)}`)
@@ -46,47 +38,82 @@ export default function GrammarHeatmap({ username, refreshKey }: { username: str
       <h2 style={{ fontSize: 13, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.6px', color: 'var(--text-muted)', marginBottom: 10 }}>
         Grammar Progress
       </h2>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+
+      {/* Legend */}
+      <div style={{ display: 'flex', gap: 12, marginBottom: 10, flexWrap: 'wrap' }}>
+        {(['mastered','learned','learning','unseen'] as const).map(b => (
+          <div key={b} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <div style={{ width: 10, height: 10, borderRadius: 2, background: COLORS[b], flexShrink: 0 }} />
+            <span style={{ fontSize: 10, color: 'var(--text-muted)', textTransform: 'capitalize' }}>{b}</span>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
         {categories.map(cat => {
-          const pctSeen = cat.total > 0 ? cat.seen / cat.total : 0
+          const unseen = cat.total - cat.seen
+          const segments = [
+            { key: 'mastered', count: cat.mastered, color: COLORS.mastered },
+            { key: 'learned', count: cat.learned, color: COLORS.learned },
+            { key: 'learning', count: cat.learning, color: COLORS.learning },
+            { key: 'unseen', count: unseen, color: COLORS.unseen },
+          ].filter(s => s.count > 0)
+
           return (
             <div key={cat.tag} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              {/* Category label */}
-              <div style={{ width: 160, flexShrink: 0, fontSize: 12, color: cat.seen > 0 ? 'var(--text)' : 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              <div style={{ width: 152, flexShrink: 0, fontSize: 12, color: cat.seen > 0 ? 'var(--text)' : 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {cat.label}
               </div>
-              {/* Progress bar background */}
-              <div style={{ flex: 1, height: 22, borderRadius: 6, background: 'var(--border)', position: 'relative', overflow: 'hidden' }}>
-                {/* Fill based on % seen */}
-                <div style={{
-                  position: 'absolute', left: 0, top: 0, bottom: 0,
-                  width: `${Math.round(pctSeen * 100)}%`,
-                  background: scoreToColor(cat.avgScore, cat.seen),
-                  borderRadius: 6,
-                  transition: 'width 0.3s ease',
-                }} />
-                {/* Score text */}
-                {cat.seen > 0 && (
-                  <div style={{
-                    position: 'absolute', left: 0, top: 0, right: 0, bottom: 0,
-                    display: 'flex', alignItems: 'center', paddingLeft: 8,
-                    fontSize: 10, fontWeight: 700,
-                    color: pctSeen > 0.3 ? '#fff' : 'var(--text-muted)',
-                    zIndex: 1,
-                  }}>
-                    {cat.mastered}M · {cat.learned}L · {cat.learning}l
-                  </div>
-                )}
+              {/* Stacked bar */}
+              <div
+                style={{ flex: 1, height: 20, borderRadius: 5, overflow: 'hidden', display: 'flex', cursor: 'default' }}
+                onMouseEnter={e => {
+                  const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
+                  setTooltip({ cat, x: rect.left, y: rect.bottom + window.scrollY + 4 })
+                }}
+                onMouseLeave={() => setTooltip(null)}
+              >
+                {segments.map(seg => (
+                  <div
+                    key={seg.key}
+                    style={{
+                      width: `${(seg.count / cat.total) * 100}%`,
+                      background: seg.color,
+                      transition: 'width 0.3s ease',
+                    }}
+                  />
+                ))}
               </div>
-              {/* Count */}
-              <div style={{ width: 44, textAlign: 'right', fontSize: 10, color: 'var(--text-muted)', flexShrink: 0 }}>
+              <div style={{ width: 36, textAlign: 'right', fontSize: 10, color: 'var(--text-muted)', flexShrink: 0 }}>
                 {cat.seen}/{cat.total}
               </div>
             </div>
           )
         })}
       </div>
-      <p style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 8 }}>M = Mastered · L = Learned · l = Learning</p>
+
+      {/* Tooltip */}
+      {tooltip && (
+        <div style={{
+          position: 'absolute',
+          top: tooltip.y,
+          left: Math.min(tooltip.x, window.innerWidth - 200),
+          background: 'var(--surface, #1a1a1a)',
+          border: '1px solid var(--border)',
+          borderRadius: 8,
+          padding: '8px 12px',
+          fontSize: 12,
+          zIndex: 1000,
+          pointerEvents: 'none',
+          minWidth: 160,
+        }}>
+          <div style={{ fontWeight: 700, marginBottom: 4, color: 'var(--text)' }}>{tooltip.cat.label}</div>
+          <div style={{ color: COLORS.mastered }}>Mastered: {tooltip.cat.mastered}</div>
+          <div style={{ color: COLORS.learned }}>Learned: {tooltip.cat.learned}</div>
+          <div style={{ color: COLORS.learning }}>Learning: {tooltip.cat.learning}</div>
+          <div style={{ color: 'var(--text-muted)' }}>Unseen: {tooltip.cat.total - tooltip.cat.seen}</div>
+        </div>
+      )}
     </div>
   )
 }
