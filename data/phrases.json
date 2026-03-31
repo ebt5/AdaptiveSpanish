@@ -1,302 +1,2924 @@
 [
-  {"sortOrder":1,"spanish":"Hola, ¿cómo estás?","english":"Hello, how are you?","englishVariants":["Hi, how are you?","Hello, how are you doing?"],"grammarTag":"survival","difficultyLevel":1,"grammarNote":"Uses estar (temporary state), not ser. Standard informal greeting."},
-  {"sortOrder":2,"spanish":"Buenos días.","english":"Good morning.","englishVariants":["Good day."],"grammarTag":"survival","difficultyLevel":1,"grammarNote":""},
-  {"sortOrder":3,"spanish":"Por favor.","english":"Please.","englishVariants":[],"grammarTag":"survival","difficultyLevel":1,"grammarNote":""},
-  {"sortOrder":4,"spanish":"Gracias.","english":"Thank you.","englishVariants":["Thanks."],"grammarTag":"survival","difficultyLevel":1,"grammarNote":""},
-  {"sortOrder":5,"spanish":"De nada.","english":"You're welcome.","englishVariants":["Don't mention it."],"grammarTag":"survival","difficultyLevel":1,"grammarNote":"Literally 'of nothing.'"},
-  {"sortOrder":6,"spanish":"¿Hablas inglés?","english":"Do you speak English?","englishVariants":[],"grammarTag":"survival","difficultyLevel":1,"grammarNote":""},
-  {"sortOrder":7,"spanish":"No entiendo.","english":"I don't understand.","englishVariants":["I don't get it."],"grammarTag":"survival","difficultyLevel":1,"grammarNote":""},
-  {"sortOrder":8,"spanish":"Me llamo Ana.","english":"My name is Ana.","englishVariants":["I'm called Ana."],"grammarTag":"reflexive","difficultyLevel":1,"grammarNote":"Llamarse is reflexive: me llamo = I call myself."},
-  {"sortOrder":9,"spanish":"¿Cómo te llamas?","english":"What is your name?","englishVariants":["What's your name?"],"grammarTag":"reflexive","difficultyLevel":1,"grammarNote":"Informal. Llamarse is reflexive; literally 'how do you call yourself?'"},
-  {"sortOrder":10,"spanish":"Mucho gusto.","english":"Nice to meet you.","englishVariants":["Pleased to meet you."],"grammarTag":"survival","difficultyLevel":1,"grammarNote":""},
-  {"sortOrder":11,"spanish":"¿Dónde está el baño?","english":"Where is the bathroom?","englishVariants":["Where's the restroom?"],"grammarTag":"ser-estar","difficultyLevel":1,"grammarNote":"Location uses estar, not ser."},
-  {"sortOrder":12,"spanish":"Quiero agua, por favor.","english":"I want water, please.","englishVariants":[],"grammarTag":"survival","difficultyLevel":1,"grammarNote":""},
-  {"sortOrder":13,"spanish":"¿Cuánto cuesta?","english":"How much does it cost?","englishVariants":["How much is it?"],"grammarTag":"survival","difficultyLevel":1,"grammarNote":""},
-  {"sortOrder":14,"spanish":"No hablo español bien.","english":"I don't speak Spanish well.","englishVariants":["I don't speak Spanish very well."],"grammarTag":"survival","difficultyLevel":1,"grammarNote":""},
-  {"sortOrder":15,"spanish":"Tengo hambre.","english":"I'm hungry.","englishVariants":[],"grammarTag":"tener-expressions","difficultyLevel":1,"grammarNote":"Spanish uses tener + noun (I have hunger), not ser/estar + adjective as in English."},
-  {"sortOrder":16,"spanish":"Tengo sed.","english":"I'm thirsty.","englishVariants":[],"grammarTag":"tener-expressions","difficultyLevel":1,"grammarNote":"Tener + noun idiom: literally 'I have thirst.'"},
-  {"sortOrder":17,"spanish":"Tengo frío.","english":"I'm cold.","englishVariants":[],"grammarTag":"tener-expressions","difficultyLevel":1,"grammarNote":"Tener + noun: literally 'I have cold.' Contrast with hace frío (the weather is cold)."},
-  {"sortOrder":18,"spanish":"Tengo calor.","english":"I'm hot.","englishVariants":["I'm warm."],"grammarTag":"tener-expressions","difficultyLevel":1,"grammarNote":"Tener + noun: literally 'I have heat.'"},
-  {"sortOrder":19,"spanish":"Soy americano.","english":"I'm American.","englishVariants":["I am American."],"grammarTag":"ser-estar","difficultyLevel":1,"grammarNote":"Origin and nationality use ser, not estar."},
-  {"sortOrder":20,"spanish":"Estoy cansado.","english":"I'm tired.","englishVariants":[],"grammarTag":"ser-estar","difficultyLevel":1,"grammarNote":"Temporary states use estar. Cansado is a condition, not a permanent trait."},
-  {"sortOrder":21,"spanish":"Me gusta el café.","english":"I like coffee.","englishVariants":[],"grammarTag":"gustar-type","difficultyLevel":1,"grammarNote":"Gustar is backwards from English: the coffee pleases me (el café = subject, me = indirect object pronoun)."},
-  {"sortOrder":22,"spanish":"Me gustan las películas.","english":"I like movies.","englishVariants":["I like films."],"grammarTag":"gustar-type","difficultyLevel":1,"grammarNote":"Plural subject (películas) requires plural verb gustan."},
-  {"sortOrder":23,"spanish":"No me gusta el pescado.","english":"I don't like fish.","englishVariants":[],"grammarTag":"gustar-type","difficultyLevel":1,"grammarNote":"Negation goes before the indirect object pronoun: no me gusta."},
-  {"sortOrder":24,"spanish":"Hace calor hoy.","english":"It's hot today.","englishVariants":["It's warm today."],"grammarTag":"weather-time","difficultyLevel":1,"grammarNote":"Weather uses hacer + noun: hace calor, hace frío, hace sol, hace viento."},
-  {"sortOrder":25,"spanish":"Hace frío afuera.","english":"It's cold outside.","englishVariants":[],"grammarTag":"weather-time","difficultyLevel":1,"grammarNote":"Hacer for weather; afuera = outside. Never 'está frío' for weather."},
-  {"sortOrder":26,"spanish":"¿Qué hora es?","english":"What time is it?","englishVariants":[],"grammarTag":"weather-time","difficultyLevel":1,"grammarNote":""},
-  {"sortOrder":27,"spanish":"Son las tres.","english":"It's three o'clock.","englishVariants":["It's three."],"grammarTag":"weather-time","difficultyLevel":1,"grammarNote":"Use son for all hours except one (es la una)."},
-  {"sortOrder":28,"spanish":"Quiero comer algo.","english":"I want to eat something.","englishVariants":[],"grammarTag":"verb-infinitive","difficultyLevel":1,"grammarNote":"Querer + infinitive is a direct verb chain, similar to English 'want to.'"},
-  {"sortOrder":29,"spanish":"Necesito ayuda.","english":"I need help.","englishVariants":[],"grammarTag":"survival","difficultyLevel":1,"grammarNote":""},
-  {"sortOrder":30,"spanish":"¿Me puede ayudar?","english":"Can you help me?","englishVariants":["Could you help me?"],"grammarTag":"object-pronoun","difficultyLevel":1,"grammarNote":"Me (indirect object pronoun) precedes the conjugated verb."},
-  {"sortOrder":31,"spanish":"Voy a ir al mercado.","english":"I'm going to go to the market.","englishVariants":["I'm going to the market."],"grammarTag":"verb-infinitive","difficultyLevel":2,"grammarNote":"Ir a + infinitive expresses near future. Al = a + el (contraction)."},
-  {"sortOrder":32,"spanish":"Tengo que trabajar mañana.","english":"I have to work tomorrow.","englishVariants":["I need to work tomorrow."],"grammarTag":"verb-infinitive","difficultyLevel":2,"grammarNote":"Tener que + infinitive expresses obligation."},
-  {"sortOrder":33,"spanish":"Acabo de llegar.","english":"I just arrived.","englishVariants":["I just got here."],"grammarTag":"verb-infinitive","difficultyLevel":2,"grammarNote":"Acabar de + infinitive = to have just done something (immediate past)."},
-  {"sortOrder":34,"spanish":"Debo estudiar más.","english":"I should study more.","englishVariants":["I ought to study more."],"grammarTag":"verb-infinitive","difficultyLevel":2,"grammarNote":"Deber + infinitive expresses moral obligation or duty."},
-  {"sortOrder":35,"spanish":"Puedo hablar un poco de español.","english":"I can speak a little Spanish.","englishVariants":[],"grammarTag":"verb-infinitive","difficultyLevel":2,"grammarNote":"Poder + infinitive = to be able to. Un poco de = a little of."},
-  {"sortOrder":36,"spanish":"Voy a llamarte esta noche.","english":"I'm going to call you tonight.","englishVariants":[],"grammarTag":"verb-infinitive","difficultyLevel":2,"grammarNote":"Ir a + infinitive for near future. Object pronoun (te) attaches to the infinitive."},
-  {"sortOrder":37,"spanish":"Volvió a llamar.","english":"He called again.","englishVariants":[],"grammarTag":"verb-infinitive","difficultyLevel":2,"grammarNote":"Volver a + infinitive = to do something again. More idiomatic than adding 'otra vez.'"},
-  {"sortOrder":38,"spanish":"Dejé de tomar café.","english":"I stopped drinking coffee.","englishVariants":[],"grammarTag":"verb-infinitive","difficultyLevel":2,"grammarNote":"Dejar de + infinitive = to stop doing something."},
-  {"sortOrder":39,"spanish":"Me duele la cabeza.","english":"My head hurts.","englishVariants":["I have a headache."],"grammarTag":"gustar-type","difficultyLevel":2,"grammarNote":"Doler works like gustar: the head hurts me (la cabeza = subject, me = indirect object)."},
-  {"sortOrder":40,"spanish":"Me faltan dos dólares.","english":"I'm short two dollars.","englishVariants":["I need two more dollars."],"grammarTag":"gustar-type","difficultyLevel":2,"grammarNote":"Faltar works like gustar: two dollars are lacking to me. Plural subject = plural verb."},
-  {"sortOrder":41,"spanish":"Me parece difícil.","english":"It seems difficult to me.","englishVariants":["It seems hard to me."],"grammarTag":"gustar-type","difficultyLevel":2,"grammarNote":"Parecer works like gustar. Used to hedge opinions politely."},
-  {"sortOrder":42,"spanish":"Me encantan los tacos.","english":"I love tacos.","englishVariants":[],"grammarTag":"gustar-type","difficultyLevel":2,"grammarNote":"Encantar works like gustar. Plural subject (tacos) = plural verb (encantan)."},
-  {"sortOrder":43,"spanish":"Estoy aprendiendo español.","english":"I'm learning Spanish.","englishVariants":[],"grammarTag":"progressive","difficultyLevel":2,"grammarNote":"Estar + gerund forms the present progressive. Used for actions happening right now."},
-  {"sortOrder":44,"spanish":"Está lloviendo.","english":"It's raining.","englishVariants":[],"grammarTag":"progressive","difficultyLevel":2,"grammarNote":"Estar + gerund for weather in progress. Lloviendo = gerund of llover."},
-  {"sortOrder":45,"spanish":"Sigo trabajando en el proyecto.","english":"I'm still working on the project.","englishVariants":[],"grammarTag":"progressive","difficultyLevel":2,"grammarNote":"Seguir + gerund = to keep doing / to still be doing something."},
-  {"sortOrder":46,"spanish":"El banco está a dos cuadras.","english":"The bank is two blocks away.","englishVariants":[],"grammarTag":"ser-estar","difficultyLevel":2,"grammarNote":"Location uses estar, not ser."},
-  {"sortOrder":47,"spanish":"La reunión es a las nueve.","english":"The meeting is at nine.","englishVariants":[],"grammarTag":"ser-estar","difficultyLevel":2,"grammarNote":"Scheduled events use ser, not estar. This surprises learners who expect location/time to always use estar."},
-  {"sortOrder":48,"spanish":"Soy de México.","english":"I'm from Mexico.","englishVariants":[],"grammarTag":"ser-estar","difficultyLevel":2,"grammarNote":"Origin uses ser: soy de + place. Never estar de for origin."},
-  {"sortOrder":49,"spanish":"El restaurante está cerrado.","english":"The restaurant is closed.","englishVariants":[],"grammarTag":"ser-estar","difficultyLevel":2,"grammarNote":"Cerrado (closed) is a resulting state, so estar is used."},
-  {"sortOrder":50,"spanish":"La sopa está muy rica.","english":"The soup is very delicious.","englishVariants":["The soup tastes great."],"grammarTag":"ser-estar","difficultyLevel":2,"grammarNote":"Estar is used for how food tastes (a condition experienced in the moment). Ser rico = to be wealthy."},
-  {"sortOrder":51,"spanish":"No tengo nada.","english":"I don't have anything.","englishVariants":["I have nothing."],"grammarTag":"negative","difficultyLevel":2,"grammarNote":"Spanish requires double negatives: no + verb + nada. Both no and nada are needed."},
-  {"sortOrder":52,"spanish":"Nunca voy al gimnasio.","english":"I never go to the gym.","englishVariants":[],"grammarTag":"negative","difficultyLevel":2,"grammarNote":"Nunca can precede the verb without 'no.' If it follows: no voy nunca al gimnasio (double negative)."},
-  {"sortOrder":53,"spanish":"No hay nadie aquí.","english":"There's nobody here.","englishVariants":["Nobody is here."],"grammarTag":"negative","difficultyLevel":2,"grammarNote":"No + hay + nadie: double negative required in Spanish."},
-  {"sortOrder":54,"spanish":"Tampoco quiero ir.","english":"I don't want to go either.","englishVariants":[],"grammarTag":"negative","difficultyLevel":2,"grammarNote":"Tampoco = neither/not either. Can precede verb without additional 'no.'"},
-  {"sortOrder":55,"spanish":"Esta es para ti.","english":"This is for you.","englishVariants":[],"grammarTag":"por-para","difficultyLevel":2,"grammarNote":"Para indicates the recipient/beneficiary of something."},
-  {"sortOrder":56,"spanish":"Trabajo para una empresa grande.","english":"I work for a large company.","englishVariants":[],"grammarTag":"por-para","difficultyLevel":2,"grammarNote":"Para indicates employment — working in service of an entity."},
-  {"sortOrder":57,"spanish":"Gracias por tu ayuda.","english":"Thank you for your help.","englishVariants":[],"grammarTag":"por-para","difficultyLevel":2,"grammarNote":"Por expresses gratitude for something received or done."},
-  {"sortOrder":58,"spanish":"Lo hice por ti.","english":"I did it for you (because of you).","englishVariants":["I did it for your sake."],"grammarTag":"por-para","difficultyLevel":2,"grammarNote":"Por expresses motive or cause (on account of). Para would mean 'for your benefit/use.'"},
-  {"sortOrder":59,"spanish":"Viajo por avión.","english":"I travel by plane.","englishVariants":[],"grammarTag":"por-para","difficultyLevel":2,"grammarNote":"Por is used for means of transportation or communication."},
-  {"sortOrder":60,"spanish":"Salgo para Madrid mañana.","english":"I'm leaving for Madrid tomorrow.","englishVariants":[],"grammarTag":"por-para","difficultyLevel":2,"grammarNote":"Para indicates destination when traveling."},
-  {"sortOrder":61,"spanish":"Me despierto a las siete.","english":"I wake up at seven.","englishVariants":["I wake up at seven o'clock."],"grammarTag":"reflexive","difficultyLevel":2,"grammarNote":"Despertarse is reflexive: the action reflects back on the subject."},
-  {"sortOrder":62,"spanish":"Me baño todos los días.","english":"I shower every day.","englishVariants":["I bathe every day."],"grammarTag":"reflexive","difficultyLevel":2,"grammarNote":"Bañarse (reflexive) = to bathe oneself. Bañar (non-reflexive) = to bathe someone else."},
-  {"sortOrder":63,"spanish":"Me siento bien hoy.","english":"I feel well today.","englishVariants":["I feel good today."],"grammarTag":"reflexive","difficultyLevel":2,"grammarNote":"Sentirse (reflexive) = to feel (emotionally/physically). Sentar = to seat someone."},
-  {"sortOrder":64,"spanish":"¿Te acuerdas de mí?","english":"Do you remember me?","englishVariants":[],"grammarTag":"reflexive","difficultyLevel":2,"grammarNote":"Acordarse de (reflexive) = to remember. Requires de before the object."},
-  {"sortOrder":65,"spanish":"No me acuerdo.","english":"I don't remember.","englishVariants":[],"grammarTag":"reflexive","difficultyLevel":2,"grammarNote":""},
-  {"sortOrder":66,"spanish":"Tengo razón.","english":"I'm right.","englishVariants":[],"grammarTag":"tener-expressions","difficultyLevel":2,"grammarNote":"Tener razón = to be right. English uses 'to be'; Spanish uses 'to have.'"},
-  {"sortOrder":67,"spanish":"Tienes razón.","english":"You're right.","englishVariants":[],"grammarTag":"tener-expressions","difficultyLevel":2,"grammarNote":""},
-  {"sortOrder":68,"spanish":"Tengo veintiocho años.","english":"I'm twenty-eight years old.","englishVariants":[],"grammarTag":"tener-expressions","difficultyLevel":2,"grammarNote":"Age uses tener in Spanish (I have 28 years), not ser/estar as in English."},
-  {"sortOrder":69,"spanish":"Tengo prisa.","english":"I'm in a hurry.","englishVariants":[],"grammarTag":"tener-expressions","difficultyLevel":2,"grammarNote":"Tener prisa = to be in a hurry. Literally 'I have hurry.'"},
-  {"sortOrder":70,"spanish":"Tengo miedo de las arañas.","english":"I'm afraid of spiders.","englishVariants":[],"grammarTag":"tener-expressions","difficultyLevel":2,"grammarNote":"Tener miedo de = to be afraid of. Literally 'I have fear of.'"},
-  {"sortOrder":71,"spanish":"Tengo ganas de salir.","english":"I feel like going out.","englishVariants":["I want to go out."],"grammarTag":"tener-expressions","difficultyLevel":2,"grammarNote":"Tener ganas de + infinitive = to feel like doing something."},
-  {"sortOrder":72,"spanish":"No tengo sueño.","english":"I'm not sleepy.","englishVariants":[],"grammarTag":"tener-expressions","difficultyLevel":2,"grammarNote":"Tener sueño = to be sleepy. Literally 'to have sleep.'"},
-  {"sortOrder":73,"spanish":"¿Me puede repetir eso?","english":"Can you repeat that?","englishVariants":["Could you repeat that?"],"grammarTag":"survival","difficultyLevel":1,"grammarNote":""},
-  {"sortOrder":74,"spanish":"Habla más despacio, por favor.","english":"Speak more slowly, please.","englishVariants":[],"grammarTag":"survival","difficultyLevel":1,"grammarNote":"Despacio = slowly. Más despacio = more slowly."},
-  {"sortOrder":75,"spanish":"¿Cómo se dice 'umbrella' en español?","english":"How do you say 'umbrella' in Spanish?","englishVariants":[],"grammarTag":"non-intuitive","difficultyLevel":2,"grammarNote":"Impersonal se: how is 'umbrella' said in Spanish? One of the most useful learner phrases."},
-  {"sortOrder":76,"spanish":"No se puede fumar aquí.","english":"You can't smoke here.","englishVariants":["Smoking is not allowed here."],"grammarTag":"non-intuitive","difficultyLevel":2,"grammarNote":"Impersonal se + verb for general rules/prohibitions. No subject is specified."},
-  {"sortOrder":77,"spanish":"Se habla español aquí.","english":"Spanish is spoken here.","englishVariants":[],"grammarTag":"non-intuitive","difficultyLevel":2,"grammarNote":"Passive se construction: se + third person verb for general/impersonal statements."},
-  {"sortOrder":78,"spanish":"¿Cómo se escribe?","english":"How do you spell it?","englishVariants":["How is it written?"],"grammarTag":"non-intuitive","difficultyLevel":2,"grammarNote":"Impersonal se: how is it written?"},
-  {"sortOrder":79,"spanish":"Hay que tener paciencia.","english":"You have to be patient.","englishVariants":["One must be patient."],"grammarTag":"non-intuitive","difficultyLevel":2,"grammarNote":"Hay que + infinitive = impersonal obligation (one must). No subject is specified."},
-  {"sortOrder":80,"spanish":"¿Qué te pasa?","english":"What's wrong with you?","englishVariants":["What's happening to you?","What's the matter?"],"grammarTag":"idiomatic","difficultyLevel":2,"grammarNote":"Pasar is used impersonally: what is happening to you? Very common colloquial expression."},
-  {"sortOrder":81,"spanish":"No pasa nada.","english":"It's okay. / Nothing's wrong.","englishVariants":["No worries.","Never mind."],"grammarTag":"idiomatic","difficultyLevel":2,"grammarNote":"Common reassurance phrase. Literally 'nothing is happening.'"},
-  {"sortOrder":82,"spanish":"Más o menos.","english":"More or less.","englishVariants":["So-so.","Kind of."],"grammarTag":"idiomatic","difficultyLevel":1,"grammarNote":""},
-  {"sortOrder":83,"spanish":"Por supuesto.","english":"Of course.","englishVariants":["Certainly."],"grammarTag":"idiomatic","difficultyLevel":1,"grammarNote":""},
-  {"sortOrder":84,"spanish":"A lo mejor viene mañana.","english":"Maybe he'll come tomorrow.","englishVariants":["Perhaps he'll come tomorrow."],"grammarTag":"idiomatic","difficultyLevel":2,"grammarNote":"A lo mejor expresses possibility but takes indicative, not subjunctive (unlike quizás/tal vez)."},
-  {"sortOrder":85,"spanish":"Me cae bien.","english":"I like him/her (as a person).","englishVariants":["He/she is cool."],"grammarTag":"idiomatic","difficultyLevel":2,"grammarNote":"Caer bien = to make a good impression. Distinct from gustar (preference or attraction)."},
-  {"sortOrder":86,"spanish":"Ya no trabajo ahí.","english":"I don't work there anymore.","englishVariants":[],"grammarTag":"non-intuitive","difficultyLevel":2,"grammarNote":"Ya no = no longer. Ya (already/now) + no creates this compound negation."},
-  {"sortOrder":87,"spanish":"Todavía no he comido.","english":"I still haven't eaten.","englishVariants":["I haven't eaten yet."],"grammarTag":"non-intuitive","difficultyLevel":2,"grammarNote":"Todavía no + present perfect = haven't done something yet."},
-  {"sortOrder":88,"spanish":"Hace dos años que vivo aquí.","english":"I've been living here for two years.","englishVariants":[],"grammarTag":"weather-time","difficultyLevel":3,"grammarNote":"Hace + time + que + present tense = duration of an ongoing action. English uses present perfect; Spanish uses present."},
-  {"sortOrder":89,"spanish":"¿Cuánto tiempo llevas en México?","english":"How long have you been in Mexico?","englishVariants":[],"grammarTag":"weather-time","difficultyLevel":3,"grammarNote":"Llevar + time = how long have you been... Same structure as llevar + gerund."},
-  {"sortOrder":90,"spanish":"Se tarda una hora en llegar.","english":"It takes an hour to get there.","englishVariants":[],"grammarTag":"weather-time","difficultyLevel":3,"grammarNote":"Impersonal se + tardar to express duration of travel or process."},
-  {"sortOrder":91,"spanish":"¿Cómo te fue?","english":"How did it go for you?","englishVariants":["How was it?"],"grammarTag":"survival","difficultyLevel":2,"grammarNote":"Ir + indirect object pronoun to ask how something went for someone."},
-  {"sortOrder":92,"spanish":"Estoy de acuerdo.","english":"I agree.","englishVariants":[],"grammarTag":"ser-estar","difficultyLevel":2,"grammarNote":"De acuerdo is a noun phrase; estar de acuerdo = to be in agreement (a state)."},
-  {"sortOrder":93,"spanish":"La fiesta es en mi casa.","english":"The party is at my house.","englishVariants":[],"grammarTag":"ser-estar","difficultyLevel":3,"grammarNote":"Events use ser for location (where something takes place). A classic exception to 'location = estar.'"},
-  {"sortOrder":94,"spanish":"Él es listo.","english":"He's clever.","englishVariants":["He's smart."],"grammarTag":"ser-estar","difficultyLevel":3,"grammarNote":"Ser listo = to be clever. Estar listo = to be ready. Meaning changes with ser vs. estar."},
-  {"sortOrder":95,"spanish":"¿Estás listo para salir?","english":"Are you ready to leave?","englishVariants":[],"grammarTag":"ser-estar","difficultyLevel":2,"grammarNote":"Estar listo = to be ready (a state). Ser listo = to be clever."},
-  {"sortOrder":96,"spanish":"Él es malo.","english":"He's bad (evil).","englishVariants":["He's wicked."],"grammarTag":"ser-estar","difficultyLevel":3,"grammarNote":"Ser malo = to be bad/evil (character). Estar malo = to be sick or taste bad."},
-  {"sortOrder":97,"spanish":"Me lo dijeron la semana pasada.","english":"They told me (that) last week.","englishVariants":[],"grammarTag":"object-pronoun","difficultyLevel":3,"grammarNote":"Me (indirect) + lo (direct) before the verb. When two pronouns co-occur, indirect comes first."},
-  {"sortOrder":98,"spanish":"Te lo digo en serio.","english":"I'm telling you seriously.","englishVariants":["I mean it.","I'm serious."],"grammarTag":"object-pronoun","difficultyLevel":3,"grammarNote":"Te (indirect) + lo (direct) before the verb."},
-  {"sortOrder":99,"spanish":"Se lo envié ayer.","english":"I sent it to him/her yesterday.","englishVariants":[],"grammarTag":"object-pronoun","difficultyLevel":3,"grammarNote":"Le becomes se when followed by lo/la/los/las to avoid two l-pronouns."},
-  {"sortOrder":100,"spanish":"Dámelo.","english":"Give it to me.","englishVariants":[],"grammarTag":"object-pronoun","difficultyLevel":3,"grammarNote":"With affirmative commands, object pronouns attach to the end: da + me + lo."},
-  {"sortOrder":101,"spanish":"No me lo digas.","english":"Don't tell me (that).","englishVariants":["Don't tell me."],"grammarTag":"object-pronoun","difficultyLevel":3,"grammarNote":"With negative commands, pronouns go before the verb: no + me + lo + digas."},
-  {"sortOrder":102,"spanish":"Lo estoy pensando.","english":"I'm thinking about it.","englishVariants":[],"grammarTag":"object-pronoun","difficultyLevel":3,"grammarNote":"Direct object pronoun can precede estar or attach to the gerund: estoy pensándolo."},
-  {"sortOrder":103,"spanish":"¿Se lo has dicho a ella?","english":"Have you told her (about it)?","englishVariants":[],"grammarTag":"object-pronoun","difficultyLevel":3,"grammarNote":"Se replaces le before lo. A ella is added for clarity since se is ambiguous."},
-  {"sortOrder":104,"spanish":"Voy a comprártelo.","english":"I'm going to buy it for you.","englishVariants":[],"grammarTag":"object-pronoun","difficultyLevel":3,"grammarNote":"With infinitives, pronouns attach: voy a comprar + te + lo. Accent mark added to maintain stress."},
-  {"sortOrder":105,"spanish":"Se me olvidó el libro.","english":"I forgot the book.","englishVariants":["The book slipped my mind."],"grammarTag":"non-intuitive","difficultyLevel":3,"grammarNote":"Accidental/unplanned events: se + indirect object + verb. Literally 'the book forgot itself to me.' Subject is el libro."},
-  {"sortOrder":106,"spanish":"Se me cayó el vaso.","english":"I dropped the glass.","englishVariants":["The glass fell on me."],"grammarTag":"non-intuitive","difficultyLevel":3,"grammarNote":"Accidental construction: se + me + cayó. Removes personal blame; literally 'the glass fell to me.'"},
-  {"sortOrder":107,"spanish":"Se me perdió el celular.","english":"I lost my cell phone.","englishVariants":[],"grammarTag":"non-intuitive","difficultyLevel":3,"grammarNote":"Accidental se: the phone lost itself on me. Implies it was unintentional."},
-  {"sortOrder":108,"spanish":"Se me rompió el vaso.","english":"The glass broke on me.","englishVariants":["I broke the glass (accidentally)."],"grammarTag":"non-intuitive","difficultyLevel":3,"grammarNote":"Accidental se: the glass broke itself to me. Implies it was unintentional."},
-  {"sortOrder":109,"spanish":"Se nos acabó el tiempo.","english":"We ran out of time.","englishVariants":[],"grammarTag":"non-intuitive","difficultyLevel":3,"grammarNote":"Se + nos + acabó: accidental construction. Literally 'time finished itself on us.'"},
-  {"sortOrder":110,"spanish":"Se les olvidó traer el dinero.","english":"They forgot to bring the money.","englishVariants":[],"grammarTag":"non-intuitive","difficultyLevel":3,"grammarNote":"Accidental se + les (third person plural). Literally 'the money forgot itself to them.'"},
-  {"sortOrder":111,"spanish":"Se venden frutas frescas.","english":"Fresh fruits are sold here.","englishVariants":[],"grammarTag":"non-intuitive","difficultyLevel":3,"grammarNote":"Passive se with plural subject: frutas is plural, so the verb is plural (se venden)."},
-  {"sortOrder":112,"spanish":"Lo que más me gusta es la música.","english":"What I like most is music.","englishVariants":[],"grammarTag":"non-intuitive","difficultyLevel":3,"grammarNote":"Lo que + relative clause creates a nominal clause (what I like). Lo is a neuter article here."},
-  {"sortOrder":113,"spanish":"Se me hace tarde.","english":"It's getting late on me.","englishVariants":["I'm going to be late."],"grammarTag":"non-intuitive","difficultyLevel":3,"grammarNote":"Se me hace tarde = it's getting late for me. Idiomatic use of hacerse (to become)."},
-  {"sortOrder":114,"spanish":"Se puso furioso.","english":"He got furious.","englishVariants":["He became furious."],"grammarTag":"reflexive","difficultyLevel":3,"grammarNote":"Ponerse + adjective = to become (emotional or physical change). One of several 'to become' verbs in Spanish."},
-  {"sortOrder":115,"spanish":"Se casaron el año pasado.","english":"They got married last year.","englishVariants":[],"grammarTag":"reflexive","difficultyLevel":2,"grammarNote":"Casarse (reflexive) = to get married. Often used reciprocally with plural subjects."},
-  {"sortOrder":116,"spanish":"Me equivoqué de número.","english":"I dialed the wrong number.","englishVariants":["I got the wrong number."],"grammarTag":"reflexive","difficultyLevel":3,"grammarNote":"Equivocarse de = to be wrong about / to get the wrong thing. Always reflexive."},
-  {"sortOrder":117,"spanish":"Se queja mucho de su trabajo.","english":"He/she complains a lot about work.","englishVariants":[],"grammarTag":"reflexive","difficultyLevel":2,"grammarNote":"Quejarse (reflexive) = to complain. Always requires reflexive pronoun."},
-  {"sortOrder":118,"spanish":"Me di cuenta de que estaba equivocado.","english":"I realized I was wrong.","englishVariants":[],"grammarTag":"idiomatic","difficultyLevel":3,"grammarNote":"Darse cuenta de = to realize/notice. Not 'realizar' (a false friend). Equivocado uses estar."},
-  {"sortOrder":119,"spanish":"Te extraño mucho.","english":"I miss you a lot.","englishVariants":[],"grammarTag":"idiomatic","difficultyLevel":2,"grammarNote":"Extrañar is the preferred verb for 'to miss' in Latin America. Spain uses echar de menos."},
-  {"sortOrder":120,"spanish":"No vale la pena.","english":"It's not worth it.","englishVariants":[],"grammarTag":"idiomatic","difficultyLevel":2,"grammarNote":"Valer la pena = to be worth it. Literally 'to be worth the trouble.'"},
-  {"sortOrder":121,"spanish":"Resulta que tenían razón.","english":"It turns out they were right.","englishVariants":[],"grammarTag":"idiomatic","difficultyLevel":3,"grammarNote":"Resulta que + indicative = it turns out that. Used to introduce surprising information."},
-  {"sortOrder":122,"spanish":"Me da igual.","english":"I don't care. / It's all the same to me.","englishVariants":["It doesn't matter to me."],"grammarTag":"idiomatic","difficultyLevel":2,"grammarNote":"Dar igual = to be all the same to someone (indifference). Me da lo mismo is equivalent."},
-  {"sortOrder":123,"spanish":"¿Qué tal el trabajo?","english":"How's work?","englishVariants":["How's the job going?"],"grammarTag":"survival","difficultyLevel":1,"grammarNote":"¿Qué tal? is an informal way to ask 'how is/are...?'"},
-  {"sortOrder":124,"spanish":"Nos vemos.","english":"See you later.","englishVariants":["See you.","Later."],"grammarTag":"survival","difficultyLevel":1,"grammarNote":"Reflexive reciprocal: we see each other. Common farewell."},
-  {"sortOrder":125,"spanish":"Hasta luego.","english":"Goodbye.","englishVariants":["See you later."],"grammarTag":"survival","difficultyLevel":1,"grammarNote":""},
-  {"sortOrder":126,"spanish":"Con permiso.","english":"Excuse me (passing through).","englishVariants":["Pardon me."],"grammarTag":"survival","difficultyLevel":1,"grammarNote":"Used when passing by or leaving. Distinct from perdón (apology or bumping into someone)."},
-  {"sortOrder":127,"spanish":"La cuenta, por favor.","english":"The check, please.","englishVariants":["The bill, please."],"grammarTag":"survival","difficultyLevel":1,"grammarNote":""},
-  {"sortOrder":128,"spanish":"¿Está incluida la propina?","english":"Is the tip included?","englishVariants":[],"grammarTag":"ser-estar","difficultyLevel":2,"grammarNote":"Estar is used for conditions/states resulting from a change (included = a resulting condition)."},
-  {"sortOrder":129,"spanish":"¿Tienen habitaciones disponibles?","english":"Do you have rooms available?","englishVariants":[],"grammarTag":"survival","difficultyLevel":2,"grammarNote":""},
-  {"sortOrder":130,"spanish":"¿A qué hora sale el autobús?","english":"What time does the bus leave?","englishVariants":[],"grammarTag":"survival","difficultyLevel":2,"grammarNote":""},
-  {"sortOrder":131,"spanish":"Necesito un médico.","english":"I need a doctor.","englishVariants":[],"grammarTag":"survival","difficultyLevel":1,"grammarNote":""},
-  {"sortOrder":132,"spanish":"Estoy perdido.","english":"I'm lost.","englishVariants":[],"grammarTag":"ser-estar","difficultyLevel":1,"grammarNote":"Being lost is a state: estar is used."},
-  {"sortOrder":133,"spanish":"¿Cómo llego al centro?","english":"How do I get to downtown?","englishVariants":["How do I get to the city center?"],"grammarTag":"survival","difficultyLevel":2,"grammarNote":"Llegar a = to arrive at / to get to."},
-  {"sortOrder":134,"spanish":"Siga todo derecho.","english":"Go straight ahead.","englishVariants":["Keep going straight."],"grammarTag":"survival","difficultyLevel":2,"grammarNote":"Siga is the formal imperative of seguir. Todo derecho = straight ahead."},
-  {"sortOrder":135,"spanish":"Doble a la izquierda.","english":"Turn left.","englishVariants":[],"grammarTag":"survival","difficultyLevel":2,"grammarNote":"Formal imperative of doblar. A la izquierda = to the left."},
-  {"sortOrder":136,"spanish":"¿Cuánto tiempo tarda en llegar?","english":"How long does it take to get there?","englishVariants":[],"grammarTag":"weather-time","difficultyLevel":2,"grammarNote":"Tardar en + infinitive = to take (time) to do something."},
-  {"sortOrder":137,"spanish":"Llevo tres horas esperando.","english":"I've been waiting for three hours.","englishVariants":[],"grammarTag":"progressive","difficultyLevel":3,"grammarNote":"Llevar + time + gerund = to have been doing something for a duration. No equivalent in English uses this structure."},
-  {"sortOrder":138,"spanish":"Voy caminando al trabajo.","english":"I'm walking to work.","englishVariants":["I walk to work."],"grammarTag":"progressive","difficultyLevel":2,"grammarNote":"Ir + gerund expresses movement while performing an action."},
-  {"sortOrder":139,"spanish":"Sigo sin entender.","english":"I still don't understand.","englishVariants":[],"grammarTag":"progressive","difficultyLevel":3,"grammarNote":"Seguir sin + infinitive = to still not be doing something."},
-  {"sortOrder":140,"spanish":"Llevan veinte años casados.","english":"They've been married for twenty years.","englishVariants":[],"grammarTag":"progressive","difficultyLevel":3,"grammarNote":"Llevar + time + past participle (used as adjective) expresses duration of a state."},
-  {"sortOrder":141,"spanish":"Ando buscando trabajo.","english":"I'm looking for work.","englishVariants":["I'm job hunting."],"grammarTag":"progressive","difficultyLevel":3,"grammarNote":"Andar + gerund = to be going around doing something (implies ongoing, sometimes aimless activity). Informal."},
-  {"sortOrder":142,"spanish":"Llevo días sin dormir bien.","english":"I've been going days without sleeping well.","englishVariants":[],"grammarTag":"progressive","difficultyLevel":3,"grammarNote":"Llevar + time + sin + infinitive = to have been without doing something for a duration."},
-  {"sortOrder":143,"spanish":"Espero que tengas un buen día.","english":"I hope you have a good day.","englishVariants":[],"grammarTag":"subjunctive","difficultyLevel":3,"grammarNote":"Esperar que triggers subjunctive. Different subjects in each clause require subjunctive."},
-  {"sortOrder":144,"spanish":"Quiero que vengas conmigo.","english":"I want you to come with me.","englishVariants":[],"grammarTag":"subjunctive","difficultyLevel":3,"grammarNote":"Querer que + subjunctive when subjects differ. English uses infinitive; Spanish requires subjunctive."},
-  {"sortOrder":145,"spanish":"Es importante que llegues a tiempo.","english":"It's important that you arrive on time.","englishVariants":[],"grammarTag":"subjunctive","difficultyLevel":3,"grammarNote":"Impersonal expressions (es importante que) trigger subjunctive in the dependent clause."},
-  {"sortOrder":146,"spanish":"No creo que sea verdad.","english":"I don't think it's true.","englishVariants":["I don't believe it's true."],"grammarTag":"subjunctive","difficultyLevel":3,"grammarNote":"No creer que triggers subjunctive (negated belief = doubt). Creer que (affirmative) uses indicative."},
-  {"sortOrder":147,"spanish":"Ojalá llueva mañana.","english":"I hope it rains tomorrow.","englishVariants":["Hopefully it will rain tomorrow."],"grammarTag":"subjunctive","difficultyLevel":3,"grammarNote":"Ojalá always triggers subjunctive. One of few words requiring subjunctive without a 'que' clause."},
-  {"sortOrder":148,"spanish":"Tal vez llegue tarde.","english":"Maybe I'll arrive late.","englishVariants":[],"grammarTag":"subjunctive","difficultyLevel":3,"grammarNote":"Tal vez + subjunctive expresses uncertainty. Tal vez + indicative expresses more certainty."},
-  {"sortOrder":149,"spanish":"Cuando llegues, llámame.","english":"When you arrive, call me.","englishVariants":[],"grammarTag":"subjunctive","difficultyLevel":4,"grammarNote":"Cuando + subjunctive for future events. Cuando + indicative for habitual/past events."},
-  {"sortOrder":150,"spanish":"Me alegra que estés aquí.","english":"I'm glad you're here.","englishVariants":[],"grammarTag":"subjunctive","difficultyLevel":3,"grammarNote":"Alegrarse de que triggers subjunctive. Emotional reaction to another's action requires subjunctive."},
-  {"sortOrder":151,"spanish":"Dudo que sea cierto.","english":"I doubt it's true.","englishVariants":[],"grammarTag":"subjunctive","difficultyLevel":3,"grammarNote":"Dudar que triggers subjunctive (expression of doubt)."},
-  {"sortOrder":152,"spanish":"Es una lástima que no puedas venir.","english":"It's a shame you can't come.","englishVariants":[],"grammarTag":"subjunctive","difficultyLevel":3,"grammarNote":"Impersonal emotional expression + que triggers subjunctive."},
-  {"sortOrder":153,"spanish":"Busco un apartamento que tenga dos habitaciones.","english":"I'm looking for an apartment that has two bedrooms.","englishVariants":[],"grammarTag":"subjunctive","difficultyLevel":4,"grammarNote":"Non-specific/hypothetical antecedent triggers subjunctive in the relative clause."},
-  {"sortOrder":154,"spanish":"Quisiera reservar una mesa para dos.","english":"I'd like to reserve a table for two.","englishVariants":[],"grammarTag":"subjunctive","difficultyLevel":3,"grammarNote":"Quisiera (imperfect subjunctive of querer) is a polite softener instead of quiero."},
-  {"sortOrder":155,"spanish":"Para que lo sepas, ya terminé.","english":"Just so you know, I already finished.","englishVariants":[],"grammarTag":"subjunctive","difficultyLevel":4,"grammarNote":"Para que always triggers subjunctive (purpose clause with different subjects)."},
-  {"sortOrder":156,"spanish":"Aunque sea difícil, lo intentaré.","english":"Even if it's difficult, I'll try.","englishVariants":[],"grammarTag":"subjunctive","difficultyLevel":4,"grammarNote":"Aunque + subjunctive concedes an unknown/hypothetical condition. Aunque + indicative = even though (known fact)."},
-  {"sortOrder":157,"spanish":"¡Que te vaya bien!","english":"Take care! / I hope things go well for you!","englishVariants":[],"grammarTag":"subjunctive","difficultyLevel":3,"grammarNote":"Que + subjunctive = may things go well for you. Indirect wish without a main verb."},
-  {"sortOrder":158,"spanish":"¡Que aproveche!","english":"Enjoy your meal!","englishVariants":["Bon appétit!"],"grammarTag":"subjunctive","difficultyLevel":2,"grammarNote":"Que + subjunctive = may you enjoy it. Fixed expression said before or during a meal."},
-  {"sortOrder":159,"spanish":"Que yo sepa, no hay problema.","english":"As far as I know, there's no problem.","englishVariants":[],"grammarTag":"subjunctive","difficultyLevel":4,"grammarNote":"Que yo sepa uses present subjunctive in an independent clause to express limited knowledge."},
-  {"sortOrder":160,"spanish":"Haz lo que quieras.","english":"Do whatever you want.","englishVariants":[],"grammarTag":"subjunctive","difficultyLevel":3,"grammarNote":"Querer in subjunctive after lo que creates a free relative clause (whatever you want)."},
-  {"sortOrder":161,"spanish":"Si estudias, aprenderás.","english":"If you study, you'll learn.","englishVariants":[],"grammarTag":"conditional","difficultyLevel":2,"grammarNote":"Real/open condition: si + present indicative + future indicative."},
-  {"sortOrder":162,"spanish":"Si tuviera dinero, viajaría por el mundo.","english":"If I had money, I would travel the world.","englishVariants":[],"grammarTag":"conditional","difficultyLevel":4,"grammarNote":"Hypothetical si clause: si + imperfect subjunctive (tuviera) + conditional (viajaría)."},
-  {"sortOrder":163,"spanish":"Si pudiera, te ayudaría.","english":"If I could, I would help you.","englishVariants":[],"grammarTag":"conditional","difficultyLevel":4,"grammarNote":"Hypothetical: si + imperfect subjunctive (pudiera) + conditional (ayudaría)."},
-  {"sortOrder":164,"spanish":"Si fuera rico, compraría una isla.","english":"If I were rich, I'd buy an island.","englishVariants":[],"grammarTag":"conditional","difficultyLevel":4,"grammarNote":"Hypothetical: si + imperfect subjunctive (fuera) + conditional (compraría)."},
-  {"sortOrder":165,"spanish":"¿Qué harías si perdieras tu trabajo?","english":"What would you do if you lost your job?","englishVariants":[],"grammarTag":"conditional","difficultyLevel":4,"grammarNote":"Hypothetical question: si + imperfect subjunctive (perdieras) + conditional (harías)."},
-  {"sortOrder":166,"spanish":"Si estuvieras aquí, todo sería diferente.","english":"If you were here, everything would be different.","englishVariants":[],"grammarTag":"conditional","difficultyLevel":4,"grammarNote":"Hypothetical: si + imperfect subjunctive (estuvieras) + conditional (sería)."},
-  {"sortOrder":167,"spanish":"Si hubiera llegado antes, habría visto el show.","english":"If I had arrived earlier, I would have seen the show.","englishVariants":[],"grammarTag":"conditional","difficultyLevel":5,"grammarNote":"Past counterfactual: si + past perfect subjunctive (hubiera llegado) + conditional perfect (habría visto)."},
-  {"sortOrder":168,"spanish":"Si hubiera sabido, habría venido.","english":"If I had known, I would have come.","englishVariants":[],"grammarTag":"conditional","difficultyLevel":5,"grammarNote":"Past counterfactual: si + past perfect subjunctive + conditional perfect."},
-  {"sortOrder":169,"spanish":"De haberlo sabido, no habría ido.","english":"Had I known, I wouldn't have gone.","englishVariants":[],"grammarTag":"conditional","difficultyLevel":5,"grammarNote":"De + perfect infinitive (haberlo sabido) can replace si + past perfect subjunctive in formal registers."},
-  {"sortOrder":170,"spanish":"No tengo ni idea.","english":"I have no idea.","englishVariants":[],"grammarTag":"negative","difficultyLevel":2,"grammarNote":"Ni siquiera una idea = not even one idea. Ni used as an emphatic negation intensifier."},
-  {"sortOrder":171,"spanish":"No vino ni siquiera a llamar.","english":"He didn't even bother to call.","englishVariants":[],"grammarTag":"negative","difficultyLevel":3,"grammarNote":"Ni siquiera = not even. Emphatic negation."},
-  {"sortOrder":172,"spanish":"No quiero ni café ni té.","english":"I don't want either coffee or tea.","englishVariants":["I want neither coffee nor tea."],"grammarTag":"negative","difficultyLevel":3,"grammarNote":"Ni...ni = neither...nor. Requires no before the verb when the construction follows it."},
-  {"sortOrder":173,"spanish":"Jamás lo haré de nuevo.","english":"I'll never do it again.","englishVariants":[],"grammarTag":"negative","difficultyLevel":3,"grammarNote":"Jamás = never (stronger than nunca, often emphatic or permanent)."},
-  {"sortOrder":174,"spanish":"En ningún momento dije eso.","english":"I never said that. / At no point did I say that.","englishVariants":[],"grammarTag":"negative","difficultyLevel":4,"grammarNote":"Ningún + noun before the verb can stand alone. After the verb: no dije eso en ningún momento (double negative)."},
-  {"sortOrder":175,"spanish":"No quiero más.","english":"I don't want any more.","englishVariants":["I've had enough."],"grammarTag":"negative","difficultyLevel":2,"grammarNote":"Más after a negated verb = any more. No more."},
-  {"sortOrder":176,"spanish":"¿Para qué sirve esto?","english":"What is this for?","englishVariants":["What does this do?"],"grammarTag":"por-para","difficultyLevel":2,"grammarNote":"Para qué = for what purpose. Por qué = why (for what reason)."},
-  {"sortOrder":177,"spanish":"Lo cambié por uno más nuevo.","english":"I exchanged it for a newer one.","englishVariants":[],"grammarTag":"por-para","difficultyLevel":3,"grammarNote":"Por indicates exchange. Para would indicate destination or purpose."},
-  {"sortOrder":178,"spanish":"Caminé por el parque.","english":"I walked through the park.","englishVariants":["I walked around the park."],"grammarTag":"por-para","difficultyLevel":2,"grammarNote":"Por indicates movement through or along a place."},
-  {"sortOrder":179,"spanish":"Para ser principiante, hablas bien.","english":"For a beginner, you speak well.","englishVariants":[],"grammarTag":"por-para","difficultyLevel":3,"grammarNote":"Para + noun/infinitive expresses 'considering' or an unexpected contrast."},
-  {"sortOrder":180,"spanish":"El informe debe estar listo para el lunes.","english":"The report must be ready by Monday.","englishVariants":[],"grammarTag":"por-para","difficultyLevel":3,"grammarNote":"Para is used for deadlines."},
-  {"sortOrder":181,"spanish":"Le interesa la historia.","english":"He/she is interested in history.","englishVariants":[],"grammarTag":"gustar-type","difficultyLevel":2,"grammarNote":"Interesar works like gustar. Le = third person indirect object."},
-  {"sortOrder":182,"spanish":"Nos molesta el ruido.","english":"The noise bothers us.","englishVariants":[],"grammarTag":"gustar-type","difficultyLevel":3,"grammarNote":"Molestar works like gustar: the noise bothers us (el ruido = subject, nos = indirect object)."},
-  {"sortOrder":183,"spanish":"¿Te importa si abro la ventana?","english":"Do you mind if I open the window?","englishVariants":[],"grammarTag":"gustar-type","difficultyLevel":3,"grammarNote":"Importar works like gustar: does it matter to you? Te = second person indirect object."},
-  {"sortOrder":184,"spanish":"Le cuesta mucho trabajo.","english":"It's hard for him/her.","englishVariants":["It costs him/her a lot of effort."],"grammarTag":"gustar-type","difficultyLevel":3,"grammarNote":"Costar works like gustar for expressing difficulty."},
-  {"sortOrder":185,"spanish":"Me cuesta creerlo.","english":"I find it hard to believe.","englishVariants":[],"grammarTag":"gustar-type","difficultyLevel":3,"grammarNote":"Costar + infinitive = to be hard (for someone) to do. Works like gustar: it costs me to believe it."},
-  {"sortOrder":186,"spanish":"Nos toca pagar esta vez.","english":"It's our turn to pay this time.","englishVariants":[],"grammarTag":"gustar-type","difficultyLevel":3,"grammarNote":"Tocar works like gustar: it falls to us to pay. Used for turns and obligations falling to someone."},
-  {"sortOrder":187,"spanish":"¿Te sobra tiempo?","english":"Do you have time to spare?","englishVariants":["Do you have extra time?"],"grammarTag":"gustar-type","difficultyLevel":3,"grammarNote":"Sobrar works like gustar: does time remain over for you? Opposite of faltar."},
-  {"sortOrder":188,"spanish":"Le urge encontrar trabajo.","english":"He/she urgently needs to find work.","englishVariants":[],"grammarTag":"gustar-type","difficultyLevel":3,"grammarNote":"Urgir works like gustar: finding work is urgent to him/her."},
-  {"sortOrder":189,"spanish":"Me preocupa mucho eso.","english":"That worries me a lot.","englishVariants":[],"grammarTag":"gustar-type","difficultyLevel":3,"grammarNote":"Preocupar works like gustar: that thing worries me. Me = indirect object, eso = subject."},
-  {"sortOrder":190,"spanish":"Tengo la impresión de que algo falla.","english":"I have the impression that something is wrong.","englishVariants":[],"grammarTag":"tener-expressions","difficultyLevel":3,"grammarNote":"Tener la impresión de que = to have the impression that. Combines tener-expression with a noun clause."},
-  {"sortOrder":191,"spanish":"No tengo ni tiempo ni dinero.","english":"I have neither time nor money.","englishVariants":[],"grammarTag":"tener-expressions","difficultyLevel":3,"grammarNote":"Combines tener-expression with ni...ni construction."},
-  {"sortOrder":192,"spanish":"Tengo entendido que se mudaron.","english":"I understand that they moved.","englishVariants":["I've heard that they moved."],"grammarTag":"tener-expressions","difficultyLevel":4,"grammarNote":"Tener entendido que = to understand/have heard that (based on prior information)."},
-  {"sortOrder":193,"spanish":"Me está tomando el pelo.","english":"He/she is pulling my leg.","englishVariants":["He/she is teasing me."],"grammarTag":"idiomatic","difficultyLevel":3,"grammarNote":"Tomar el pelo = to pull someone's leg/tease. Me = indirect object; progressive form with estar."},
-  {"sortOrder":194,"spanish":"¡Qué buena onda!","english":"How cool! / What a great vibe!","englishVariants":["Awesome!"],"grammarTag":"idiomatic","difficultyLevel":2,"grammarNote":"Buena onda (good wave/vibe) is widely used in Mexico and other Latin American countries."},
-  {"sortOrder":195,"spanish":"Por fin llegó el verano.","english":"Summer finally arrived.","englishVariants":[],"grammarTag":"idiomatic","difficultyLevel":2,"grammarNote":"Por fin = finally/at last."},
-  {"sortOrder":196,"spanish":"Sin embargo, creo que tienes razón.","english":"However, I think you're right.","englishVariants":[],"grammarTag":"idiomatic","difficultyLevel":3,"grammarNote":"Sin embargo = however/nevertheless. Formal discourse connector."},
-  {"sortOrder":197,"spanish":"A pesar de eso, lo intenté.","english":"Despite that, I tried.","englishVariants":[],"grammarTag":"idiomatic","difficultyLevel":3,"grammarNote":"A pesar de = despite / in spite of. Followed by noun or infinitive."},
-  {"sortOrder":198,"spanish":"Al fin y al cabo, todo salió bien.","english":"In the end, everything turned out well.","englishVariants":["After all, everything turned out fine."],"grammarTag":"idiomatic","difficultyLevel":3,"grammarNote":"Al fin y al cabo = in the end/after all. Discourse marker for a conclusion."},
-  {"sortOrder":199,"spanish":"Tener en cuenta algo.","english":"To keep something in mind.","englishVariants":["To take something into account."],"grammarTag":"idiomatic","difficultyLevel":3,"grammarNote":"Tener en cuenta = to bear in mind / to take into account."},
-  {"sortOrder":200,"spanish":"Llevar a cabo un plan.","english":"To carry out a plan.","englishVariants":["To execute a plan."],"grammarTag":"idiomatic","difficultyLevel":3,"grammarNote":"Llevar a cabo = to carry out / to accomplish. Fixed idiom."},
-  {"sortOrder":201,"spanish":"Estar al tanto de algo.","english":"To be up to date on something.","englishVariants":["To be aware of something."],"grammarTag":"idiomatic","difficultyLevel":3,"grammarNote":"Estar al tanto de = to be in the know/up to date. Uses estar for the current state of awareness."},
-  {"sortOrder":202,"spanish":"A ver...","english":"Let's see...","englishVariants":["Let me see..."],"grammarTag":"idiomatic","difficultyLevel":1,"grammarNote":"Discourse marker used to pause and think. Written a ver (not haber)."},
-  {"sortOrder":203,"spanish":"O sea...","english":"I mean... / In other words...","englishVariants":["That is to say..."],"grammarTag":"idiomatic","difficultyLevel":2,"grammarNote":"Very common discourse filler in spoken Spanish, especially among younger speakers."},
-  {"sortOrder":204,"spanish":"De repente aparecieron.","english":"Suddenly they appeared.","englishVariants":["All of a sudden they appeared."],"grammarTag":"idiomatic","difficultyLevel":2,"grammarNote":"De repente = suddenly. Common adverbial phrase."},
-  {"sortOrder":205,"spanish":"De hecho, tienes razón.","english":"In fact, you're right.","englishVariants":["Actually, you're right."],"grammarTag":"idiomatic","difficultyLevel":2,"grammarNote":"De hecho = in fact/actually. Used to confirm or add supporting information."},
-  {"sortOrder":206,"spanish":"A tiempo.","english":"On time.","englishVariants":[],"grammarTag":"idiomatic","difficultyLevel":1,"grammarNote":"A tiempo = on time. Not the same as en tiempo (in time/in season)."},
-  {"sortOrder":207,"spanish":"¡Ni hablar!","english":"No way! / Out of the question!","englishVariants":["Don't even mention it!"],"grammarTag":"idiomatic","difficultyLevel":2,"grammarNote":"Literally 'not even speaking.' Used as emphatic refusal or disbelief."},
-  {"sortOrder":208,"spanish":"No hay de qué.","english":"You're welcome. / Don't mention it.","englishVariants":[],"grammarTag":"idiomatic","difficultyLevel":2,"grammarNote":"Literally 'there's nothing to thank for.' Alternative to de nada."},
-  {"sortOrder":209,"spanish":"Estar a la vuelta de la esquina.","english":"To be around the corner.","englishVariants":[],"grammarTag":"idiomatic","difficultyLevel":2,"grammarNote":"Spatial expression often used idiomatically to mean something is very close or about to happen."},
-  {"sortOrder":210,"spanish":"Claro que sí.","english":"Of course.","englishVariants":["Sure.","Absolutely."],"grammarTag":"idiomatic","difficultyLevel":1,"grammarNote":"Claro que sí = clearly yes. Very common affirmation."},
-  {"sortOrder":211,"spanish":"Quiero que me digan la verdad.","english":"I want them to tell me the truth.","englishVariants":[],"grammarTag":"subjunctive","difficultyLevel":3,"grammarNote":"Querer que + subjunctive (digan) with different subjects. Me = indirect object pronoun in the dependent clause."},
-  {"sortOrder":212,"spanish":"Espero que hayas descansado.","english":"I hope you've rested.","englishVariants":[],"grammarTag":"subjunctive","difficultyLevel":4,"grammarNote":"Esperar que + present perfect subjunctive (hayas descansado) for completed actions."},
-  {"sortOrder":213,"spanish":"Quería que vinieras a la fiesta.","english":"I wanted you to come to the party.","englishVariants":[],"grammarTag":"subjunctive","difficultyLevel":4,"grammarNote":"Past tense main verb (quería) + past subjunctive (vinieras) when subjects differ."},
-  {"sortOrder":214,"spanish":"No había nadie que supiera la respuesta.","english":"There was nobody who knew the answer.","englishVariants":[],"grammarTag":"subjunctive","difficultyLevel":5,"grammarNote":"Negative antecedent in past (no había nadie) triggers past subjunctive in the relative clause."},
-  {"sortOrder":215,"spanish":"A menos que vengas tú, no hay quórum.","english":"Unless you come, there's no quorum.","englishVariants":[],"grammarTag":"subjunctive","difficultyLevel":4,"grammarNote":"A menos que always triggers subjunctive. It expresses a conditional exception."},
-  {"sortOrder":216,"spanish":"Antes de que te vayas, necesito decirte algo.","english":"Before you leave, I need to tell you something.","englishVariants":[],"grammarTag":"subjunctive","difficultyLevel":4,"grammarNote":"Antes de que always triggers subjunctive (future event, different subject)."},
-  {"sortOrder":217,"spanish":"Con tal de que llegues a tiempo, todo está bien.","english":"As long as you arrive on time, everything is fine.","englishVariants":[],"grammarTag":"subjunctive","difficultyLevel":4,"grammarNote":"Con tal de que triggers subjunctive. It expresses a condition for acceptability."},
-  {"sortOrder":218,"spanish":"Siempre que pueda, te ayudo.","english":"Whenever I can, I'll help you.","englishVariants":[],"grammarTag":"subjunctive","difficultyLevel":4,"grammarNote":"Siempre que = whenever/as long as, followed by subjunctive for habitual future conditions."},
-  {"sortOrder":219,"spanish":"Habla como si supiera todo.","english":"He talks as if he knew everything.","englishVariants":[],"grammarTag":"subjunctive","difficultyLevel":4,"grammarNote":"Como si always triggers imperfect subjunctive (presents something as hypothetical/unreal)."},
-  {"sortOrder":220,"spanish":"No hay nadie que lo sepa.","english":"There's no one who knows it.","englishVariants":[],"grammarTag":"subjunctive","difficultyLevel":4,"grammarNote":"Negative antecedent (no hay nadie) triggers subjunctive in the relative clause."},
-  {"sortOrder":221,"spanish":"Ojalá pudiera acompañarte.","english":"I wish I could go with you.","englishVariants":[],"grammarTag":"subjunctive","difficultyLevel":4,"grammarNote":"Ojalá + imperfect subjunctive expresses an unlikely or impossible wish in the present/future."},
-  {"sortOrder":222,"spanish":"Ojalá hubiera podido ayudarte.","english":"I wish I had been able to help you.","englishVariants":[],"grammarTag":"subjunctive","difficultyLevel":5,"grammarNote":"Ojalá + past perfect subjunctive expresses regret about something that didn't happen."},
-  {"sortOrder":223,"spanish":"Pase lo que pase, estaré aquí.","english":"Whatever happens, I'll be here.","englishVariants":[],"grammarTag":"subjunctive","difficulpLevel":4,"difficultyLevel":4,"grammarNote":"Pase lo que pase = whatever happens. Concessive subjunctive construction."},
-  {"sortOrder":224,"spanish":"Hagas lo que hagas, apoyaré tu decisión.","english":"Whatever you do, I'll support your decision.","englishVariants":[],"grammarTag":"subjunctive","difficultyLevel":5,"grammarNote":"Concessive subjunctive with repetition (hagas lo que hagas) = whatever you do."},
-  {"sortOrder":225,"spanish":"Por más que lo intento, no lo logro.","english":"No matter how hard I try, I can't manage it.","englishVariants":[],"grammarTag":"subjunctive","difficultyLevel":4,"grammarNote":"Por más que + subjunctive/indicative = no matter how much. Expresses futile effort."},
-  {"sortOrder":226,"spanish":"¿En qué puedo servirle?","english":"How can I help you? (formal)","englishVariants":["How may I assist you?"],"grammarTag":"survival","difficultyLevel":2,"grammarNote":"Servirle (indirect object pronoun attached to infinitive). Used in formal/service contexts."},
-  {"sortOrder":227,"spanish":"Habría sido mejor decírselo antes.","english":"It would have been better to tell him before.","englishVariants":[],"grammarTag":"conditional","difficultyLevel":5,"grammarNote":"Conditional perfect (habría sido) for an action that didn't happen. Decírselo = decir + se + lo attached."},
-  {"sortOrder":228,"spanish":"Lo que me molesta es la hipocresía.","english":"What bothers me is hypocrisy.","englishVariants":[],"grammarTag":"non-intuitive","difficultyLevel":4,"grammarNote":"Lo que + clause = nominalized relative clause used as subject. Lo is a neuter article."},
-  {"sortOrder":229,"spanish":"Mientras más practicas, mejor hablas.","english":"The more you practice, the better you speak.","englishVariants":[],"grammarTag":"non-intuitive","difficultyLevel":4,"grammarNote":"Mientras más...más/mejor is the Latin American correlative construction for 'the more...the more.'"},
-  {"sortOrder":230,"spanish":"Fue entonces cuando lo entendí todo.","english":"It was then that I understood everything.","englishVariants":[],"grammarTag":"non-intuitive","difficultyLevel":4,"grammarNote":"Cleft sentence: fue + time expression + cuando. Used for emphasis. Ser acts as a linking verb."},
-  {"sortOrder":231,"spanish":"Lo que me sorprende es tu actitud.","english":"What surprises me is your attitude.","englishVariants":[],"grammarTag":"non-intuitive","difficultyLevel":4,"grammarNote":"Lo que + clause = what (nominalized relative). Acts as subject of the main clause."},
-  {"sortOrder":232,"spanish":"Se hizo de noche.","english":"It got dark. / Night fell.","englishVariants":[],"grammarTag":"non-intuitive","difficultyLevel":3,"grammarNote":"Hacerse + noun/adjective = to become. Se hizo de noche = it became night. Impersonal."},
-  {"sortOrder":233,"spanish":"Cuanto antes lo hagas, mejor.","english":"The sooner you do it, the better.","englishVariants":[],"grammarTag":"non-intuitive","difficultyLevel":4,"grammarNote":"Cuanto antes = the sooner. This correlative structure differs from mientras más...más."},
-  {"sortOrder":234,"spanish":"No me parece que sea la mejor opción.","english":"It doesn't seem to me that it's the best option.","englishVariants":[],"grammarTag":"subjunctive","difficultyLevel":4,"grammarNote":"No parecer que triggers subjunctive (negated verb of seeming introduces doubt)."},
-  {"sortOrder":235,"spanish":"Me arrepiento de haberlo dicho.","english":"I regret having said it.","englishVariants":[],"grammarTag":"reflexive","difficultyLevel":4,"grammarNote":"Arrepentirse de (reflexive) = to regret. Followed by perfect infinitive (haber + past participle)."},
-  {"sortOrder":236,"spanish":"Se atrevió a decirle la verdad.","english":"He/she dared to tell him/her the truth.","englishVariants":[],"grammarTag":"reflexive","difficultyLevel":3,"grammarNote":"Atreverse a + infinitive = to dare to do something. Always reflexive."},
-  {"sortOrder":237,"spanish":"Me enamoré de ella a primera vista.","english":"I fell in love with her at first sight.","englishVariants":[],"grammarTag":"reflexive","difficultyLevel":3,"grammarNote":"Enamorarse de (reflexive) = to fall in love with. A primera vista = at first sight."},
-  {"sortOrder":238,"spanish":"Se fue sin despedirse.","english":"He/she left without saying goodbye.","englishVariants":[],"grammarTag":"reflexive","difficultyLevel":3,"grammarNote":"Irse (reflexive) = to leave/go away. Despedirse (reflexive) = to say goodbye. Sin + infinitive."},
-  {"sortOrder":239,"spanish":"Nos llevamos muy bien.","english":"We get along very well.","englishVariants":[],"grammarTag":"reflexive","difficultyLevel":2,"grammarNote":"Llevarse bien/mal = to get along well/poorly. Reciprocal reflexive."},
-  {"sortOrder":240,"spanish":"Se negó a hablar con la prensa.","english":"He/she refused to speak to the press.","englishVariants":[],"grammarTag":"reflexive","difficultyLevel":3,"grammarNote":"Negarse a + infinitive = to refuse to do. Always reflexive."},
-  {"sortOrder":241,"spanish":"Ponerse de acuerdo.","english":"To come to an agreement.","englishVariants":["To agree on something."],"grammarTag":"reflexive","difficultyLevel":3,"grammarNote":"Ponerse de acuerdo = to reach agreement. Ponerse + noun/adj phrase for 'becoming' in a state."},
-  {"sortOrder":242,"spanish":"No te preocupes.","english":"Don't worry.","englishVariants":[],"grammarTag":"reflexive","difficultyLevel":2,"grammarNote":"Preocuparse (reflexive) = to worry. Negative informal command: no + te + preocupes (subjunctive form)."},
-  {"sortOrder":243,"spanish":"¿En qué se diferencia esto de aquello?","english":"How does this differ from that?","englishVariants":["What's the difference between this and that?"],"grammarTag":"non-intuitive","difficultyLevel":4,"grammarNote":"Diferenciarse de (reflexive) = to differ from. ¿En qué? = in what way?"},
-  {"sortOrder":244,"spanish":"Está por llegar.","english":"He/she is about to arrive.","englishVariants":["He/she is on the verge of arriving."],"grammarTag":"verb-infinitive","difficultyLevel":3,"grammarNote":"Estar por + infinitive = to be about to do something (near future)."},
-  {"sortOrder":245,"spanish":"No logro entender este concepto.","english":"I can't manage to understand this concept.","englishVariants":[],"grammarTag":"verb-infinitive","difficultyLevel":3,"grammarNote":"Lograr + infinitive = to manage to do / to succeed in doing. Useful alternative to poder."},
-  {"sortOrder":246,"spanish":"Tardó una hora en contestar.","english":"He took an hour to reply.","englishVariants":[],"grammarTag":"verb-infinitive","difficultyLevel":3,"grammarNote":"Tardar + time + en + infinitive = to take (time) to do something."},
-  {"sortOrder":247,"spanish":"Trata de no llegar tarde.","english":"Try not to be late.","englishVariants":[],"grammarTag":"verb-infinitive","difficultyLevel":2,"grammarNote":"Tratar de + infinitive = to try to do. No before the infinitive = try not to."},
-  {"sortOrder":248,"spanish":"Me alegro de verte.","english":"I'm glad to see you.","englishVariants":[],"grammarTag":"verb-infinitive","difficultyLevel":2,"grammarNote":"Alegrarse de + infinitive = to be glad to do. When subjects are the same, use infinitive (not subjunctive)."},
-  {"sortOrder":249,"spanish":"Acaba de salir.","english":"He/she just left.","englishVariants":[],"grammarTag":"verb-infinitive","difficultyLevel":2,"grammarNote":"Acabar de + infinitive in third person = he/she just did something."},
-  {"sortOrder":250,"spanish":"Me robaron la cartera.","english":"My wallet was stolen.","englishVariants":["They stole my wallet."],"grammarTag":"non-intuitive","difficultyLevel":2,"grammarNote":"Me + verb in third person plural = passive/impersonal event done to me. Common for victimization."},
-  {"sortOrder":251,"spanish":"¿Qué le pasó?","english":"What happened to him/her?","englishVariants":["What's wrong with him/her?"],"grammarTag":"non-intuitive","difficultyLevel":2,"grammarNote":"Le = indirect object pronoun. Pasar a alguien = to happen to someone."},
-  {"sortOrder":252,"spanish":"Se me fue la luz.","english":"The power went out on me.","englishVariants":["I lost power."],"grammarTag":"non-intuitive","difficultyLevel":3,"grammarNote":"Accidental se + indirect object: something happened to me involuntarily. Literally 'the power left itself to me.'"},
-  {"sortOrder":253,"spanish":"Dicho esto, pasemos al siguiente tema.","english":"That said, let's move on to the next topic.","englishVariants":[],"grammarTag":"non-intuitive","difficultyLevel":4,"grammarNote":"Absolute participial construction: dicho esto = having said this. No conjugated verb in the participial phrase."},
-  {"sortOrder":254,"spanish":"Se empezó a entender la situación.","english":"The situation began to be understood.","englishVariants":[],"grammarTag":"non-intuitive","difficultyLevel":4,"grammarNote":"Empezar a + infinitive with impersonal se creates a passive-like construction."},
-  {"sortOrder":255,"spanish":"¿Cuándo quieres que lo haga?","english":"When do you want me to do it?","englishVariants":[],"grammarTag":"subjunctive","difficultyLevel":3,"grammarNote":"Querer que + subjunctive (haga) with different subjects."},
-  {"sortOrder":256,"spanish":"Espero poder verte pronto.","english":"I hope to be able to see you soon.","englishVariants":[],"grammarTag":"verb-infinitive","difficultyLevel":3,"grammarNote":"Esperar + infinitive (same subject) vs. esperar que + subjunctive (different subjects)."},
-  {"sortOrder":257,"spanish":"Se me hace agua la boca.","english":"My mouth is watering.","englishVariants":[],"grammarTag":"idiomatic","difficultyLevel":3,"grammarNote":"Hacerse agua la boca = my mouth waters. Idiomatic use of hacerse with body part + indirect object."},
-  {"sortOrder":258,"spanish":"Meter la pata.","english":"To put one's foot in it. / To mess up.","englishVariants":["To make a blunder."],"grammarTag":"idiomatic","difficultyLevel":3,"grammarNote":"Meter la pata = to stick one's paw in = to make a social or practical blunder."},
-  {"sortOrder":259,"spanish":"Echar de menos a alguien.","english":"To miss someone.","englishVariants":[],"grammarTag":"idiomatic","difficultyLevel":3,"grammarNote":"Echar de menos = to miss a person or place. Preferred in Spain; Latin America uses extrañar."},
-  {"sortOrder":260,"spanish":"Echar a perder algo.","english":"To ruin something. / To spoil something.","englishVariants":[],"grammarTag":"idiomatic","difficultyLevel":4,"grammarNote":"Echar a perder = to throw to waste = to ruin. Reflexive form echarse a perder = to go bad (food)."},
-  {"sortOrder":261,"spanish":"No tener pelos en la lengua.","english":"To be outspoken. / To not mince words.","englishVariants":["To speak one's mind freely."],"grammarTag":"idiomatic","difficultyLevel":4,"grammarNote":"Literally 'to have no hairs on the tongue' = to speak bluntly without filtering."},
-  {"sortOrder":262,"spanish":"A que no sabes qué me pasó.","english":"I bet you don't know what happened to me.","englishVariants":[],"grammarTag":"idiomatic","difficultyLevel":4,"grammarNote":"A que + negation = I bet (introducing something the speaker thinks the listener doesn't know). Very colloquial."},
-  {"sortOrder":263,"spanish":"Resulta que me lo dijeron mal.","english":"It turns out they told me wrong.","englishVariants":[],"grammarTag":"idiomatic","difficultyLevel":3,"grammarNote":"Resultar que + indicative = it turns out that. Common frame for surprising revelations."},
-  {"sortOrder":264,"spanish":"¡Qué padre!","english":"How cool!","englishVariants":["Awesome!","Great!"],"grammarTag":"idiomatic","difficultyLevel":2,"grammarNote":"Mexican expression of enthusiasm. Padre = father, but colloquially means 'cool/awesome.'"},
-  {"sortOrder":265,"spanish":"Ni modo.","english":"Oh well. / No way.","englishVariants":["Too bad.","What can you do?"],"grammarTag":"idiomatic","difficultyLevel":2,"grammarNote":"Common Latin American expression of resignation or refusal depending on context."},
-  {"sortOrder":266,"spanish":"En cambio, mi hermano sí fue.","english":"On the other hand, my brother did go.","englishVariants":[],"grammarTag":"idiomatic","difficultyLevel":3,"grammarNote":"En cambio = on the other hand / instead. Introduces a contrasting idea."},
-  {"sortOrder":267,"spanish":"A veces me siento solo.","english":"Sometimes I feel lonely.","englishVariants":[],"grammarTag":"idiomatic","difficultyLevel":2,"grammarNote":"A veces = sometimes. Sentirse solo = to feel lonely (reflexive verb + adjective)."},
-  {"sortOrder":268,"spanish":"En realidad, no lo sé.","english":"Actually, I don't know.","englishVariants":["In reality, I don't know."],"grammarTag":"idiomatic","difficultyLevel":2,"grammarNote":"En realidad = actually/in reality. Doesn't carry the contradictory force of 'actually' in English."},
-  {"sortOrder":269,"spanish":"A propósito, ¿viste las noticias?","english":"By the way, did you see the news?","englishVariants":[],"grammarTag":"idiomatic","difficultyLevel":2,"grammarNote":"A propósito = by the way (to introduce a new topic)."},
-  {"sortOrder":270,"spanish":"En cuanto a eso, no sé.","english":"As for that, I don't know.","englishVariants":[],"grammarTag":"idiomatic","difficultyLevel":3,"grammarNote":"En cuanto a = as for / regarding. Used to frame a topic."},
-  {"sortOrder":271,"spanish":"Siento que hayas tenido que esperar.","english":"I'm sorry you had to wait.","englishVariants":[],"grammarTag":"subjunctive","difficultyLevel":4,"grammarNote":"Sentir que + present perfect subjunctive for regret about a completed event."},
-  {"sortOrder":272,"spanish":"No lo haré sin que me lo pidas.","english":"I won't do it unless you ask me.","englishVariants":[],"grammarTag":"subjunctive","difficultyLevel":4,"grammarNote":"Sin que triggers subjunctive (different subjects required)."},
-  {"sortOrder":273,"spanish":"Busca a alguien que hable chino.","english":"He's looking for someone who speaks Chinese.","englishVariants":[],"grammarTag":"subjunctive","difficultyLevel":4,"grammarNote":"Indefinite/unknown antecedent (someone hypothetical) triggers subjunctive in the relative clause."},
-  {"sortOrder":274,"spanish":"¿Qué Dios te bendiga!","english":"May God bless you!","englishVariants":[],"grammarTag":"subjunctive","difficultyLevel":3,"grammarNote":"Que + subjunctive (bendiga) expresses a wish or blessing. Indirect command/wish without main verb."},
-  {"sortOrder":275,"spanish":"Aunque hubiera querido, no habría podido.","english":"Even if I had wanted to, I wouldn't have been able to.","englishVariants":[],"grammarTag":"subjunctive","difficultyLevel":5,"grammarNote":"Aunque + past perfect subjunctive (hubiera querido) + conditional perfect (habría podido)."},
-  {"sortOrder":276,"spanish":"Me temo que no va a funcionar.","english":"I'm afraid it's not going to work.","englishVariants":[],"grammarTag":"idiomatic","difficultyLevel":3,"grammarNote":"Temerse (reflexive) = to be afraid/suspect (used to hedge bad news). Different nuance from tener miedo."},
-  {"sortOrder":277,"spanish":"¿Qué me recomiendas?","english":"What do you recommend to me?","englishVariants":["What do you recommend?"],"grammarTag":"object-pronoun","difficultyLevel":2,"grammarNote":"Me = indirect object pronoun. Recomendar is a verb like gustar in that it needs an indirect object."},
-  {"sortOrder":278,"spanish":"¿Me lo puedes explicar?","english":"Can you explain it to me?","englishVariants":[],"grammarTag":"object-pronoun","difficultyLevel":2,"grammarNote":"Me (indirect) + lo (direct) before the modal verb. Can also attach to the infinitive: ¿puedes explicármelo?"},
-  {"sortOrder":279,"spanish":"Nos lo contaron todo.","english":"They told us everything.","englishVariants":[],"grammarTag":"object-pronoun","difficultyLevel":3,"grammarNote":"Nos (indirect) + lo (direct) before the verb. Todo = everything (direct object not replaced by lo here)."},
-  {"sortOrder":280,"spanish":"¿Por qué no nos tomamos un descanso?","english":"Why don't we take a break?","englishVariants":[],"grammarTag":"reflexive","difficultyLevel":2,"grammarNote":"Tomarse un descanso (reflexive) = to take a break for oneself. ¿Por qué no + present? = invitation."},
-  {"sortOrder":281,"spanish":"Se pelearon por una tontería.","english":"They fought over something silly.","englishVariants":[],"grammarTag":"reflexive","difficultyLevel":3,"grammarNote":"Pelearse (reflexive/reciprocal) = to fight/argue with each other."},
-  {"sortOrder":282,"spanish":"Estaba tan cansado que me dormí en el sofá.","english":"I was so tired that I fell asleep on the sofa.","englishVariants":[],"grammarTag":"reflexive","difficultyLevel":3,"grammarNote":"Dormirse (reflexive) = to fall asleep (involuntary). Dormir = to sleep (general activity)."},
-  {"sortOrder":283,"spanish":"No quiero ni café ni té.","english":"I don't want either coffee or tea.","englishVariants":["I want neither coffee nor tea."],"grammarTag":"negative","difficultyLevel":3,"grammarNote":"Ni...ni = neither...nor. Requires no before the verb when the construction follows it."},
-  {"sortOrder":284,"spanish":"No lo ha visto nadie todavía.","english":"Nobody has seen it yet.","englishVariants":[],"grammarTag":"negative","difficultyLevel":3,"grammarNote":"Double negative: no + verb + nadie. Nadie after the verb adds emphasis. Todavía = yet/still."},
-  {"sortOrder":285,"spanish":"Jamás había visto algo así.","english":"I had never seen anything like that.","englishVariants":[],"grammarTag":"negative","difficultyLevel":3,"grammarNote":"Jamás + past perfect = had never. Algo here becomes 'anything' in a negative context."},
-  {"sortOrder":286,"spanish":"No tiene ningún sentido.","english":"It doesn't make any sense.","englishVariants":["It makes no sense."],"grammarTag":"negative","difficultyLevel":3,"grammarNote":"Ningún + masculine singular noun as emphatic negation. Double negative: no + verb + ningún."},
-  {"sortOrder":287,"spanish":"Nunca jamás lo haré.","english":"I will never ever do it.","englishVariants":[],"grammarTag":"negative","difficultyLevel":3,"grammarNote":"Nunca jamás = never ever. Double negative adverbs for maximum emphasis."},
-  {"sortOrder":288,"spanish":"Por nada del mundo lo diría.","english":"I wouldn't say it for anything in the world.","englishVariants":[],"grammarTag":"negative","difficultyLevel":4,"grammarNote":"Por nada del mundo = not for anything in the world. Emphatic negation with conditional."},
-  {"sortOrder":289,"spanish":"Hace un calor de muerte hoy.","english":"It's unbearably hot today.","englishVariants":["It's deadly hot today."],"grammarTag":"weather-time","difficultyLevel":3,"grammarNote":"Hacer + noun + de muerte = idiomatic intensification of weather expressions."},
-  {"sortOrder":290,"spanish":"Al anochecer empezó a llover.","english":"At nightfall it started to rain.","englishVariants":["When night fell, it started to rain."],"grammarTag":"weather-time","difficultyLevel":4,"grammarNote":"Al + infinitive = upon/when doing something. Al anochecer = when night fell (anochecer = to get dark)."},
-  {"sortOrder":291,"spanish":"Habría que estudiar más.","english":"One would need to study more.","englishVariants":[],"grammarTag":"conditional","difficultyLevel":4,"grammarNote":"Habría que + infinitive = conditional impersonal obligation. The conditional form of hay que."},
-  {"sortOrder":292,"spanish":"Podría haber llegado antes.","english":"He/she could have arrived earlier.","englishVariants":[],"grammarTag":"conditional","difficultyLevel":4,"grammarNote":"Conditional perfect of poder (podría haber) + past participle = could have done."},
-  {"sortOrder":293,"spanish":"Debería haberlo dicho antes.","english":"He/she should have said it earlier.","englishVariants":[],"grammarTag":"conditional","difficultyLevel":4,"grammarNote":"Deber in conditional (debería) + haber + past participle = should have done."},
-  {"sortOrder":294,"spanish":"Que descanse en paz.","english":"May he/she rest in peace.","englishVariants":[],"grammarTag":"subjunctive","difficultyLevel":4,"grammarNote":"Que + subjunctive in an independent clause expresses a wish. The que is mandatory."},
-  {"sortOrder":295,"spanish":"No por mucho madrugar amanece más temprano.","english":"Getting up earlier doesn't make the sun rise sooner. / Haste makes waste.","englishVariants":[],"grammarTag":"idiomatic","difficultyLevel":5,"grammarNote":"Proverb: rushing doesn't speed up natural outcomes. Madrugar = to rise early. Amanecer = for dawn to break."},
-  {"sortOrder":296,"spanish":"A palabras necias, oídos sordos.","english":"Don't pay attention to foolish words.","englishVariants":["Turn a deaf ear to foolishness."],"grammarTag":"idiomatic","difficultyLevel":5,"grammarNote":"Proverb using ellipsis: to foolish words, deaf ears. Shows how Spanish proverbs omit verbs."},
-  {"sortOrder":297,"spanish":"Cada quien a lo suyo.","english":"To each their own.","englishVariants":[],"grammarTag":"idiomatic","difficultyLevel":4,"grammarNote":"Cada quien = each one. A lo suyo = to their own thing. Expresses non-interference."},
-  {"sortOrder":298,"spanish":"Dicho y hecho.","english":"No sooner said than done.","englishVariants":["Said and done."],"grammarTag":"idiomatic","difficultyLevel":3,"grammarNote":"Absolute participle construction: said and done. Common expression showing efficiency."},
-  {"sortOrder":299,"spanish":"Cueste lo que cueste, lo terminaré.","english":"Whatever it costs, I'll finish it.","englishVariants":["No matter what it costs, I'll finish it."],"grammarTag":"subjunctive","difficultyLevel":5,"grammarNote":"Cueste lo que cueste = concessive subjunctive construction (whatever it costs). Expresses unconditional commitment."},
-  {"sortOrder":300,"spanish":"A grandes males, grandes remedios.","english":"Desperate times call for desperate measures.","englishVariants":[],"grammarTag":"idiomatic","difficultyLevel":4,"grammarNote":"Proverb: to great problems, great remedies. Illustrates Spanish proverbs' parallel prepositional structure."}
+  {
+    "sortOrder": 1,
+    "spanish": "Hola, ¿cómo estás?",
+    "english": "Hello, how are you?",
+    "englishVariants": [
+      "Hi, how are you?",
+      "Hello, how are you doing?"
+    ],
+    "grammarTag": "survival",
+    "difficultyLevel": 1,
+    "grammarNote": "Uses estar (temporary state), not ser. Standard informal greeting."
+  },
+  {
+    "sortOrder": 2,
+    "spanish": "Buenos días.",
+    "english": "Good morning.",
+    "englishVariants": [
+      "Good day."
+    ],
+    "grammarTag": "survival",
+    "difficultyLevel": 1,
+    "grammarNote": ""
+  },
+  {
+    "sortOrder": 3,
+    "spanish": "Por favor.",
+    "english": "Please.",
+    "englishVariants": [],
+    "grammarTag": "survival",
+    "difficultyLevel": 1,
+    "grammarNote": ""
+  },
+  {
+    "sortOrder": 4,
+    "spanish": "Gracias.",
+    "english": "Thank you.",
+    "englishVariants": [
+      "Thanks."
+    ],
+    "grammarTag": "survival",
+    "difficultyLevel": 1,
+    "grammarNote": ""
+  },
+  {
+    "sortOrder": 5,
+    "spanish": "De nada.",
+    "english": "You're welcome.",
+    "englishVariants": [
+      "Don't mention it."
+    ],
+    "grammarTag": "survival",
+    "difficultyLevel": 1,
+    "grammarNote": "Literally 'of nothing.'"
+  },
+  {
+    "sortOrder": 6,
+    "spanish": "¿Hablas inglés?",
+    "english": "Do you speak English?",
+    "englishVariants": [],
+    "grammarTag": "survival",
+    "difficultyLevel": 1,
+    "grammarNote": ""
+  },
+  {
+    "sortOrder": 7,
+    "spanish": "No entiendo.",
+    "english": "I don't understand.",
+    "englishVariants": [
+      "I don't get it."
+    ],
+    "grammarTag": "survival",
+    "difficultyLevel": 1,
+    "grammarNote": ""
+  },
+  {
+    "sortOrder": 8,
+    "spanish": "Me llamo Ana.",
+    "english": "My name is Ana.",
+    "englishVariants": [
+      "I'm called Ana."
+    ],
+    "grammarTag": "reflexive",
+    "difficultyLevel": 1,
+    "grammarNote": "Llamarse is reflexive: me llamo = I call myself."
+  },
+  {
+    "sortOrder": 9,
+    "spanish": "¿Cómo te llamas?",
+    "english": "What is your name?",
+    "englishVariants": [
+      "What's your name?"
+    ],
+    "grammarTag": "reflexive",
+    "difficultyLevel": 1,
+    "grammarNote": "Informal. Llamarse is reflexive; literally 'how do you call yourself?'"
+  },
+  {
+    "sortOrder": 10,
+    "spanish": "Mucho gusto.",
+    "english": "Nice to meet you.",
+    "englishVariants": [
+      "Pleased to meet you."
+    ],
+    "grammarTag": "survival",
+    "difficultyLevel": 1,
+    "grammarNote": ""
+  },
+  {
+    "sortOrder": 11,
+    "spanish": "¿Dónde está el baño?",
+    "english": "Where is the bathroom?",
+    "englishVariants": [
+      "Where's the restroom?"
+    ],
+    "grammarTag": "ser-estar",
+    "difficultyLevel": 1,
+    "grammarNote": "Location uses estar, not ser."
+  },
+  {
+    "sortOrder": 12,
+    "spanish": "Quiero agua, por favor.",
+    "english": "I want water, please.",
+    "englishVariants": [],
+    "grammarTag": "survival",
+    "difficultyLevel": 1,
+    "grammarNote": ""
+  },
+  {
+    "sortOrder": 13,
+    "spanish": "¿Cuánto cuesta?",
+    "english": "How much does it cost?",
+    "englishVariants": [
+      "How much is it?"
+    ],
+    "grammarTag": "survival",
+    "difficultyLevel": 1,
+    "grammarNote": ""
+  },
+  {
+    "sortOrder": 14,
+    "spanish": "No hablo español bien.",
+    "english": "I don't speak Spanish well.",
+    "englishVariants": [
+      "I don't speak Spanish very well."
+    ],
+    "grammarTag": "survival",
+    "difficultyLevel": 1,
+    "grammarNote": ""
+  },
+  {
+    "sortOrder": 15,
+    "spanish": "Tengo hambre.",
+    "english": "I'm hungry.",
+    "englishVariants": [],
+    "grammarTag": "tener-expressions",
+    "difficultyLevel": 1,
+    "grammarNote": "Spanish uses tener + noun (I have hunger), not ser/estar + adjective as in English."
+  },
+  {
+    "sortOrder": 16,
+    "spanish": "Tengo sed.",
+    "english": "I'm thirsty.",
+    "englishVariants": [],
+    "grammarTag": "tener-expressions",
+    "difficultyLevel": 1,
+    "grammarNote": "Tener + noun idiom: literally 'I have thirst.'"
+  },
+  {
+    "sortOrder": 17,
+    "spanish": "Tengo frío.",
+    "english": "I'm cold.",
+    "englishVariants": [],
+    "grammarTag": "tener-expressions",
+    "difficultyLevel": 1,
+    "grammarNote": "Tener + noun: literally 'I have cold.' Contrast with hace frío (the weather is cold)."
+  },
+  {
+    "sortOrder": 18,
+    "spanish": "Tengo calor.",
+    "english": "I'm hot.",
+    "englishVariants": [
+      "I'm warm."
+    ],
+    "grammarTag": "tener-expressions",
+    "difficultyLevel": 1,
+    "grammarNote": "Tener + noun: literally 'I have heat.'"
+  },
+  {
+    "sortOrder": 19,
+    "spanish": "Soy americano.",
+    "english": "I'm American.",
+    "englishVariants": [
+      "I am American."
+    ],
+    "grammarTag": "ser-estar",
+    "difficultyLevel": 1,
+    "grammarNote": "Origin and nationality use ser, not estar."
+  },
+  {
+    "sortOrder": 20,
+    "spanish": "Estoy cansado.",
+    "english": "I'm tired.",
+    "englishVariants": [],
+    "grammarTag": "ser-estar",
+    "difficultyLevel": 1,
+    "grammarNote": "Temporary states use estar. Cansado is a condition, not a permanent trait."
+  },
+  {
+    "sortOrder": 21,
+    "spanish": "Me gusta el café.",
+    "english": "I like coffee.",
+    "englishVariants": [],
+    "grammarTag": "gustar-type",
+    "difficultyLevel": 1,
+    "grammarNote": "Gustar is backwards from English: the coffee pleases me (el café = subject, me = indirect object pronoun)."
+  },
+  {
+    "sortOrder": 22,
+    "spanish": "Me gustan las películas.",
+    "english": "I like movies.",
+    "englishVariants": [
+      "I like films."
+    ],
+    "grammarTag": "gustar-type",
+    "difficultyLevel": 1,
+    "grammarNote": "Plural subject (películas) requires plural verb gustan."
+  },
+  {
+    "sortOrder": 23,
+    "spanish": "No me gusta el pescado.",
+    "english": "I don't like fish.",
+    "englishVariants": [],
+    "grammarTag": "gustar-type",
+    "difficultyLevel": 1,
+    "grammarNote": "Negation goes before the indirect object pronoun: no me gusta."
+  },
+  {
+    "sortOrder": 24,
+    "spanish": "Hace calor hoy.",
+    "english": "It's hot today.",
+    "englishVariants": [
+      "It's warm today."
+    ],
+    "grammarTag": "hacer-expressions",
+    "difficultyLevel": 1,
+    "grammarNote": "Weather uses hacer + noun: hace calor, hace frío, hace sol, hace viento."
+  },
+  {
+    "sortOrder": 25,
+    "spanish": "Hace frío afuera.",
+    "english": "It's cold outside.",
+    "englishVariants": [],
+    "grammarTag": "hacer-expressions",
+    "difficultyLevel": 1,
+    "grammarNote": "Hacer for weather; afuera = outside. Never 'está frío' for weather."
+  },
+  {
+    "sortOrder": 26,
+    "spanish": "¿Qué hora es?",
+    "english": "What time is it?",
+    "englishVariants": [],
+    "grammarTag": "hacer-expressions",
+    "difficultyLevel": 1,
+    "grammarNote": ""
+  },
+  {
+    "sortOrder": 27,
+    "spanish": "Son las tres.",
+    "english": "It's three o'clock.",
+    "englishVariants": [
+      "It's three."
+    ],
+    "grammarTag": "hacer-expressions",
+    "difficultyLevel": 1,
+    "grammarNote": "Use son for all hours except one (es la una)."
+  },
+  {
+    "sortOrder": 28,
+    "spanish": "Quiero comer algo.",
+    "english": "I want to eat something.",
+    "englishVariants": [],
+    "grammarTag": "verb-infinitive",
+    "difficultyLevel": 1,
+    "grammarNote": "Querer + infinitive is a direct verb chain, similar to English 'want to.'"
+  },
+  {
+    "sortOrder": 29,
+    "spanish": "Necesito ayuda.",
+    "english": "I need help.",
+    "englishVariants": [],
+    "grammarTag": "survival",
+    "difficultyLevel": 1,
+    "grammarNote": ""
+  },
+  {
+    "sortOrder": 30,
+    "spanish": "¿Me puede ayudar?",
+    "english": "Can you help me?",
+    "englishVariants": [
+      "Could you help me?"
+    ],
+    "grammarTag": "object-pronouns",
+    "difficultyLevel": 1,
+    "grammarNote": "Me (indirect object pronoun) precedes the conjugated verb."
+  },
+  {
+    "sortOrder": 31,
+    "spanish": "Voy a ir al mercado.",
+    "english": "I'm going to go to the market.",
+    "englishVariants": [
+      "I'm going to the market."
+    ],
+    "grammarTag": "verb-infinitive",
+    "difficultyLevel": 2,
+    "grammarNote": "Ir a + infinitive expresses near future. Al = a + el (contraction)."
+  },
+  {
+    "sortOrder": 32,
+    "spanish": "Tengo que trabajar mañana.",
+    "english": "I have to work tomorrow.",
+    "englishVariants": [
+      "I need to work tomorrow."
+    ],
+    "grammarTag": "verb-infinitive",
+    "difficultyLevel": 2,
+    "grammarNote": "Tener que + infinitive expresses obligation."
+  },
+  {
+    "sortOrder": 33,
+    "spanish": "Acabo de llegar.",
+    "english": "I just arrived.",
+    "englishVariants": [
+      "I just got here."
+    ],
+    "grammarTag": "verb-infinitive",
+    "difficultyLevel": 2,
+    "grammarNote": "Acabar de + infinitive = to have just done something (immediate past)."
+  },
+  {
+    "sortOrder": 34,
+    "spanish": "Debo estudiar más.",
+    "english": "I should study more.",
+    "englishVariants": [
+      "I ought to study more."
+    ],
+    "grammarTag": "verb-infinitive",
+    "difficultyLevel": 2,
+    "grammarNote": "Deber + infinitive expresses moral obligation or duty."
+  },
+  {
+    "sortOrder": 35,
+    "spanish": "Puedo hablar un poco de español.",
+    "english": "I can speak a little Spanish.",
+    "englishVariants": [],
+    "grammarTag": "verb-infinitive",
+    "difficultyLevel": 2,
+    "grammarNote": "Poder + infinitive = to be able to. Un poco de = a little of."
+  },
+  {
+    "sortOrder": 36,
+    "spanish": "Voy a llamarte esta noche.",
+    "english": "I'm going to call you tonight.",
+    "englishVariants": [],
+    "grammarTag": "verb-infinitive",
+    "difficultyLevel": 2,
+    "grammarNote": "Ir a + infinitive for near future. Object pronoun (te) attaches to the infinitive."
+  },
+  {
+    "sortOrder": 37,
+    "spanish": "Volvió a llamar.",
+    "english": "He called again.",
+    "englishVariants": [],
+    "grammarTag": "verb-infinitive",
+    "difficultyLevel": 2,
+    "grammarNote": "Volver a + infinitive = to do something again. More idiomatic than adding 'otra vez.'"
+  },
+  {
+    "sortOrder": 38,
+    "spanish": "Dejé de tomar café.",
+    "english": "I stopped drinking coffee.",
+    "englishVariants": [],
+    "grammarTag": "verb-infinitive",
+    "difficultyLevel": 2,
+    "grammarNote": "Dejar de + infinitive = to stop doing something."
+  },
+  {
+    "sortOrder": 39,
+    "spanish": "Me duele la cabeza.",
+    "english": "My head hurts.",
+    "englishVariants": [
+      "I have a headache."
+    ],
+    "grammarTag": "gustar-type",
+    "difficultyLevel": 2,
+    "grammarNote": "Doler works like gustar: the head hurts me (la cabeza = subject, me = indirect object)."
+  },
+  {
+    "sortOrder": 40,
+    "spanish": "Me faltan dos dólares.",
+    "english": "I'm short two dollars.",
+    "englishVariants": [
+      "I need two more dollars."
+    ],
+    "grammarTag": "gustar-type",
+    "difficultyLevel": 2,
+    "grammarNote": "Faltar works like gustar: two dollars are lacking to me. Plural subject = plural verb."
+  },
+  {
+    "sortOrder": 41,
+    "spanish": "Me parece difícil.",
+    "english": "It seems difficult to me.",
+    "englishVariants": [
+      "It seems hard to me."
+    ],
+    "grammarTag": "gustar-type",
+    "difficultyLevel": 2,
+    "grammarNote": "Parecer works like gustar. Used to hedge opinions politely."
+  },
+  {
+    "sortOrder": 42,
+    "spanish": "Me encantan los tacos.",
+    "english": "I love tacos.",
+    "englishVariants": [],
+    "grammarTag": "gustar-type",
+    "difficultyLevel": 2,
+    "grammarNote": "Encantar works like gustar. Plural subject (tacos) = plural verb (encantan)."
+  },
+  {
+    "sortOrder": 43,
+    "spanish": "Estoy aprendiendo español.",
+    "english": "I'm learning Spanish.",
+    "englishVariants": [],
+    "grammarTag": "progressive",
+    "difficultyLevel": 2,
+    "grammarNote": "Estar + gerund forms the present progressive. Used for actions happening right now."
+  },
+  {
+    "sortOrder": 44,
+    "spanish": "Está lloviendo.",
+    "english": "It's raining.",
+    "englishVariants": [],
+    "grammarTag": "progressive",
+    "difficultyLevel": 2,
+    "grammarNote": "Estar + gerund for weather in progress. Lloviendo = gerund of llover."
+  },
+  {
+    "sortOrder": 45,
+    "spanish": "Sigo trabajando en el proyecto.",
+    "english": "I'm still working on the project.",
+    "englishVariants": [],
+    "grammarTag": "progressive",
+    "difficultyLevel": 2,
+    "grammarNote": "Seguir + gerund = to keep doing / to still be doing something."
+  },
+  {
+    "sortOrder": 46,
+    "spanish": "El banco está a dos cuadras.",
+    "english": "The bank is two blocks away.",
+    "englishVariants": [],
+    "grammarTag": "ser-estar",
+    "difficultyLevel": 2,
+    "grammarNote": "Location uses estar, not ser."
+  },
+  {
+    "sortOrder": 47,
+    "spanish": "La reunión es a las nueve.",
+    "english": "The meeting is at nine.",
+    "englishVariants": [],
+    "grammarTag": "ser-estar",
+    "difficultyLevel": 2,
+    "grammarNote": "Scheduled events use ser, not estar. This surprises learners who expect location/time to always use estar."
+  },
+  {
+    "sortOrder": 48,
+    "spanish": "Soy de México.",
+    "english": "I'm from Mexico.",
+    "englishVariants": [],
+    "grammarTag": "ser-estar",
+    "difficultyLevel": 2,
+    "grammarNote": "Origin uses ser: soy de + place. Never estar de for origin."
+  },
+  {
+    "sortOrder": 49,
+    "spanish": "El restaurante está cerrado.",
+    "english": "The restaurant is closed.",
+    "englishVariants": [],
+    "grammarTag": "ser-estar",
+    "difficultyLevel": 2,
+    "grammarNote": "Cerrado (closed) is a resulting state, so estar is used."
+  },
+  {
+    "sortOrder": 50,
+    "spanish": "La sopa está muy rica.",
+    "english": "The soup is very delicious.",
+    "englishVariants": [
+      "The soup tastes great."
+    ],
+    "grammarTag": "ser-estar",
+    "difficultyLevel": 2,
+    "grammarNote": "Estar is used for how food tastes (a condition experienced in the moment). Ser rico = to be wealthy."
+  },
+  {
+    "sortOrder": 51,
+    "spanish": "No tengo nada.",
+    "english": "I don't have anything.",
+    "englishVariants": [
+      "I have nothing."
+    ],
+    "grammarTag": "negative-constructions",
+    "difficultyLevel": 2,
+    "grammarNote": "Spanish requires double negatives: no + verb + nada. Both no and nada are needed."
+  },
+  {
+    "sortOrder": 52,
+    "spanish": "Nunca voy al gimnasio.",
+    "english": "I never go to the gym.",
+    "englishVariants": [],
+    "grammarTag": "negative-constructions",
+    "difficultyLevel": 2,
+    "grammarNote": "Nunca can precede the verb without 'no.' If it follows: no voy nunca al gimnasio (double negative)."
+  },
+  {
+    "sortOrder": 53,
+    "spanish": "No hay nadie aquí.",
+    "english": "There's nobody here.",
+    "englishVariants": [
+      "Nobody is here."
+    ],
+    "grammarTag": "negative-constructions",
+    "difficultyLevel": 2,
+    "grammarNote": "No + hay + nadie: double negative required in Spanish."
+  },
+  {
+    "sortOrder": 54,
+    "spanish": "Tampoco quiero ir.",
+    "english": "I don't want to go either.",
+    "englishVariants": [],
+    "grammarTag": "negative-constructions",
+    "difficultyLevel": 2,
+    "grammarNote": "Tampoco = neither/not either. Can precede verb without additional 'no.'"
+  },
+  {
+    "sortOrder": 55,
+    "spanish": "Esta es para ti.",
+    "english": "This is for you.",
+    "englishVariants": [],
+    "grammarTag": "por-para",
+    "difficultyLevel": 2,
+    "grammarNote": "Para indicates the recipient/beneficiary of something."
+  },
+  {
+    "sortOrder": 56,
+    "spanish": "Trabajo para una empresa grande.",
+    "english": "I work for a large company.",
+    "englishVariants": [],
+    "grammarTag": "por-para",
+    "difficultyLevel": 2,
+    "grammarNote": "Para indicates employment — working in service of an entity."
+  },
+  {
+    "sortOrder": 57,
+    "spanish": "Gracias por tu ayuda.",
+    "english": "Thank you for your help.",
+    "englishVariants": [],
+    "grammarTag": "por-para",
+    "difficultyLevel": 2,
+    "grammarNote": "Por expresses gratitude for something received or done."
+  },
+  {
+    "sortOrder": 58,
+    "spanish": "Lo hice por ti.",
+    "english": "I did it for you (because of you).",
+    "englishVariants": [
+      "I did it for your sake."
+    ],
+    "grammarTag": "por-para",
+    "difficultyLevel": 2,
+    "grammarNote": "Por expresses motive or cause (on account of). Para would mean 'for your benefit/use.'"
+  },
+  {
+    "sortOrder": 59,
+    "spanish": "Viajo por avión.",
+    "english": "I travel by plane.",
+    "englishVariants": [],
+    "grammarTag": "por-para",
+    "difficultyLevel": 2,
+    "grammarNote": "Por is used for means of transportation or communication."
+  },
+  {
+    "sortOrder": 60,
+    "spanish": "Salgo para Madrid mañana.",
+    "english": "I'm leaving for Madrid tomorrow.",
+    "englishVariants": [],
+    "grammarTag": "por-para",
+    "difficultyLevel": 2,
+    "grammarNote": "Para indicates destination when traveling."
+  },
+  {
+    "sortOrder": 61,
+    "spanish": "Me despierto a las siete.",
+    "english": "I wake up at seven.",
+    "englishVariants": [
+      "I wake up at seven o'clock."
+    ],
+    "grammarTag": "reflexive",
+    "difficultyLevel": 2,
+    "grammarNote": "Despertarse is reflexive: the action reflects back on the subject."
+  },
+  {
+    "sortOrder": 62,
+    "spanish": "Me baño todos los días.",
+    "english": "I shower every day.",
+    "englishVariants": [
+      "I bathe every day."
+    ],
+    "grammarTag": "reflexive",
+    "difficultyLevel": 2,
+    "grammarNote": "Bañarse (reflexive) = to bathe oneself. Bañar (non-reflexive) = to bathe someone else."
+  },
+  {
+    "sortOrder": 63,
+    "spanish": "Me siento bien hoy.",
+    "english": "I feel well today.",
+    "englishVariants": [
+      "I feel good today."
+    ],
+    "grammarTag": "reflexive",
+    "difficultyLevel": 2,
+    "grammarNote": "Sentirse (reflexive) = to feel (emotionally/physically). Sentar = to seat someone."
+  },
+  {
+    "sortOrder": 64,
+    "spanish": "¿Te acuerdas de mí?",
+    "english": "Do you remember me?",
+    "englishVariants": [],
+    "grammarTag": "reflexive",
+    "difficultyLevel": 2,
+    "grammarNote": "Acordarse de (reflexive) = to remember. Requires de before the object."
+  },
+  {
+    "sortOrder": 65,
+    "spanish": "No me acuerdo.",
+    "english": "I don't remember.",
+    "englishVariants": [],
+    "grammarTag": "reflexive",
+    "difficultyLevel": 2,
+    "grammarNote": ""
+  },
+  {
+    "sortOrder": 66,
+    "spanish": "Tengo razón.",
+    "english": "I'm right.",
+    "englishVariants": [],
+    "grammarTag": "tener-expressions",
+    "difficultyLevel": 2,
+    "grammarNote": "Tener razón = to be right. English uses 'to be'; Spanish uses 'to have.'"
+  },
+  {
+    "sortOrder": 67,
+    "spanish": "Tienes razón.",
+    "english": "You're right.",
+    "englishVariants": [],
+    "grammarTag": "tener-expressions",
+    "difficultyLevel": 2,
+    "grammarNote": ""
+  },
+  {
+    "sortOrder": 68,
+    "spanish": "Tengo veintiocho años.",
+    "english": "I'm twenty-eight years old.",
+    "englishVariants": [],
+    "grammarTag": "tener-expressions",
+    "difficultyLevel": 2,
+    "grammarNote": "Age uses tener in Spanish (I have 28 years), not ser/estar as in English."
+  },
+  {
+    "sortOrder": 69,
+    "spanish": "Tengo prisa.",
+    "english": "I'm in a hurry.",
+    "englishVariants": [],
+    "grammarTag": "tener-expressions",
+    "difficultyLevel": 2,
+    "grammarNote": "Tener prisa = to be in a hurry. Literally 'I have hurry.'"
+  },
+  {
+    "sortOrder": 70,
+    "spanish": "Tengo miedo de las arañas.",
+    "english": "I'm afraid of spiders.",
+    "englishVariants": [],
+    "grammarTag": "tener-expressions",
+    "difficultyLevel": 2,
+    "grammarNote": "Tener miedo de = to be afraid of. Literally 'I have fear of.'"
+  },
+  {
+    "sortOrder": 71,
+    "spanish": "Tengo ganas de salir.",
+    "english": "I feel like going out.",
+    "englishVariants": [
+      "I want to go out."
+    ],
+    "grammarTag": "tener-expressions",
+    "difficultyLevel": 2,
+    "grammarNote": "Tener ganas de + infinitive = to feel like doing something."
+  },
+  {
+    "sortOrder": 72,
+    "spanish": "No tengo sueño.",
+    "english": "I'm not sleepy.",
+    "englishVariants": [],
+    "grammarTag": "tener-expressions",
+    "difficultyLevel": 2,
+    "grammarNote": "Tener sueño = to be sleepy. Literally 'to have sleep.'"
+  },
+  {
+    "sortOrder": 73,
+    "spanish": "¿Me puede repetir eso?",
+    "english": "Can you repeat that?",
+    "englishVariants": [
+      "Could you repeat that?"
+    ],
+    "grammarTag": "survival",
+    "difficultyLevel": 1,
+    "grammarNote": ""
+  },
+  {
+    "sortOrder": 74,
+    "spanish": "Habla más despacio, por favor.",
+    "english": "Speak more slowly, please.",
+    "englishVariants": [],
+    "grammarTag": "survival",
+    "difficultyLevel": 1,
+    "grammarNote": "Despacio = slowly. Más despacio = more slowly."
+  },
+  {
+    "sortOrder": 75,
+    "spanish": "¿Cómo se dice 'umbrella' en español?",
+    "english": "How do you say 'umbrella' in Spanish?",
+    "englishVariants": [],
+    "grammarTag": "hay-que-impersonal",
+    "difficultyLevel": 2,
+    "grammarNote": "Impersonal se: how is 'umbrella' said in Spanish? One of the most useful learner phrases."
+  },
+  {
+    "sortOrder": 76,
+    "spanish": "No se puede fumar aquí.",
+    "english": "You can't smoke here.",
+    "englishVariants": [
+      "Smoking is not allowed here."
+    ],
+    "grammarTag": "hay-que-impersonal",
+    "difficultyLevel": 2,
+    "grammarNote": "Impersonal se + verb for general rules/prohibitions. No subject is specified."
+  },
+  {
+    "sortOrder": 77,
+    "spanish": "Se habla español aquí.",
+    "english": "Spanish is spoken here.",
+    "englishVariants": [],
+    "grammarTag": "hay-que-impersonal",
+    "difficultyLevel": 2,
+    "grammarNote": "Passive se construction: se + third person verb for general/impersonal statements."
+  },
+  {
+    "sortOrder": 78,
+    "spanish": "¿Cómo se escribe?",
+    "english": "How do you spell it?",
+    "englishVariants": [
+      "How is it written?"
+    ],
+    "grammarTag": "hay-que-impersonal",
+    "difficultyLevel": 2,
+    "grammarNote": "Impersonal se: how is it written?"
+  },
+  {
+    "sortOrder": 79,
+    "spanish": "Hay que tener paciencia.",
+    "english": "You have to be patient.",
+    "englishVariants": [
+      "One must be patient."
+    ],
+    "grammarTag": "hay-que-impersonal",
+    "difficultyLevel": 2,
+    "grammarNote": "Hay que + infinitive = impersonal obligation (one must). No subject is specified."
+  },
+  {
+    "sortOrder": 80,
+    "spanish": "¿Qué te pasa?",
+    "english": "What's wrong with you?",
+    "englishVariants": [
+      "What's happening to you?",
+      "What's the matter?"
+    ],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 2,
+    "grammarNote": "Pasar is used impersonally: what is happening to you? Very common colloquial expression."
+  },
+  {
+    "sortOrder": 81,
+    "spanish": "No pasa nada.",
+    "english": "It's okay. / Nothing's wrong.",
+    "englishVariants": [
+      "No worries.",
+      "Never mind."
+    ],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 2,
+    "grammarNote": "Common reassurance phrase. Literally 'nothing is happening.'"
+  },
+  {
+    "sortOrder": 82,
+    "spanish": "Más o menos.",
+    "english": "More or less.",
+    "englishVariants": [
+      "So-so.",
+      "Kind of."
+    ],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 1,
+    "grammarNote": ""
+  },
+  {
+    "sortOrder": 83,
+    "spanish": "Por supuesto.",
+    "english": "Of course.",
+    "englishVariants": [
+      "Certainly."
+    ],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 1,
+    "grammarNote": ""
+  },
+  {
+    "sortOrder": 84,
+    "spanish": "A lo mejor viene mañana.",
+    "english": "Maybe he'll come tomorrow.",
+    "englishVariants": [
+      "Perhaps he'll come tomorrow."
+    ],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 2,
+    "grammarNote": "A lo mejor expresses possibility but takes indicative, not subjunctive (unlike quizás/tal vez)."
+  },
+  {
+    "sortOrder": 85,
+    "spanish": "Me cae bien.",
+    "english": "I like him/her (as a person).",
+    "englishVariants": [
+      "He/she is cool."
+    ],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 2,
+    "grammarNote": "Caer bien = to make a good impression. Distinct from gustar (preference or attraction)."
+  },
+  {
+    "sortOrder": 86,
+    "spanish": "Ya no trabajo ahí.",
+    "english": "I don't work there anymore.",
+    "englishVariants": [],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 2,
+    "grammarNote": "Ya no = no longer. Ya (already/now) + no creates this compound negation."
+  },
+  {
+    "sortOrder": 87,
+    "spanish": "Todavía no he comido.",
+    "english": "I still haven't eaten.",
+    "englishVariants": [
+      "I haven't eaten yet."
+    ],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 2,
+    "grammarNote": "Todavía no + present perfect = haven't done something yet."
+  },
+  {
+    "sortOrder": 88,
+    "spanish": "Hace dos años que vivo aquí.",
+    "english": "I've been living here for two years.",
+    "englishVariants": [],
+    "grammarTag": "hacer-expressions",
+    "difficultyLevel": 3,
+    "grammarNote": "Hace + time + que + present tense = duration of an ongoing action. English uses present perfect; Spanish uses present."
+  },
+  {
+    "sortOrder": 89,
+    "spanish": "¿Cuánto tiempo llevas en México?",
+    "english": "How long have you been in Mexico?",
+    "englishVariants": [],
+    "grammarTag": "hacer-expressions",
+    "difficultyLevel": 3,
+    "grammarNote": "Llevar + time = how long have you been... Same structure as llevar + gerund."
+  },
+  {
+    "sortOrder": 90,
+    "spanish": "Se tarda una hora en llegar.",
+    "english": "It takes an hour to get there.",
+    "englishVariants": [],
+    "grammarTag": "hacer-expressions",
+    "difficultyLevel": 3,
+    "grammarNote": "Impersonal se + tardar to express duration of travel or process."
+  },
+  {
+    "sortOrder": 91,
+    "spanish": "¿Cómo te fue?",
+    "english": "How did it go for you?",
+    "englishVariants": [
+      "How was it?"
+    ],
+    "grammarTag": "survival",
+    "difficultyLevel": 2,
+    "grammarNote": "Ir + indirect object pronoun to ask how something went for someone."
+  },
+  {
+    "sortOrder": 92,
+    "spanish": "Estoy de acuerdo.",
+    "english": "I agree.",
+    "englishVariants": [],
+    "grammarTag": "ser-estar",
+    "difficultyLevel": 2,
+    "grammarNote": "De acuerdo is a noun phrase; estar de acuerdo = to be in agreement (a state)."
+  },
+  {
+    "sortOrder": 93,
+    "spanish": "La fiesta es en mi casa.",
+    "english": "The party is at my house.",
+    "englishVariants": [],
+    "grammarTag": "ser-estar",
+    "difficultyLevel": 3,
+    "grammarNote": "Events use ser for location (where something takes place). A classic exception to 'location = estar.'"
+  },
+  {
+    "sortOrder": 94,
+    "spanish": "Él es listo.",
+    "english": "He's clever.",
+    "englishVariants": [
+      "He's smart."
+    ],
+    "grammarTag": "ser-estar",
+    "difficultyLevel": 3,
+    "grammarNote": "Ser listo = to be clever. Estar listo = to be ready. Meaning changes with ser vs. estar."
+  },
+  {
+    "sortOrder": 95,
+    "spanish": "¿Estás listo para salir?",
+    "english": "Are you ready to leave?",
+    "englishVariants": [],
+    "grammarTag": "ser-estar",
+    "difficultyLevel": 2,
+    "grammarNote": "Estar listo = to be ready (a state). Ser listo = to be clever."
+  },
+  {
+    "sortOrder": 96,
+    "spanish": "Él es malo.",
+    "english": "He's bad (evil).",
+    "englishVariants": [
+      "He's wicked."
+    ],
+    "grammarTag": "ser-estar",
+    "difficultyLevel": 3,
+    "grammarNote": "Ser malo = to be bad/evil (character). Estar malo = to be sick or taste bad."
+  },
+  {
+    "sortOrder": 97,
+    "spanish": "Me lo dijeron la semana pasada.",
+    "english": "They told me (that) last week.",
+    "englishVariants": [],
+    "grammarTag": "object-pronouns",
+    "difficultyLevel": 3,
+    "grammarNote": "Me (indirect) + lo (direct) before the verb. When two pronouns co-occur, indirect comes first."
+  },
+  {
+    "sortOrder": 98,
+    "spanish": "Te lo digo en serio.",
+    "english": "I'm telling you seriously.",
+    "englishVariants": [
+      "I mean it.",
+      "I'm serious."
+    ],
+    "grammarTag": "object-pronouns",
+    "difficultyLevel": 3,
+    "grammarNote": "Te (indirect) + lo (direct) before the verb."
+  },
+  {
+    "sortOrder": 99,
+    "spanish": "Se lo envié ayer.",
+    "english": "I sent it to him/her yesterday.",
+    "englishVariants": [],
+    "grammarTag": "object-pronouns",
+    "difficultyLevel": 3,
+    "grammarNote": "Le becomes se when followed by lo/la/los/las to avoid two l-pronouns."
+  },
+  {
+    "sortOrder": 100,
+    "spanish": "Dámelo.",
+    "english": "Give it to me.",
+    "englishVariants": [],
+    "grammarTag": "object-pronouns",
+    "difficultyLevel": 3,
+    "grammarNote": "With affirmative commands, object pronouns attach to the end: da + me + lo."
+  },
+  {
+    "sortOrder": 101,
+    "spanish": "No me lo digas.",
+    "english": "Don't tell me (that).",
+    "englishVariants": [
+      "Don't tell me."
+    ],
+    "grammarTag": "object-pronouns",
+    "difficultyLevel": 3,
+    "grammarNote": "With negative commands, pronouns go before the verb: no + me + lo + digas."
+  },
+  {
+    "sortOrder": 102,
+    "spanish": "Lo estoy pensando.",
+    "english": "I'm thinking about it.",
+    "englishVariants": [],
+    "grammarTag": "object-pronouns",
+    "difficultyLevel": 3,
+    "grammarNote": "Direct object pronoun can precede estar or attach to the gerund: estoy pensándolo."
+  },
+  {
+    "sortOrder": 103,
+    "spanish": "¿Se lo has dicho a ella?",
+    "english": "Have you told her (about it)?",
+    "englishVariants": [],
+    "grammarTag": "object-pronouns",
+    "difficultyLevel": 3,
+    "grammarNote": "Se replaces le before lo. A ella is added for clarity since se is ambiguous."
+  },
+  {
+    "sortOrder": 104,
+    "spanish": "Voy a comprártelo.",
+    "english": "I'm going to buy it for you.",
+    "englishVariants": [],
+    "grammarTag": "object-pronouns",
+    "difficultyLevel": 3,
+    "grammarNote": "With infinitives, pronouns attach: voy a comprar + te + lo. Accent mark added to maintain stress."
+  },
+  {
+    "sortOrder": 105,
+    "spanish": "Se me olvidó el libro.",
+    "english": "I forgot the book.",
+    "englishVariants": [
+      "The book slipped my mind."
+    ],
+    "grammarTag": "unintentional",
+    "difficultyLevel": 3,
+    "grammarNote": "Accidental/unplanned events: se + indirect object + verb. Literally 'the book forgot itself to me.' Subject is el libro."
+  },
+  {
+    "sortOrder": 106,
+    "spanish": "Se me cayó el vaso.",
+    "english": "I dropped the glass.",
+    "englishVariants": [
+      "The glass fell on me."
+    ],
+    "grammarTag": "unintentional",
+    "difficultyLevel": 3,
+    "grammarNote": "Accidental construction: se + me + cayó. Removes personal blame; literally 'the glass fell to me.'"
+  },
+  {
+    "sortOrder": 107,
+    "spanish": "Se me perdió el celular.",
+    "english": "I lost my cell phone.",
+    "englishVariants": [],
+    "grammarTag": "unintentional",
+    "difficultyLevel": 3,
+    "grammarNote": "Accidental se: the phone lost itself on me. Implies it was unintentional."
+  },
+  {
+    "sortOrder": 108,
+    "spanish": "Se me rompió el vaso.",
+    "english": "The glass broke on me.",
+    "englishVariants": [
+      "I broke the glass (accidentally)."
+    ],
+    "grammarTag": "unintentional",
+    "difficultyLevel": 3,
+    "grammarNote": "Accidental se: the glass broke itself to me. Implies it was unintentional."
+  },
+  {
+    "sortOrder": 109,
+    "spanish": "Se nos acabó el tiempo.",
+    "english": "We ran out of time.",
+    "englishVariants": [],
+    "grammarTag": "unintentional",
+    "difficultyLevel": 3,
+    "grammarNote": "Se + nos + acabó: accidental construction. Literally 'time finished itself on us.'"
+  },
+  {
+    "sortOrder": 110,
+    "spanish": "Se les olvidó traer el dinero.",
+    "english": "They forgot to bring the money.",
+    "englishVariants": [],
+    "grammarTag": "unintentional",
+    "difficultyLevel": 3,
+    "grammarNote": "Accidental se + les (third person plural). Literally 'the money forgot itself to them.'"
+  },
+  {
+    "sortOrder": 111,
+    "spanish": "Se venden frutas frescas.",
+    "english": "Fresh fruits are sold here.",
+    "englishVariants": [],
+    "grammarTag": "hay-que-impersonal",
+    "difficultyLevel": 3,
+    "grammarNote": "Passive se with plural subject: frutas is plural, so the verb is plural (se venden)."
+  },
+  {
+    "sortOrder": 112,
+    "spanish": "Lo que más me gusta es la música.",
+    "english": "What I like most is music.",
+    "englishVariants": [],
+    "grammarTag": "hay-que-impersonal",
+    "difficultyLevel": 3,
+    "grammarNote": "Lo que + relative clause creates a nominal clause (what I like). Lo is a neuter article here."
+  },
+  {
+    "sortOrder": 113,
+    "spanish": "Se me hace tarde.",
+    "english": "It's getting late on me.",
+    "englishVariants": [
+      "I'm going to be late."
+    ],
+    "grammarTag": "unintentional",
+    "difficultyLevel": 3,
+    "grammarNote": "Se me hace tarde = it's getting late for me. Idiomatic use of hacerse (to become)."
+  },
+  {
+    "sortOrder": 114,
+    "spanish": "Se puso furioso.",
+    "english": "He got furious.",
+    "englishVariants": [
+      "He became furious."
+    ],
+    "grammarTag": "reflexive",
+    "difficultyLevel": 3,
+    "grammarNote": "Ponerse + adjective = to become (emotional or physical change). One of several 'to become' verbs in Spanish."
+  },
+  {
+    "sortOrder": 115,
+    "spanish": "Se casaron el año pasado.",
+    "english": "They got married last year.",
+    "englishVariants": [],
+    "grammarTag": "reflexive",
+    "difficultyLevel": 2,
+    "grammarNote": "Casarse (reflexive) = to get married. Often used reciprocally with plural subjects."
+  },
+  {
+    "sortOrder": 116,
+    "spanish": "Me equivoqué de número.",
+    "english": "I dialed the wrong number.",
+    "englishVariants": [
+      "I got the wrong number."
+    ],
+    "grammarTag": "reflexive",
+    "difficultyLevel": 3,
+    "grammarNote": "Equivocarse de = to be wrong about / to get the wrong thing. Always reflexive."
+  },
+  {
+    "sortOrder": 117,
+    "spanish": "Se queja mucho de su trabajo.",
+    "english": "He/she complains a lot about work.",
+    "englishVariants": [],
+    "grammarTag": "reflexive",
+    "difficultyLevel": 2,
+    "grammarNote": "Quejarse (reflexive) = to complain. Always requires reflexive pronoun."
+  },
+  {
+    "sortOrder": 118,
+    "spanish": "Me di cuenta de que estaba equivocado.",
+    "english": "I realized I was wrong.",
+    "englishVariants": [],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 3,
+    "grammarNote": "Darse cuenta de = to realize/notice. Not 'realizar' (a false friend). Equivocado uses estar."
+  },
+  {
+    "sortOrder": 119,
+    "spanish": "Te extraño mucho.",
+    "english": "I miss you a lot.",
+    "englishVariants": [],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 2,
+    "grammarNote": "Extrañar is the preferred verb for 'to miss' in Latin America. Spain uses echar de menos."
+  },
+  {
+    "sortOrder": 120,
+    "spanish": "No vale la pena.",
+    "english": "It's not worth it.",
+    "englishVariants": [],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 2,
+    "grammarNote": "Valer la pena = to be worth it. Literally 'to be worth the trouble.'"
+  },
+  {
+    "sortOrder": 121,
+    "spanish": "Resulta que tenían razón.",
+    "english": "It turns out they were right.",
+    "englishVariants": [],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 3,
+    "grammarNote": "Resulta que + indicative = it turns out that. Used to introduce surprising information."
+  },
+  {
+    "sortOrder": 122,
+    "spanish": "Me da igual.",
+    "english": "I don't care. / It's all the same to me.",
+    "englishVariants": [
+      "It doesn't matter to me."
+    ],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 2,
+    "grammarNote": "Dar igual = to be all the same to someone (indifference). Me da lo mismo is equivalent."
+  },
+  {
+    "sortOrder": 123,
+    "spanish": "¿Qué tal el trabajo?",
+    "english": "How's work?",
+    "englishVariants": [
+      "How's the job going?"
+    ],
+    "grammarTag": "survival",
+    "difficultyLevel": 1,
+    "grammarNote": "¿Qué tal? is an informal way to ask 'how is/are...?'"
+  },
+  {
+    "sortOrder": 124,
+    "spanish": "Nos vemos.",
+    "english": "See you later.",
+    "englishVariants": [
+      "See you.",
+      "Later."
+    ],
+    "grammarTag": "survival",
+    "difficultyLevel": 1,
+    "grammarNote": "Reflexive reciprocal: we see each other. Common farewell."
+  },
+  {
+    "sortOrder": 125,
+    "spanish": "Hasta luego.",
+    "english": "Goodbye.",
+    "englishVariants": [
+      "See you later."
+    ],
+    "grammarTag": "survival",
+    "difficultyLevel": 1,
+    "grammarNote": ""
+  },
+  {
+    "sortOrder": 126,
+    "spanish": "Con permiso.",
+    "english": "Excuse me (passing through).",
+    "englishVariants": [
+      "Pardon me."
+    ],
+    "grammarTag": "survival",
+    "difficultyLevel": 1,
+    "grammarNote": "Used when passing by or leaving. Distinct from perdón (apology or bumping into someone)."
+  },
+  {
+    "sortOrder": 127,
+    "spanish": "La cuenta, por favor.",
+    "english": "The check, please.",
+    "englishVariants": [
+      "The bill, please."
+    ],
+    "grammarTag": "survival",
+    "difficultyLevel": 1,
+    "grammarNote": ""
+  },
+  {
+    "sortOrder": 128,
+    "spanish": "¿Está incluida la propina?",
+    "english": "Is the tip included?",
+    "englishVariants": [],
+    "grammarTag": "ser-estar",
+    "difficultyLevel": 2,
+    "grammarNote": "Estar is used for conditions/states resulting from a change (included = a resulting condition)."
+  },
+  {
+    "sortOrder": 129,
+    "spanish": "¿Tienen habitaciones disponibles?",
+    "english": "Do you have rooms available?",
+    "englishVariants": [],
+    "grammarTag": "survival",
+    "difficultyLevel": 2,
+    "grammarNote": ""
+  },
+  {
+    "sortOrder": 130,
+    "spanish": "¿A qué hora sale el autobús?",
+    "english": "What time does the bus leave?",
+    "englishVariants": [],
+    "grammarTag": "survival",
+    "difficultyLevel": 2,
+    "grammarNote": ""
+  },
+  {
+    "sortOrder": 131,
+    "spanish": "Necesito un médico.",
+    "english": "I need a doctor.",
+    "englishVariants": [],
+    "grammarTag": "survival",
+    "difficultyLevel": 1,
+    "grammarNote": ""
+  },
+  {
+    "sortOrder": 132,
+    "spanish": "Estoy perdido.",
+    "english": "I'm lost.",
+    "englishVariants": [],
+    "grammarTag": "ser-estar",
+    "difficultyLevel": 1,
+    "grammarNote": "Being lost is a state: estar is used."
+  },
+  {
+    "sortOrder": 133,
+    "spanish": "¿Cómo llego al centro?",
+    "english": "How do I get to downtown?",
+    "englishVariants": [
+      "How do I get to the city center?"
+    ],
+    "grammarTag": "survival",
+    "difficultyLevel": 2,
+    "grammarNote": "Llegar a = to arrive at / to get to."
+  },
+  {
+    "sortOrder": 134,
+    "spanish": "Siga todo derecho.",
+    "english": "Go straight ahead.",
+    "englishVariants": [
+      "Keep going straight."
+    ],
+    "grammarTag": "survival",
+    "difficultyLevel": 2,
+    "grammarNote": "Siga is the formal imperative of seguir. Todo derecho = straight ahead."
+  },
+  {
+    "sortOrder": 135,
+    "spanish": "Doble a la izquierda.",
+    "english": "Turn left.",
+    "englishVariants": [],
+    "grammarTag": "survival",
+    "difficultyLevel": 2,
+    "grammarNote": "Formal imperative of doblar. A la izquierda = to the left."
+  },
+  {
+    "sortOrder": 136,
+    "spanish": "¿Cuánto tiempo tarda en llegar?",
+    "english": "How long does it take to get there?",
+    "englishVariants": [],
+    "grammarTag": "hacer-expressions",
+    "difficultyLevel": 2,
+    "grammarNote": "Tardar en + infinitive = to take (time) to do something."
+  },
+  {
+    "sortOrder": 137,
+    "spanish": "Llevo tres horas esperando.",
+    "english": "I've been waiting for three hours.",
+    "englishVariants": [],
+    "grammarTag": "progressive",
+    "difficultyLevel": 3,
+    "grammarNote": "Llevar + time + gerund = to have been doing something for a duration. No equivalent in English uses this structure."
+  },
+  {
+    "sortOrder": 138,
+    "spanish": "Voy caminando al trabajo.",
+    "english": "I'm walking to work.",
+    "englishVariants": [
+      "I walk to work."
+    ],
+    "grammarTag": "progressive",
+    "difficultyLevel": 2,
+    "grammarNote": "Ir + gerund expresses movement while performing an action."
+  },
+  {
+    "sortOrder": 139,
+    "spanish": "Sigo sin entender.",
+    "english": "I still don't understand.",
+    "englishVariants": [],
+    "grammarTag": "progressive",
+    "difficultyLevel": 3,
+    "grammarNote": "Seguir sin + infinitive = to still not be doing something."
+  },
+  {
+    "sortOrder": 140,
+    "spanish": "Llevan veinte años casados.",
+    "english": "They've been married for twenty years.",
+    "englishVariants": [],
+    "grammarTag": "progressive",
+    "difficultyLevel": 3,
+    "grammarNote": "Llevar + time + past participle (used as adjective) expresses duration of a state."
+  },
+  {
+    "sortOrder": 141,
+    "spanish": "Ando buscando trabajo.",
+    "english": "I'm looking for work.",
+    "englishVariants": [
+      "I'm job hunting."
+    ],
+    "grammarTag": "progressive",
+    "difficultyLevel": 3,
+    "grammarNote": "Andar + gerund = to be going around doing something (implies ongoing, sometimes aimless activity). Informal."
+  },
+  {
+    "sortOrder": 142,
+    "spanish": "Llevo días sin dormir bien.",
+    "english": "I've been going days without sleeping well.",
+    "englishVariants": [],
+    "grammarTag": "progressive",
+    "difficultyLevel": 3,
+    "grammarNote": "Llevar + time + sin + infinitive = to have been without doing something for a duration."
+  },
+  {
+    "sortOrder": 143,
+    "spanish": "Espero que tengas un buen día.",
+    "english": "I hope you have a good day.",
+    "englishVariants": [],
+    "grammarTag": "subjunctive",
+    "difficultyLevel": 3,
+    "grammarNote": "Esperar que triggers subjunctive. Different subjects in each clause require subjunctive."
+  },
+  {
+    "sortOrder": 144,
+    "spanish": "Quiero que vengas conmigo.",
+    "english": "I want you to come with me.",
+    "englishVariants": [],
+    "grammarTag": "subjunctive",
+    "difficultyLevel": 3,
+    "grammarNote": "Querer que + subjunctive when subjects differ. English uses infinitive; Spanish requires subjunctive."
+  },
+  {
+    "sortOrder": 145,
+    "spanish": "Es importante que llegues a tiempo.",
+    "english": "It's important that you arrive on time.",
+    "englishVariants": [],
+    "grammarTag": "subjunctive",
+    "difficultyLevel": 3,
+    "grammarNote": "Impersonal expressions (es importante que) trigger subjunctive in the dependent clause."
+  },
+  {
+    "sortOrder": 146,
+    "spanish": "No creo que sea verdad.",
+    "english": "I don't think it's true.",
+    "englishVariants": [
+      "I don't believe it's true."
+    ],
+    "grammarTag": "subjunctive",
+    "difficultyLevel": 3,
+    "grammarNote": "No creer que triggers subjunctive (negated belief = doubt). Creer que (affirmative) uses indicative."
+  },
+  {
+    "sortOrder": 147,
+    "spanish": "Ojalá llueva mañana.",
+    "english": "I hope it rains tomorrow.",
+    "englishVariants": [
+      "Hopefully it will rain tomorrow."
+    ],
+    "grammarTag": "subjunctive",
+    "difficultyLevel": 3,
+    "grammarNote": "Ojalá always triggers subjunctive. One of few words requiring subjunctive without a 'que' clause."
+  },
+  {
+    "sortOrder": 148,
+    "spanish": "Tal vez llegue tarde.",
+    "english": "Maybe I'll arrive late.",
+    "englishVariants": [],
+    "grammarTag": "subjunctive",
+    "difficultyLevel": 3,
+    "grammarNote": "Tal vez + subjunctive expresses uncertainty. Tal vez + indicative expresses more certainty."
+  },
+  {
+    "sortOrder": 149,
+    "spanish": "Cuando llegues, llámame.",
+    "english": "When you arrive, call me.",
+    "englishVariants": [],
+    "grammarTag": "subjunctive",
+    "difficultyLevel": 4,
+    "grammarNote": "Cuando + subjunctive for future events. Cuando + indicative for habitual/past events."
+  },
+  {
+    "sortOrder": 150,
+    "spanish": "Me alegra que estés aquí.",
+    "english": "I'm glad you're here.",
+    "englishVariants": [],
+    "grammarTag": "subjunctive",
+    "difficultyLevel": 3,
+    "grammarNote": "Alegrarse de que triggers subjunctive. Emotional reaction to another's action requires subjunctive."
+  },
+  {
+    "sortOrder": 151,
+    "spanish": "Dudo que sea cierto.",
+    "english": "I doubt it's true.",
+    "englishVariants": [],
+    "grammarTag": "subjunctive",
+    "difficultyLevel": 3,
+    "grammarNote": "Dudar que triggers subjunctive (expression of doubt)."
+  },
+  {
+    "sortOrder": 152,
+    "spanish": "Es una lástima que no puedas venir.",
+    "english": "It's a shame you can't come.",
+    "englishVariants": [],
+    "grammarTag": "subjunctive",
+    "difficultyLevel": 3,
+    "grammarNote": "Impersonal emotional expression + que triggers subjunctive."
+  },
+  {
+    "sortOrder": 153,
+    "spanish": "Busco un apartamento que tenga dos habitaciones.",
+    "english": "I'm looking for an apartment that has two bedrooms.",
+    "englishVariants": [],
+    "grammarTag": "subjunctive",
+    "difficultyLevel": 4,
+    "grammarNote": "Non-specific/hypothetical antecedent triggers subjunctive in the relative clause."
+  },
+  {
+    "sortOrder": 154,
+    "spanish": "Quisiera reservar una mesa para dos.",
+    "english": "I'd like to reserve a table for two.",
+    "englishVariants": [],
+    "grammarTag": "subjunctive",
+    "difficultyLevel": 3,
+    "grammarNote": "Quisiera (imperfect subjunctive of querer) is a polite softener instead of quiero."
+  },
+  {
+    "sortOrder": 155,
+    "spanish": "Para que lo sepas, ya terminé.",
+    "english": "Just so you know, I already finished.",
+    "englishVariants": [],
+    "grammarTag": "subjunctive",
+    "difficultyLevel": 4,
+    "grammarNote": "Para que always triggers subjunctive (purpose clause with different subjects)."
+  },
+  {
+    "sortOrder": 156,
+    "spanish": "Aunque sea difícil, lo intentaré.",
+    "english": "Even if it's difficult, I'll try.",
+    "englishVariants": [],
+    "grammarTag": "subjunctive",
+    "difficultyLevel": 4,
+    "grammarNote": "Aunque + subjunctive concedes an unknown/hypothetical condition. Aunque + indicative = even though (known fact)."
+  },
+  {
+    "sortOrder": 157,
+    "spanish": "¡Que te vaya bien!",
+    "english": "Take care! / I hope things go well for you!",
+    "englishVariants": [],
+    "grammarTag": "subjunctive",
+    "difficultyLevel": 3,
+    "grammarNote": "Que + subjunctive = may things go well for you. Indirect wish without a main verb."
+  },
+  {
+    "sortOrder": 158,
+    "spanish": "¡Que aproveche!",
+    "english": "Enjoy your meal!",
+    "englishVariants": [
+      "Bon appétit!"
+    ],
+    "grammarTag": "subjunctive",
+    "difficultyLevel": 2,
+    "grammarNote": "Que + subjunctive = may you enjoy it. Fixed expression said before or during a meal."
+  },
+  {
+    "sortOrder": 159,
+    "spanish": "Que yo sepa, no hay problema.",
+    "english": "As far as I know, there's no problem.",
+    "englishVariants": [],
+    "grammarTag": "subjunctive",
+    "difficultyLevel": 4,
+    "grammarNote": "Que yo sepa uses present subjunctive in an independent clause to express limited knowledge."
+  },
+  {
+    "sortOrder": 160,
+    "spanish": "Haz lo que quieras.",
+    "english": "Do whatever you want.",
+    "englishVariants": [],
+    "grammarTag": "subjunctive",
+    "difficultyLevel": 3,
+    "grammarNote": "Querer in subjunctive after lo que creates a free relative clause (whatever you want)."
+  },
+  {
+    "sortOrder": 161,
+    "spanish": "Si estudias, aprenderás.",
+    "english": "If you study, you'll learn.",
+    "englishVariants": [],
+    "grammarTag": "conditional",
+    "difficultyLevel": 2,
+    "grammarNote": "Real/open condition: si + present indicative + future indicative."
+  },
+  {
+    "sortOrder": 162,
+    "spanish": "Si tuviera dinero, viajaría por el mundo.",
+    "english": "If I had money, I would travel the world.",
+    "englishVariants": [],
+    "grammarTag": "conditional",
+    "difficultyLevel": 4,
+    "grammarNote": "Hypothetical si clause: si + imperfect subjunctive (tuviera) + conditional (viajaría)."
+  },
+  {
+    "sortOrder": 163,
+    "spanish": "Si pudiera, te ayudaría.",
+    "english": "If I could, I would help you.",
+    "englishVariants": [],
+    "grammarTag": "conditional",
+    "difficultyLevel": 4,
+    "grammarNote": "Hypothetical: si + imperfect subjunctive (pudiera) + conditional (ayudaría)."
+  },
+  {
+    "sortOrder": 164,
+    "spanish": "Si fuera rico, compraría una isla.",
+    "english": "If I were rich, I'd buy an island.",
+    "englishVariants": [],
+    "grammarTag": "conditional",
+    "difficultyLevel": 4,
+    "grammarNote": "Hypothetical: si + imperfect subjunctive (fuera) + conditional (compraría)."
+  },
+  {
+    "sortOrder": 165,
+    "spanish": "¿Qué harías si perdieras tu trabajo?",
+    "english": "What would you do if you lost your job?",
+    "englishVariants": [],
+    "grammarTag": "conditional",
+    "difficultyLevel": 4,
+    "grammarNote": "Hypothetical question: si + imperfect subjunctive (perdieras) + conditional (harías)."
+  },
+  {
+    "sortOrder": 166,
+    "spanish": "Si estuvieras aquí, todo sería diferente.",
+    "english": "If you were here, everything would be different.",
+    "englishVariants": [],
+    "grammarTag": "conditional",
+    "difficultyLevel": 4,
+    "grammarNote": "Hypothetical: si + imperfect subjunctive (estuvieras) + conditional (sería)."
+  },
+  {
+    "sortOrder": 167,
+    "spanish": "Si hubiera llegado antes, habría visto el show.",
+    "english": "If I had arrived earlier, I would have seen the show.",
+    "englishVariants": [],
+    "grammarTag": "conditional",
+    "difficultyLevel": 5,
+    "grammarNote": "Past counterfactual: si + past perfect subjunctive (hubiera llegado) + conditional perfect (habría visto)."
+  },
+  {
+    "sortOrder": 168,
+    "spanish": "Si hubiera sabido, habría venido.",
+    "english": "If I had known, I would have come.",
+    "englishVariants": [],
+    "grammarTag": "conditional",
+    "difficultyLevel": 5,
+    "grammarNote": "Past counterfactual: si + past perfect subjunctive + conditional perfect."
+  },
+  {
+    "sortOrder": 169,
+    "spanish": "De haberlo sabido, no habría ido.",
+    "english": "Had I known, I wouldn't have gone.",
+    "englishVariants": [],
+    "grammarTag": "conditional",
+    "difficultyLevel": 5,
+    "grammarNote": "De + perfect infinitive (haberlo sabido) can replace si + past perfect subjunctive in formal registers."
+  },
+  {
+    "sortOrder": 170,
+    "spanish": "No tengo ni idea.",
+    "english": "I have no idea.",
+    "englishVariants": [],
+    "grammarTag": "negative-constructions",
+    "difficultyLevel": 2,
+    "grammarNote": "Ni siquiera una idea = not even one idea. Ni used as an emphatic negation intensifier."
+  },
+  {
+    "sortOrder": 171,
+    "spanish": "No vino ni siquiera a llamar.",
+    "english": "He didn't even bother to call.",
+    "englishVariants": [],
+    "grammarTag": "negative-constructions",
+    "difficultyLevel": 3,
+    "grammarNote": "Ni siquiera = not even. Emphatic negation."
+  },
+  {
+    "sortOrder": 172,
+    "spanish": "No quiero ni café ni té.",
+    "english": "I don't want either coffee or tea.",
+    "englishVariants": [
+      "I want neither coffee nor tea."
+    ],
+    "grammarTag": "negative-constructions",
+    "difficultyLevel": 3,
+    "grammarNote": "Ni...ni = neither...nor. Requires no before the verb when the construction follows it."
+  },
+  {
+    "sortOrder": 173,
+    "spanish": "Jamás lo haré de nuevo.",
+    "english": "I'll never do it again.",
+    "englishVariants": [],
+    "grammarTag": "negative-constructions",
+    "difficultyLevel": 3,
+    "grammarNote": "Jamás = never (stronger than nunca, often emphatic or permanent)."
+  },
+  {
+    "sortOrder": 174,
+    "spanish": "En ningún momento dije eso.",
+    "english": "I never said that. / At no point did I say that.",
+    "englishVariants": [],
+    "grammarTag": "negative-constructions",
+    "difficultyLevel": 4,
+    "grammarNote": "Ningún + noun before the verb can stand alone. After the verb: no dije eso en ningún momento (double negative)."
+  },
+  {
+    "sortOrder": 175,
+    "spanish": "No quiero más.",
+    "english": "I don't want any more.",
+    "englishVariants": [
+      "I've had enough."
+    ],
+    "grammarTag": "negative-constructions",
+    "difficultyLevel": 2,
+    "grammarNote": "Más after a negated verb = any more. No more."
+  },
+  {
+    "sortOrder": 176,
+    "spanish": "¿Para qué sirve esto?",
+    "english": "What is this for?",
+    "englishVariants": [
+      "What does this do?"
+    ],
+    "grammarTag": "por-para",
+    "difficultyLevel": 2,
+    "grammarNote": "Para qué = for what purpose. Por qué = why (for what reason)."
+  },
+  {
+    "sortOrder": 177,
+    "spanish": "Lo cambié por uno más nuevo.",
+    "english": "I exchanged it for a newer one.",
+    "englishVariants": [],
+    "grammarTag": "por-para",
+    "difficultyLevel": 3,
+    "grammarNote": "Por indicates exchange. Para would indicate destination or purpose."
+  },
+  {
+    "sortOrder": 178,
+    "spanish": "Caminé por el parque.",
+    "english": "I walked through the park.",
+    "englishVariants": [
+      "I walked around the park."
+    ],
+    "grammarTag": "por-para",
+    "difficultyLevel": 2,
+    "grammarNote": "Por indicates movement through or along a place."
+  },
+  {
+    "sortOrder": 179,
+    "spanish": "Para ser principiante, hablas bien.",
+    "english": "For a beginner, you speak well.",
+    "englishVariants": [],
+    "grammarTag": "por-para",
+    "difficultyLevel": 3,
+    "grammarNote": "Para + noun/infinitive expresses 'considering' or an unexpected contrast."
+  },
+  {
+    "sortOrder": 180,
+    "spanish": "El informe debe estar listo para el lunes.",
+    "english": "The report must be ready by Monday.",
+    "englishVariants": [],
+    "grammarTag": "por-para",
+    "difficultyLevel": 3,
+    "grammarNote": "Para is used for deadlines."
+  },
+  {
+    "sortOrder": 181,
+    "spanish": "Le interesa la historia.",
+    "english": "He/she is interested in history.",
+    "englishVariants": [],
+    "grammarTag": "gustar-type",
+    "difficultyLevel": 2,
+    "grammarNote": "Interesar works like gustar. Le = third person indirect object."
+  },
+  {
+    "sortOrder": 182,
+    "spanish": "Nos molesta el ruido.",
+    "english": "The noise bothers us.",
+    "englishVariants": [],
+    "grammarTag": "gustar-type",
+    "difficultyLevel": 3,
+    "grammarNote": "Molestar works like gustar: the noise bothers us (el ruido = subject, nos = indirect object)."
+  },
+  {
+    "sortOrder": 183,
+    "spanish": "¿Te importa si abro la ventana?",
+    "english": "Do you mind if I open the window?",
+    "englishVariants": [],
+    "grammarTag": "gustar-type",
+    "difficultyLevel": 3,
+    "grammarNote": "Importar works like gustar: does it matter to you? Te = second person indirect object."
+  },
+  {
+    "sortOrder": 184,
+    "spanish": "Le cuesta mucho trabajo.",
+    "english": "It's hard for him/her.",
+    "englishVariants": [
+      "It costs him/her a lot of effort."
+    ],
+    "grammarTag": "gustar-type",
+    "difficultyLevel": 3,
+    "grammarNote": "Costar works like gustar for expressing difficulty."
+  },
+  {
+    "sortOrder": 185,
+    "spanish": "Me cuesta creerlo.",
+    "english": "I find it hard to believe.",
+    "englishVariants": [],
+    "grammarTag": "gustar-type",
+    "difficultyLevel": 3,
+    "grammarNote": "Costar + infinitive = to be hard (for someone) to do. Works like gustar: it costs me to believe it."
+  },
+  {
+    "sortOrder": 186,
+    "spanish": "Nos toca pagar esta vez.",
+    "english": "It's our turn to pay this time.",
+    "englishVariants": [],
+    "grammarTag": "gustar-type",
+    "difficultyLevel": 3,
+    "grammarNote": "Tocar works like gustar: it falls to us to pay. Used for turns and obligations falling to someone."
+  },
+  {
+    "sortOrder": 187,
+    "spanish": "¿Te sobra tiempo?",
+    "english": "Do you have time to spare?",
+    "englishVariants": [
+      "Do you have extra time?"
+    ],
+    "grammarTag": "gustar-type",
+    "difficultyLevel": 3,
+    "grammarNote": "Sobrar works like gustar: does time remain over for you? Opposite of faltar."
+  },
+  {
+    "sortOrder": 188,
+    "spanish": "Le urge encontrar trabajo.",
+    "english": "He/she urgently needs to find work.",
+    "englishVariants": [],
+    "grammarTag": "gustar-type",
+    "difficultyLevel": 3,
+    "grammarNote": "Urgir works like gustar: finding work is urgent to him/her."
+  },
+  {
+    "sortOrder": 189,
+    "spanish": "Me preocupa mucho eso.",
+    "english": "That worries me a lot.",
+    "englishVariants": [],
+    "grammarTag": "gustar-type",
+    "difficultyLevel": 3,
+    "grammarNote": "Preocupar works like gustar: that thing worries me. Me = indirect object, eso = subject."
+  },
+  {
+    "sortOrder": 190,
+    "spanish": "Tengo la impresión de que algo falla.",
+    "english": "I have the impression that something is wrong.",
+    "englishVariants": [],
+    "grammarTag": "tener-expressions",
+    "difficultyLevel": 3,
+    "grammarNote": "Tener la impresión de que = to have the impression that. Combines tener-expression with a noun clause."
+  },
+  {
+    "sortOrder": 191,
+    "spanish": "No tengo ni tiempo ni dinero.",
+    "english": "I have neither time nor money.",
+    "englishVariants": [],
+    "grammarTag": "tener-expressions",
+    "difficultyLevel": 3,
+    "grammarNote": "Combines tener-expression with ni...ni construction."
+  },
+  {
+    "sortOrder": 192,
+    "spanish": "Tengo entendido que se mudaron.",
+    "english": "I understand that they moved.",
+    "englishVariants": [
+      "I've heard that they moved."
+    ],
+    "grammarTag": "tener-expressions",
+    "difficultyLevel": 4,
+    "grammarNote": "Tener entendido que = to understand/have heard that (based on prior information)."
+  },
+  {
+    "sortOrder": 193,
+    "spanish": "Me está tomando el pelo.",
+    "english": "He/she is pulling my leg.",
+    "englishVariants": [
+      "He/she is teasing me."
+    ],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 3,
+    "grammarNote": "Tomar el pelo = to pull someone's leg/tease. Me = indirect object; progressive form with estar."
+  },
+  {
+    "sortOrder": 194,
+    "spanish": "¡Qué buena onda!",
+    "english": "How cool! / What a great vibe!",
+    "englishVariants": [
+      "Awesome!"
+    ],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 2,
+    "grammarNote": "Buena onda (good wave/vibe) is widely used in Mexico and other Latin American countries."
+  },
+  {
+    "sortOrder": 195,
+    "spanish": "Por fin llegó el verano.",
+    "english": "Summer finally arrived.",
+    "englishVariants": [],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 2,
+    "grammarNote": "Por fin = finally/at last."
+  },
+  {
+    "sortOrder": 196,
+    "spanish": "Sin embargo, creo que tienes razón.",
+    "english": "However, I think you're right.",
+    "englishVariants": [],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 3,
+    "grammarNote": "Sin embargo = however/nevertheless. Formal discourse connector."
+  },
+  {
+    "sortOrder": 197,
+    "spanish": "A pesar de eso, lo intenté.",
+    "english": "Despite that, I tried.",
+    "englishVariants": [],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 3,
+    "grammarNote": "A pesar de = despite / in spite of. Followed by noun or infinitive."
+  },
+  {
+    "sortOrder": 198,
+    "spanish": "Al fin y al cabo, todo salió bien.",
+    "english": "In the end, everything turned out well.",
+    "englishVariants": [
+      "After all, everything turned out fine."
+    ],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 3,
+    "grammarNote": "Al fin y al cabo = in the end/after all. Discourse marker for a conclusion."
+  },
+  {
+    "sortOrder": 199,
+    "spanish": "Tener en cuenta algo.",
+    "english": "To keep something in mind.",
+    "englishVariants": [
+      "To take something into account."
+    ],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 3,
+    "grammarNote": "Tener en cuenta = to bear in mind / to take into account."
+  },
+  {
+    "sortOrder": 200,
+    "spanish": "Llevar a cabo un plan.",
+    "english": "To carry out a plan.",
+    "englishVariants": [
+      "To execute a plan."
+    ],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 3,
+    "grammarNote": "Llevar a cabo = to carry out / to accomplish. Fixed idiom."
+  },
+  {
+    "sortOrder": 201,
+    "spanish": "Estar al tanto de algo.",
+    "english": "To be up to date on something.",
+    "englishVariants": [
+      "To be aware of something."
+    ],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 3,
+    "grammarNote": "Estar al tanto de = to be in the know/up to date. Uses estar for the current state of awareness."
+  },
+  {
+    "sortOrder": 202,
+    "spanish": "A ver...",
+    "english": "Let's see...",
+    "englishVariants": [
+      "Let me see..."
+    ],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 1,
+    "grammarNote": "Discourse marker used to pause and think. Written a ver (not haber)."
+  },
+  {
+    "sortOrder": 203,
+    "spanish": "O sea...",
+    "english": "I mean... / In other words...",
+    "englishVariants": [
+      "That is to say..."
+    ],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 2,
+    "grammarNote": "Very common discourse filler in spoken Spanish, especially among younger speakers."
+  },
+  {
+    "sortOrder": 204,
+    "spanish": "De repente aparecieron.",
+    "english": "Suddenly they appeared.",
+    "englishVariants": [
+      "All of a sudden they appeared."
+    ],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 2,
+    "grammarNote": "De repente = suddenly. Common adverbial phrase."
+  },
+  {
+    "sortOrder": 205,
+    "spanish": "De hecho, tienes razón.",
+    "english": "In fact, you're right.",
+    "englishVariants": [
+      "Actually, you're right."
+    ],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 2,
+    "grammarNote": "De hecho = in fact/actually. Used to confirm or add supporting information."
+  },
+  {
+    "sortOrder": 206,
+    "spanish": "A tiempo.",
+    "english": "On time.",
+    "englishVariants": [],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 1,
+    "grammarNote": "A tiempo = on time. Not the same as en tiempo (in time/in season)."
+  },
+  {
+    "sortOrder": 207,
+    "spanish": "¡Ni hablar!",
+    "english": "No way! / Out of the question!",
+    "englishVariants": [
+      "Don't even mention it!"
+    ],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 2,
+    "grammarNote": "Literally 'not even speaking.' Used as emphatic refusal or disbelief."
+  },
+  {
+    "sortOrder": 208,
+    "spanish": "No hay de qué.",
+    "english": "You're welcome. / Don't mention it.",
+    "englishVariants": [],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 2,
+    "grammarNote": "Literally 'there's nothing to thank for.' Alternative to de nada."
+  },
+  {
+    "sortOrder": 209,
+    "spanish": "Estar a la vuelta de la esquina.",
+    "english": "To be around the corner.",
+    "englishVariants": [],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 2,
+    "grammarNote": "Spatial expression often used idiomatically to mean something is very close or about to happen."
+  },
+  {
+    "sortOrder": 210,
+    "spanish": "Claro que sí.",
+    "english": "Of course.",
+    "englishVariants": [
+      "Sure.",
+      "Absolutely."
+    ],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 1,
+    "grammarNote": "Claro que sí = clearly yes. Very common affirmation."
+  },
+  {
+    "sortOrder": 211,
+    "spanish": "Quiero que me digan la verdad.",
+    "english": "I want them to tell me the truth.",
+    "englishVariants": [],
+    "grammarTag": "subjunctive",
+    "difficultyLevel": 3,
+    "grammarNote": "Querer que + subjunctive (digan) with different subjects. Me = indirect object pronoun in the dependent clause."
+  },
+  {
+    "sortOrder": 212,
+    "spanish": "Espero que hayas descansado.",
+    "english": "I hope you've rested.",
+    "englishVariants": [],
+    "grammarTag": "subjunctive",
+    "difficultyLevel": 4,
+    "grammarNote": "Esperar que + present perfect subjunctive (hayas descansado) for completed actions."
+  },
+  {
+    "sortOrder": 213,
+    "spanish": "Quería que vinieras a la fiesta.",
+    "english": "I wanted you to come to the party.",
+    "englishVariants": [],
+    "grammarTag": "subjunctive",
+    "difficultyLevel": 4,
+    "grammarNote": "Past tense main verb (quería) + past subjunctive (vinieras) when subjects differ."
+  },
+  {
+    "sortOrder": 214,
+    "spanish": "No había nadie que supiera la respuesta.",
+    "english": "There was nobody who knew the answer.",
+    "englishVariants": [],
+    "grammarTag": "subjunctive",
+    "difficultyLevel": 5,
+    "grammarNote": "Negative antecedent in past (no había nadie) triggers past subjunctive in the relative clause."
+  },
+  {
+    "sortOrder": 215,
+    "spanish": "A menos que vengas tú, no hay quórum.",
+    "english": "Unless you come, there's no quorum.",
+    "englishVariants": [],
+    "grammarTag": "subjunctive",
+    "difficultyLevel": 4,
+    "grammarNote": "A menos que always triggers subjunctive. It expresses a conditional exception."
+  },
+  {
+    "sortOrder": 216,
+    "spanish": "Antes de que te vayas, necesito decirte algo.",
+    "english": "Before you leave, I need to tell you something.",
+    "englishVariants": [],
+    "grammarTag": "subjunctive",
+    "difficultyLevel": 4,
+    "grammarNote": "Antes de que always triggers subjunctive (future event, different subject)."
+  },
+  {
+    "sortOrder": 217,
+    "spanish": "Con tal de que llegues a tiempo, todo está bien.",
+    "english": "As long as you arrive on time, everything is fine.",
+    "englishVariants": [],
+    "grammarTag": "subjunctive",
+    "difficultyLevel": 4,
+    "grammarNote": "Con tal de que triggers subjunctive. It expresses a condition for acceptability."
+  },
+  {
+    "sortOrder": 218,
+    "spanish": "Siempre que pueda, te ayudo.",
+    "english": "Whenever I can, I'll help you.",
+    "englishVariants": [],
+    "grammarTag": "subjunctive",
+    "difficultyLevel": 4,
+    "grammarNote": "Siempre que = whenever/as long as, followed by subjunctive for habitual future conditions."
+  },
+  {
+    "sortOrder": 219,
+    "spanish": "Habla como si supiera todo.",
+    "english": "He talks as if he knew everything.",
+    "englishVariants": [],
+    "grammarTag": "subjunctive",
+    "difficultyLevel": 4,
+    "grammarNote": "Como si always triggers imperfect subjunctive (presents something as hypothetical/unreal)."
+  },
+  {
+    "sortOrder": 220,
+    "spanish": "No hay nadie que lo sepa.",
+    "english": "There's no one who knows it.",
+    "englishVariants": [],
+    "grammarTag": "subjunctive",
+    "difficultyLevel": 4,
+    "grammarNote": "Negative antecedent (no hay nadie) triggers subjunctive in the relative clause."
+  },
+  {
+    "sortOrder": 221,
+    "spanish": "Ojalá pudiera acompañarte.",
+    "english": "I wish I could go with you.",
+    "englishVariants": [],
+    "grammarTag": "subjunctive",
+    "difficultyLevel": 4,
+    "grammarNote": "Ojalá + imperfect subjunctive expresses an unlikely or impossible wish in the present/future."
+  },
+  {
+    "sortOrder": 222,
+    "spanish": "Ojalá hubiera podido ayudarte.",
+    "english": "I wish I had been able to help you.",
+    "englishVariants": [],
+    "grammarTag": "subjunctive",
+    "difficultyLevel": 5,
+    "grammarNote": "Ojalá + past perfect subjunctive expresses regret about something that didn't happen."
+  },
+  {
+    "sortOrder": 223,
+    "spanish": "Pase lo que pase, estaré aquí.",
+    "english": "Whatever happens, I'll be here.",
+    "englishVariants": [],
+    "grammarTag": "subjunctive",
+    "difficulpLevel": 4,
+    "difficultyLevel": 4,
+    "grammarNote": "Pase lo que pase = whatever happens. Concessive subjunctive construction."
+  },
+  {
+    "sortOrder": 224,
+    "spanish": "Hagas lo que hagas, apoyaré tu decisión.",
+    "english": "Whatever you do, I'll support your decision.",
+    "englishVariants": [],
+    "grammarTag": "subjunctive",
+    "difficultyLevel": 5,
+    "grammarNote": "Concessive subjunctive with repetition (hagas lo que hagas) = whatever you do."
+  },
+  {
+    "sortOrder": 225,
+    "spanish": "Por más que lo intento, no lo logro.",
+    "english": "No matter how hard I try, I can't manage it.",
+    "englishVariants": [],
+    "grammarTag": "subjunctive",
+    "difficultyLevel": 4,
+    "grammarNote": "Por más que + subjunctive/indicative = no matter how much. Expresses futile effort."
+  },
+  {
+    "sortOrder": 226,
+    "spanish": "¿En qué puedo servirle?",
+    "english": "How can I help you? (formal)",
+    "englishVariants": [
+      "How may I assist you?"
+    ],
+    "grammarTag": "survival",
+    "difficultyLevel": 2,
+    "grammarNote": "Servirle (indirect object pronoun attached to infinitive). Used in formal/service contexts."
+  },
+  {
+    "sortOrder": 227,
+    "spanish": "Habría sido mejor decírselo antes.",
+    "english": "It would have been better to tell him before.",
+    "englishVariants": [],
+    "grammarTag": "conditional",
+    "difficultyLevel": 5,
+    "grammarNote": "Conditional perfect (habría sido) for an action that didn't happen. Decírselo = decir + se + lo attached."
+  },
+  {
+    "sortOrder": 228,
+    "spanish": "Lo que me molesta es la hipocresía.",
+    "english": "What bothers me is hypocrisy.",
+    "englishVariants": [],
+    "grammarTag": "unintentional",
+    "difficultyLevel": 4,
+    "grammarNote": "Lo que + clause = nominalized relative clause used as subject. Lo is a neuter article."
+  },
+  {
+    "sortOrder": 229,
+    "spanish": "Mientras más practicas, mejor hablas.",
+    "english": "The more you practice, the better you speak.",
+    "englishVariants": [],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 4,
+    "grammarNote": "Mientras más...más/mejor is the Latin American correlative construction for 'the more...the more.'"
+  },
+  {
+    "sortOrder": 230,
+    "spanish": "Fue entonces cuando lo entendí todo.",
+    "english": "It was then that I understood everything.",
+    "englishVariants": [],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 4,
+    "grammarNote": "Cleft sentence: fue + time expression + cuando. Used for emphasis. Ser acts as a linking verb."
+  },
+  {
+    "sortOrder": 231,
+    "spanish": "Lo que me sorprende es tu actitud.",
+    "english": "What surprises me is your attitude.",
+    "englishVariants": [],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 4,
+    "grammarNote": "Lo que + clause = what (nominalized relative). Acts as subject of the main clause."
+  },
+  {
+    "sortOrder": 232,
+    "spanish": "Se hizo de noche.",
+    "english": "It got dark. / Night fell.",
+    "englishVariants": [],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 3,
+    "grammarNote": "Hacerse + noun/adjective = to become. Se hizo de noche = it became night. Impersonal."
+  },
+  {
+    "sortOrder": 233,
+    "spanish": "Cuanto antes lo hagas, mejor.",
+    "english": "The sooner you do it, the better.",
+    "englishVariants": [],
+    "grammarTag": "hay-que-impersonal",
+    "difficultyLevel": 4,
+    "grammarNote": "Cuanto antes = the sooner. This correlative structure differs from mientras más...más."
+  },
+  {
+    "sortOrder": 234,
+    "spanish": "No me parece que sea la mejor opción.",
+    "english": "It doesn't seem to me that it's the best option.",
+    "englishVariants": [],
+    "grammarTag": "subjunctive",
+    "difficultyLevel": 4,
+    "grammarNote": "No parecer que triggers subjunctive (negated verb of seeming introduces doubt)."
+  },
+  {
+    "sortOrder": 235,
+    "spanish": "Me arrepiento de haberlo dicho.",
+    "english": "I regret having said it.",
+    "englishVariants": [],
+    "grammarTag": "reflexive",
+    "difficultyLevel": 4,
+    "grammarNote": "Arrepentirse de (reflexive) = to regret. Followed by perfect infinitive (haber + past participle)."
+  },
+  {
+    "sortOrder": 236,
+    "spanish": "Se atrevió a decirle la verdad.",
+    "english": "He/she dared to tell him/her the truth.",
+    "englishVariants": [],
+    "grammarTag": "reflexive",
+    "difficultyLevel": 3,
+    "grammarNote": "Atreverse a + infinitive = to dare to do something. Always reflexive."
+  },
+  {
+    "sortOrder": 237,
+    "spanish": "Me enamoré de ella a primera vista.",
+    "english": "I fell in love with her at first sight.",
+    "englishVariants": [],
+    "grammarTag": "reflexive",
+    "difficultyLevel": 3,
+    "grammarNote": "Enamorarse de (reflexive) = to fall in love with. A primera vista = at first sight."
+  },
+  {
+    "sortOrder": 238,
+    "spanish": "Se fue sin despedirse.",
+    "english": "He/she left without saying goodbye.",
+    "englishVariants": [],
+    "grammarTag": "reflexive",
+    "difficultyLevel": 3,
+    "grammarNote": "Irse (reflexive) = to leave/go away. Despedirse (reflexive) = to say goodbye. Sin + infinitive."
+  },
+  {
+    "sortOrder": 239,
+    "spanish": "Nos llevamos muy bien.",
+    "english": "We get along very well.",
+    "englishVariants": [],
+    "grammarTag": "reflexive",
+    "difficultyLevel": 2,
+    "grammarNote": "Llevarse bien/mal = to get along well/poorly. Reciprocal reflexive."
+  },
+  {
+    "sortOrder": 240,
+    "spanish": "Se negó a hablar con la prensa.",
+    "english": "He/she refused to speak to the press.",
+    "englishVariants": [],
+    "grammarTag": "reflexive",
+    "difficultyLevel": 3,
+    "grammarNote": "Negarse a + infinitive = to refuse to do. Always reflexive."
+  },
+  {
+    "sortOrder": 241,
+    "spanish": "Ponerse de acuerdo.",
+    "english": "To come to an agreement.",
+    "englishVariants": [
+      "To agree on something."
+    ],
+    "grammarTag": "reflexive",
+    "difficultyLevel": 3,
+    "grammarNote": "Ponerse de acuerdo = to reach agreement. Ponerse + noun/adj phrase for 'becoming' in a state."
+  },
+  {
+    "sortOrder": 242,
+    "spanish": "No te preocupes.",
+    "english": "Don't worry.",
+    "englishVariants": [],
+    "grammarTag": "reflexive",
+    "difficultyLevel": 2,
+    "grammarNote": "Preocuparse (reflexive) = to worry. Negative informal command: no + te + preocupes (subjunctive form)."
+  },
+  {
+    "sortOrder": 243,
+    "spanish": "¿En qué se diferencia esto de aquello?",
+    "english": "How does this differ from that?",
+    "englishVariants": [
+      "What's the difference between this and that?"
+    ],
+    "grammarTag": "hay-que-impersonal",
+    "difficultyLevel": 4,
+    "grammarNote": "Diferenciarse de (reflexive) = to differ from. ¿En qué? = in what way?"
+  },
+  {
+    "sortOrder": 244,
+    "spanish": "Está por llegar.",
+    "english": "He/she is about to arrive.",
+    "englishVariants": [
+      "He/she is on the verge of arriving."
+    ],
+    "grammarTag": "verb-infinitive",
+    "difficultyLevel": 3,
+    "grammarNote": "Estar por + infinitive = to be about to do something (near future)."
+  },
+  {
+    "sortOrder": 245,
+    "spanish": "No logro entender este concepto.",
+    "english": "I can't manage to understand this concept.",
+    "englishVariants": [],
+    "grammarTag": "verb-infinitive",
+    "difficultyLevel": 3,
+    "grammarNote": "Lograr + infinitive = to manage to do / to succeed in doing. Useful alternative to poder."
+  },
+  {
+    "sortOrder": 246,
+    "spanish": "Tardó una hora en contestar.",
+    "english": "He took an hour to reply.",
+    "englishVariants": [],
+    "grammarTag": "verb-infinitive",
+    "difficultyLevel": 3,
+    "grammarNote": "Tardar + time + en + infinitive = to take (time) to do something."
+  },
+  {
+    "sortOrder": 247,
+    "spanish": "Trata de no llegar tarde.",
+    "english": "Try not to be late.",
+    "englishVariants": [],
+    "grammarTag": "verb-infinitive",
+    "difficultyLevel": 2,
+    "grammarNote": "Tratar de + infinitive = to try to do. No before the infinitive = try not to."
+  },
+  {
+    "sortOrder": 248,
+    "spanish": "Me alegro de verte.",
+    "english": "I'm glad to see you.",
+    "englishVariants": [],
+    "grammarTag": "verb-infinitive",
+    "difficultyLevel": 2,
+    "grammarNote": "Alegrarse de + infinitive = to be glad to do. When subjects are the same, use infinitive (not subjunctive)."
+  },
+  {
+    "sortOrder": 249,
+    "spanish": "Acaba de salir.",
+    "english": "He/she just left.",
+    "englishVariants": [],
+    "grammarTag": "verb-infinitive",
+    "difficultyLevel": 2,
+    "grammarNote": "Acabar de + infinitive in third person = he/she just did something."
+  },
+  {
+    "sortOrder": 250,
+    "spanish": "Me robaron la cartera.",
+    "english": "My wallet was stolen.",
+    "englishVariants": [
+      "They stole my wallet."
+    ],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 2,
+    "grammarNote": "Me + verb in third person plural = passive/impersonal event done to me. Common for victimization."
+  },
+  {
+    "sortOrder": 251,
+    "spanish": "¿Qué le pasó?",
+    "english": "What happened to him/her?",
+    "englishVariants": [
+      "What's wrong with him/her?"
+    ],
+    "grammarTag": "unintentional",
+    "difficultyLevel": 2,
+    "grammarNote": "Le = indirect object pronoun. Pasar a alguien = to happen to someone."
+  },
+  {
+    "sortOrder": 252,
+    "spanish": "Se me fue la luz.",
+    "english": "The power went out on me.",
+    "englishVariants": [
+      "I lost power."
+    ],
+    "grammarTag": "unintentional",
+    "difficultyLevel": 3,
+    "grammarNote": "Accidental se + indirect object: something happened to me involuntarily. Literally 'the power left itself to me.'"
+  },
+  {
+    "sortOrder": 253,
+    "spanish": "Dicho esto, pasemos al siguiente tema.",
+    "english": "That said, let's move on to the next topic.",
+    "englishVariants": [],
+    "grammarTag": "hay-que-impersonal",
+    "difficultyLevel": 4,
+    "grammarNote": "Absolute participial construction: dicho esto = having said this. No conjugated verb in the participial phrase."
+  },
+  {
+    "sortOrder": 254,
+    "spanish": "Se empezó a entender la situación.",
+    "english": "The situation began to be understood.",
+    "englishVariants": [],
+    "grammarTag": "hay-que-impersonal",
+    "difficultyLevel": 4,
+    "grammarNote": "Empezar a + infinitive with impersonal se creates a passive-like construction."
+  },
+  {
+    "sortOrder": 255,
+    "spanish": "¿Cuándo quieres que lo haga?",
+    "english": "When do you want me to do it?",
+    "englishVariants": [],
+    "grammarTag": "subjunctive",
+    "difficultyLevel": 3,
+    "grammarNote": "Querer que + subjunctive (haga) with different subjects."
+  },
+  {
+    "sortOrder": 256,
+    "spanish": "Espero poder verte pronto.",
+    "english": "I hope to be able to see you soon.",
+    "englishVariants": [],
+    "grammarTag": "verb-infinitive",
+    "difficultyLevel": 3,
+    "grammarNote": "Esperar + infinitive (same subject) vs. esperar que + subjunctive (different subjects)."
+  },
+  {
+    "sortOrder": 257,
+    "spanish": "Se me hace agua la boca.",
+    "english": "My mouth is watering.",
+    "englishVariants": [],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 3,
+    "grammarNote": "Hacerse agua la boca = my mouth waters. Idiomatic use of hacerse with body part + indirect object."
+  },
+  {
+    "sortOrder": 258,
+    "spanish": "Meter la pata.",
+    "english": "To put one's foot in it. / To mess up.",
+    "englishVariants": [
+      "To make a blunder."
+    ],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 3,
+    "grammarNote": "Meter la pata = to stick one's paw in = to make a social or practical blunder."
+  },
+  {
+    "sortOrder": 259,
+    "spanish": "Echar de menos a alguien.",
+    "english": "To miss someone.",
+    "englishVariants": [],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 3,
+    "grammarNote": "Echar de menos = to miss a person or place. Preferred in Spain; Latin America uses extrañar."
+  },
+  {
+    "sortOrder": 260,
+    "spanish": "Echar a perder algo.",
+    "english": "To ruin something. / To spoil something.",
+    "englishVariants": [],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 4,
+    "grammarNote": "Echar a perder = to throw to waste = to ruin. Reflexive form echarse a perder = to go bad (food)."
+  },
+  {
+    "sortOrder": 261,
+    "spanish": "No tener pelos en la lengua.",
+    "english": "To be outspoken. / To not mince words.",
+    "englishVariants": [
+      "To speak one's mind freely."
+    ],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 4,
+    "grammarNote": "Literally 'to have no hairs on the tongue' = to speak bluntly without filtering."
+  },
+  {
+    "sortOrder": 262,
+    "spanish": "A que no sabes qué me pasó.",
+    "english": "I bet you don't know what happened to me.",
+    "englishVariants": [],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 4,
+    "grammarNote": "A que + negation = I bet (introducing something the speaker thinks the listener doesn't know). Very colloquial."
+  },
+  {
+    "sortOrder": 263,
+    "spanish": "Resulta que me lo dijeron mal.",
+    "english": "It turns out they told me wrong.",
+    "englishVariants": [],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 3,
+    "grammarNote": "Resultar que + indicative = it turns out that. Common frame for surprising revelations."
+  },
+  {
+    "sortOrder": 264,
+    "spanish": "¡Qué padre!",
+    "english": "How cool!",
+    "englishVariants": [
+      "Awesome!",
+      "Great!"
+    ],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 2,
+    "grammarNote": "Mexican expression of enthusiasm. Padre = father, but colloquially means 'cool/awesome.'"
+  },
+  {
+    "sortOrder": 265,
+    "spanish": "Ni modo.",
+    "english": "Oh well. / No way.",
+    "englishVariants": [
+      "Too bad.",
+      "What can you do?"
+    ],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 2,
+    "grammarNote": "Common Latin American expression of resignation or refusal depending on context."
+  },
+  {
+    "sortOrder": 266,
+    "spanish": "En cambio, mi hermano sí fue.",
+    "english": "On the other hand, my brother did go.",
+    "englishVariants": [],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 3,
+    "grammarNote": "En cambio = on the other hand / instead. Introduces a contrasting idea."
+  },
+  {
+    "sortOrder": 267,
+    "spanish": "A veces me siento solo.",
+    "english": "Sometimes I feel lonely.",
+    "englishVariants": [],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 2,
+    "grammarNote": "A veces = sometimes. Sentirse solo = to feel lonely (reflexive verb + adjective)."
+  },
+  {
+    "sortOrder": 268,
+    "spanish": "En realidad, no lo sé.",
+    "english": "Actually, I don't know.",
+    "englishVariants": [
+      "In reality, I don't know."
+    ],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 2,
+    "grammarNote": "En realidad = actually/in reality. Doesn't carry the contradictory force of 'actually' in English."
+  },
+  {
+    "sortOrder": 269,
+    "spanish": "A propósito, ¿viste las noticias?",
+    "english": "By the way, did you see the news?",
+    "englishVariants": [],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 2,
+    "grammarNote": "A propósito = by the way (to introduce a new topic)."
+  },
+  {
+    "sortOrder": 270,
+    "spanish": "En cuanto a eso, no sé.",
+    "english": "As for that, I don't know.",
+    "englishVariants": [],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 3,
+    "grammarNote": "En cuanto a = as for / regarding. Used to frame a topic."
+  },
+  {
+    "sortOrder": 271,
+    "spanish": "Siento que hayas tenido que esperar.",
+    "english": "I'm sorry you had to wait.",
+    "englishVariants": [],
+    "grammarTag": "subjunctive",
+    "difficultyLevel": 4,
+    "grammarNote": "Sentir que + present perfect subjunctive for regret about a completed event."
+  },
+  {
+    "sortOrder": 272,
+    "spanish": "No lo haré sin que me lo pidas.",
+    "english": "I won't do it unless you ask me.",
+    "englishVariants": [],
+    "grammarTag": "subjunctive",
+    "difficultyLevel": 4,
+    "grammarNote": "Sin que triggers subjunctive (different subjects required)."
+  },
+  {
+    "sortOrder": 273,
+    "spanish": "Busca a alguien que hable chino.",
+    "english": "He's looking for someone who speaks Chinese.",
+    "englishVariants": [],
+    "grammarTag": "subjunctive",
+    "difficultyLevel": 4,
+    "grammarNote": "Indefinite/unknown antecedent (someone hypothetical) triggers subjunctive in the relative clause."
+  },
+  {
+    "sortOrder": 274,
+    "spanish": "¿Qué Dios te bendiga!",
+    "english": "May God bless you!",
+    "englishVariants": [],
+    "grammarTag": "subjunctive",
+    "difficultyLevel": 3,
+    "grammarNote": "Que + subjunctive (bendiga) expresses a wish or blessing. Indirect command/wish without main verb."
+  },
+  {
+    "sortOrder": 275,
+    "spanish": "Aunque hubiera querido, no habría podido.",
+    "english": "Even if I had wanted to, I wouldn't have been able to.",
+    "englishVariants": [],
+    "grammarTag": "subjunctive",
+    "difficultyLevel": 5,
+    "grammarNote": "Aunque + past perfect subjunctive (hubiera querido) + conditional perfect (habría podido)."
+  },
+  {
+    "sortOrder": 276,
+    "spanish": "Me temo que no va a funcionar.",
+    "english": "I'm afraid it's not going to work.",
+    "englishVariants": [],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 3,
+    "grammarNote": "Temerse (reflexive) = to be afraid/suspect (used to hedge bad news). Different nuance from tener miedo."
+  },
+  {
+    "sortOrder": 277,
+    "spanish": "¿Qué me recomiendas?",
+    "english": "What do you recommend to me?",
+    "englishVariants": [
+      "What do you recommend?"
+    ],
+    "grammarTag": "object-pronouns",
+    "difficultyLevel": 2,
+    "grammarNote": "Me = indirect object pronoun. Recomendar is a verb like gustar in that it needs an indirect object."
+  },
+  {
+    "sortOrder": 278,
+    "spanish": "¿Me lo puedes explicar?",
+    "english": "Can you explain it to me?",
+    "englishVariants": [],
+    "grammarTag": "object-pronouns",
+    "difficultyLevel": 2,
+    "grammarNote": "Me (indirect) + lo (direct) before the modal verb. Can also attach to the infinitive: ¿puedes explicármelo?"
+  },
+  {
+    "sortOrder": 279,
+    "spanish": "Nos lo contaron todo.",
+    "english": "They told us everything.",
+    "englishVariants": [],
+    "grammarTag": "object-pronouns",
+    "difficultyLevel": 3,
+    "grammarNote": "Nos (indirect) + lo (direct) before the verb. Todo = everything (direct object not replaced by lo here)."
+  },
+  {
+    "sortOrder": 280,
+    "spanish": "¿Por qué no nos tomamos un descanso?",
+    "english": "Why don't we take a break?",
+    "englishVariants": [],
+    "grammarTag": "reflexive",
+    "difficultyLevel": 2,
+    "grammarNote": "Tomarse un descanso (reflexive) = to take a break for oneself. ¿Por qué no + present? = invitation."
+  },
+  {
+    "sortOrder": 281,
+    "spanish": "Se pelearon por una tontería.",
+    "english": "They fought over something silly.",
+    "englishVariants": [],
+    "grammarTag": "reflexive",
+    "difficultyLevel": 3,
+    "grammarNote": "Pelearse (reflexive/reciprocal) = to fight/argue with each other."
+  },
+  {
+    "sortOrder": 282,
+    "spanish": "Estaba tan cansado que me dormí en el sofá.",
+    "english": "I was so tired that I fell asleep on the sofa.",
+    "englishVariants": [],
+    "grammarTag": "reflexive",
+    "difficultyLevel": 3,
+    "grammarNote": "Dormirse (reflexive) = to fall asleep (involuntary). Dormir = to sleep (general activity)."
+  },
+  {
+    "sortOrder": 283,
+    "spanish": "No quiero ni café ni té.",
+    "english": "I don't want either coffee or tea.",
+    "englishVariants": [
+      "I want neither coffee nor tea."
+    ],
+    "grammarTag": "negative-constructions",
+    "difficultyLevel": 3,
+    "grammarNote": "Ni...ni = neither...nor. Requires no before the verb when the construction follows it."
+  },
+  {
+    "sortOrder": 284,
+    "spanish": "No lo ha visto nadie todavía.",
+    "english": "Nobody has seen it yet.",
+    "englishVariants": [],
+    "grammarTag": "negative-constructions",
+    "difficultyLevel": 3,
+    "grammarNote": "Double negative: no + verb + nadie. Nadie after the verb adds emphasis. Todavía = yet/still."
+  },
+  {
+    "sortOrder": 285,
+    "spanish": "Jamás había visto algo así.",
+    "english": "I had never seen anything like that.",
+    "englishVariants": [],
+    "grammarTag": "negative-constructions",
+    "difficultyLevel": 3,
+    "grammarNote": "Jamás + past perfect = had never. Algo here becomes 'anything' in a negative context."
+  },
+  {
+    "sortOrder": 286,
+    "spanish": "No tiene ningún sentido.",
+    "english": "It doesn't make any sense.",
+    "englishVariants": [
+      "It makes no sense."
+    ],
+    "grammarTag": "negative-constructions",
+    "difficultyLevel": 3,
+    "grammarNote": "Ningún + masculine singular noun as emphatic negation. Double negative: no + verb + ningún."
+  },
+  {
+    "sortOrder": 287,
+    "spanish": "Nunca jamás lo haré.",
+    "english": "I will never ever do it.",
+    "englishVariants": [],
+    "grammarTag": "negative-constructions",
+    "difficultyLevel": 3,
+    "grammarNote": "Nunca jamás = never ever. Double negative adverbs for maximum emphasis."
+  },
+  {
+    "sortOrder": 288,
+    "spanish": "Por nada del mundo lo diría.",
+    "english": "I wouldn't say it for anything in the world.",
+    "englishVariants": [],
+    "grammarTag": "negative-constructions",
+    "difficultyLevel": 4,
+    "grammarNote": "Por nada del mundo = not for anything in the world. Emphatic negation with conditional."
+  },
+  {
+    "sortOrder": 289,
+    "spanish": "Hace un calor de muerte hoy.",
+    "english": "It's unbearably hot today.",
+    "englishVariants": [
+      "It's deadly hot today."
+    ],
+    "grammarTag": "hacer-expressions",
+    "difficultyLevel": 3,
+    "grammarNote": "Hacer + noun + de muerte = idiomatic intensification of weather expressions."
+  },
+  {
+    "sortOrder": 290,
+    "spanish": "Al anochecer empezó a llover.",
+    "english": "At nightfall it started to rain.",
+    "englishVariants": [
+      "When night fell, it started to rain."
+    ],
+    "grammarTag": "hacer-expressions",
+    "difficultyLevel": 4,
+    "grammarNote": "Al + infinitive = upon/when doing something. Al anochecer = when night fell (anochecer = to get dark)."
+  },
+  {
+    "sortOrder": 291,
+    "spanish": "Habría que estudiar más.",
+    "english": "One would need to study more.",
+    "englishVariants": [],
+    "grammarTag": "conditional",
+    "difficultyLevel": 4,
+    "grammarNote": "Habría que + infinitive = conditional impersonal obligation. The conditional form of hay que."
+  },
+  {
+    "sortOrder": 292,
+    "spanish": "Podría haber llegado antes.",
+    "english": "He/she could have arrived earlier.",
+    "englishVariants": [],
+    "grammarTag": "conditional",
+    "difficultyLevel": 4,
+    "grammarNote": "Conditional perfect of poder (podría haber) + past participle = could have done."
+  },
+  {
+    "sortOrder": 293,
+    "spanish": "Debería haberlo dicho antes.",
+    "english": "He/she should have said it earlier.",
+    "englishVariants": [],
+    "grammarTag": "conditional",
+    "difficultyLevel": 4,
+    "grammarNote": "Deber in conditional (debería) + haber + past participle = should have done."
+  },
+  {
+    "sortOrder": 294,
+    "spanish": "Que descanse en paz.",
+    "english": "May he/she rest in peace.",
+    "englishVariants": [],
+    "grammarTag": "subjunctive",
+    "difficultyLevel": 4,
+    "grammarNote": "Que + subjunctive in an independent clause expresses a wish. The que is mandatory."
+  },
+  {
+    "sortOrder": 295,
+    "spanish": "No por mucho madrugar amanece más temprano.",
+    "english": "Getting up earlier doesn't make the sun rise sooner. / Haste makes waste.",
+    "englishVariants": [],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 5,
+    "grammarNote": "Proverb: rushing doesn't speed up natural outcomes. Madrugar = to rise early. Amanecer = for dawn to break."
+  },
+  {
+    "sortOrder": 296,
+    "spanish": "A palabras necias, oídos sordos.",
+    "english": "Don't pay attention to foolish words.",
+    "englishVariants": [
+      "Turn a deaf ear to foolishness."
+    ],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 5,
+    "grammarNote": "Proverb using ellipsis: to foolish words, deaf ears. Shows how Spanish proverbs omit verbs."
+  },
+  {
+    "sortOrder": 297,
+    "spanish": "Cada quien a lo suyo.",
+    "english": "To each their own.",
+    "englishVariants": [],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 4,
+    "grammarNote": "Cada quien = each one. A lo suyo = to their own thing. Expresses non-interference."
+  },
+  {
+    "sortOrder": 298,
+    "spanish": "Dicho y hecho.",
+    "english": "No sooner said than done.",
+    "englishVariants": [
+      "Said and done."
+    ],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 3,
+    "grammarNote": "Absolute participle construction: said and done. Common expression showing efficiency."
+  },
+  {
+    "sortOrder": 299,
+    "spanish": "Cueste lo que cueste, lo terminaré.",
+    "english": "Whatever it costs, I'll finish it.",
+    "englishVariants": [
+      "No matter what it costs, I'll finish it."
+    ],
+    "grammarTag": "subjunctive",
+    "difficultyLevel": 5,
+    "grammarNote": "Cueste lo que cueste = concessive subjunctive construction (whatever it costs). Expresses unconditional commitment."
+  },
+  {
+    "sortOrder": 300,
+    "spanish": "A grandes males, grandes remedios.",
+    "english": "Desperate times call for desperate measures.",
+    "englishVariants": [],
+    "grammarTag": "idioms-discourse",
+    "difficultyLevel": 4,
+    "grammarNote": "Proverb: to great problems, great remedies. Illustrates Spanish proverbs' parallel prepositional structure."
+  }
 ]
