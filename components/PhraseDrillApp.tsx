@@ -2,6 +2,32 @@
 
 import { useEffect, useRef, useState } from 'react'
 
+const ALL_TAGS = [
+  'survival','ser-estar','tener-expressions','hacer-expressions','reflexive',
+  'gustar-type','verb-infinitive','progressive','object-pronouns','por-para',
+  'negative-constructions','hay-que-impersonal','unintentional','subjunctive',
+  'conditional','idioms-discourse',
+]
+
+const TAG_LABELS: Record<string, string> = {
+  'survival': 'Survival',
+  'ser-estar': 'Ser vs. Estar',
+  'tener-expressions': 'Tener Expressions',
+  'hacer-expressions': 'Hacer Expressions',
+  'reflexive': 'Reflexive Verbs',
+  'gustar-type': 'Gustar-type',
+  'verb-infinitive': 'Verb + Infinitive',
+  'progressive': 'Progressive',
+  'object-pronouns': 'Object Pronouns',
+  'por-para': 'Por vs. Para',
+  'negative-constructions': 'Negatives',
+  'hay-que-impersonal': 'Hay que / Impersonal',
+  'unintentional': 'Unintentional se',
+  'subjunctive': 'Subjunctive',
+  'conditional': 'Conditional / Si',
+  'idioms-discourse': 'Idioms & Discourse',
+}
+
 type Bucket = 'unseen' | 'learning' | 'learned' | 'mastered'
 type MoveType = 'promote' | 'master' | 'demote' | null
 type Phase = 'answering' | 'wrong-first' | 'correct' | 'revealed'
@@ -50,6 +76,7 @@ interface Props {
 }
 
 export default function PhraseDrillApp({ username, onCounts, onAnswer }: Props) {
+  const [selectedTags, setSelectedTags] = useState<string[]>(ALL_TAGS)
   const [drill, setDrill] = useState<PhraseDrillState>(emptyState)
   const [phase, setPhase] = useState<Phase>('answering')
   const [input, setInput] = useState('')
@@ -66,6 +93,21 @@ export default function PhraseDrillApp({ username, onCounts, onAnswer }: Props) 
   const isReviewing = phase === 'correct' || phase === 'revealed'
   const anyStats = drill.stats.correct + drill.stats.wrong > 0
   const toastKey = drill.lastMove ? `${drill.lastMove}-${drill.stats.promoted}-${drill.stats.demoted}` : ''
+  const allSelected = selectedTags.length === ALL_TAGS.length
+
+  function toggleTag(tag: string) {
+    setSelectedTags(prev => {
+      if (prev.includes(tag)) {
+        const next = prev.filter(t => t !== tag)
+        return next.length === 0 ? prev : next
+      }
+      return [...prev, tag]
+    })
+  }
+
+  function toggleAll() {
+    setSelectedTags(allSelected ? [ALL_TAGS[0]] : ALL_TAGS)
+  }
 
   useEffect(() => {
     setLoading(true)
@@ -74,12 +116,13 @@ export default function PhraseDrillApp({ username, onCounts, onAnswer }: Props) 
     setInput('')
     setAnswer(null)
     setGrammarNote(null)
-    fetch(`/api/phrases/drill/init?username=${encodeURIComponent(username)}`).then(r => r.json()).then((data: PhraseDrillState) => {
+    const tagsParam = selectedTags.join(',')
+    fetch(`/api/phrases/drill/init?username=${encodeURIComponent(username)}&tags=${tagsParam}`).then(r => r.json()).then((data: PhraseDrillState) => {
       setDrill(data)
       setLoading(false)
       onCounts?.(data.counts)
     })
-  }, [username])
+  }, [username, selectedTags])
 
   useEffect(() => {
     if (isReviewing) nextBtnRef.current?.focus()
@@ -208,6 +251,34 @@ export default function PhraseDrillApp({ username, onCounts, onAnswer }: Props) 
 
   return (
     <>
+      <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
+        {/* Category filter sidebar */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, paddingTop: 4, flexShrink: 0 }}>
+          {/* Select All */}
+          <label style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, fontWeight: 700, color: 'var(--text)', cursor: 'pointer', userSelect: 'none', whiteSpace: 'nowrap', paddingBottom: 4, borderBottom: '1px solid var(--border)', marginBottom: 2 }}>
+            <input
+              type="checkbox"
+              checked={allSelected}
+              onChange={toggleAll}
+              style={{ accentColor: 'var(--green)', width: 12, height: 12, flexShrink: 0 }}
+            />
+            All categories
+          </label>
+          {ALL_TAGS.map(tag => (
+            <label key={tag} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: selectedTags.includes(tag) ? 'var(--text)' : 'var(--text-muted)', cursor: 'pointer', userSelect: 'none', whiteSpace: 'nowrap' }}>
+              <input
+                type="checkbox"
+                checked={selectedTags.includes(tag)}
+                onChange={() => toggleTag(tag)}
+                style={{ accentColor: 'var(--green)', width: 12, height: 12, flexShrink: 0 }}
+              />
+              {TAG_LABELS[tag]}
+            </label>
+          ))}
+        </div>
+        {/* Drill pane */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+    <>
       {!item ? (
         <section className="drill-panel">
           <div className="all-done">
@@ -269,12 +340,11 @@ export default function PhraseDrillApp({ username, onCounts, onAnswer }: Props) 
           <span className="stat stat-correct">✓ {drill.stats.correct}</span>
           <span className="stat-sep">·</span>
           <span className="stat stat-wrong">✗ {drill.stats.wrong}</span>
-          <span className="stat-sep">·</span>
-          <span className="stat stat-promoted">↑ {drill.stats.promoted}</span>
-          <span className="stat-sep">·</span>
-          <span className="stat stat-demoted">↓ {drill.stats.demoted}</span>
         </div>
       )}
+      </>{/* end inner fragment */}
+      </div>{/* end drill pane */}
+      </div>{/* end sidebar+drill flex row */}
     </>
   )
 }

@@ -87,21 +87,23 @@ async function fetchCounts(userId: string) {
   return counts
 }
 
-async function fetchCandidateItems(userId: string, excludeId?: string | null): Promise<PhraseDrillItem[]> {
+async function fetchCandidateItems(userId: string, tags?: string[], excludeId?: string | null): Promise<PhraseDrillItem[]> {
+  const tagFilter = tags && tags.length > 0 ? { phrase: { grammarTag: { in: tags } } } : {}
   const excludeFilter = excludeId ? { NOT: { phraseId: excludeId } } : {}
+  const baseWhere = { userId, ...tagFilter, ...excludeFilter }
   const [learning, learned, mastered] = await Promise.all([
     prisma.userPhraseProgress.findMany({
-      where: { userId, bucket: 'learning', ...excludeFilter },
+      where: { ...baseWhere, bucket: 'learning' },
       include: { phrase: true },
       take: 24,
     }),
     prisma.userPhraseProgress.findMany({
-      where: { userId, bucket: 'learned', ...excludeFilter },
+      where: { ...baseWhere, bucket: 'learned' },
       include: { phrase: true },
       take: 18,
     }),
     prisma.userPhraseProgress.findMany({
-      where: { userId, bucket: 'mastered', ...excludeFilter },
+      where: { ...baseWhere, bucket: 'mastered' },
       include: { phrase: true },
       orderBy: [{ score: 'asc' }, { lastSeenAt: 'asc' }],
       take: 24,
@@ -118,7 +120,7 @@ async function fetchCandidateItems(userId: string, excludeId?: string | null): P
   }))
 }
 
-export async function initializePhraseDrillState(username: string): Promise<PhraseDrillState> {
+export async function initializePhraseDrillState(username: string, tags?: string[]): Promise<PhraseDrillState> {
   const user = await getCurrentUser(username)
 
   // Ensure progress rows exist for all phrases
@@ -150,7 +152,7 @@ export async function initializePhraseDrillState(username: string): Promise<Phra
     }
   }
 
-  const [counts, items] = await Promise.all([fetchCounts(user.id), fetchCandidateItems(user.id)])
+  const [counts, items] = await Promise.all([fetchCounts(user.id), fetchCandidateItems(user.id, tags)])
   const item = weightedPick(items) ?? null
   return { item, counts, unseenCount: counts.unseen, stats: { correct: 0, wrong: 0, promoted: 0, demoted: 0 }, lastMove: null, lastMoveType: null }
 }
@@ -225,7 +227,7 @@ async function nextPhraseState(userId: string, phraseId: string, success: boolea
   })
 
   const forceMastered = !success && currentBucket === 'mastered'
-  const [counts, items] = await Promise.all([fetchCounts(userId), fetchCandidateItems(userId, phraseId)])
+  const [counts, items] = await Promise.all([fetchCounts(userId), fetchCandidateItems(userId, undefined, phraseId)])
   const item = weightedPick(items, phraseId, forceMastered) ?? null
   return {
     item,
