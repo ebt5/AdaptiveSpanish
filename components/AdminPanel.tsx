@@ -190,11 +190,17 @@ export default function AdminPanel({ username, mode, item }: Props) {
 }
 
 const panelStyle: React.CSSProperties = {
+  position: 'fixed',
+  top: 80,
+  right: 16,
   width: 220,
-  flexShrink: 0,
-  background: 'rgba(255,255,255,0.03)',
+  maxHeight: 'calc(100vh - 100px)',
+  overflowY: 'auto',
+  background: 'var(--surface, #1a1a1a)',
   border: '1px solid var(--border)',
   borderRadius: 12,
+  zIndex: 500,
+  boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
 }
 
 const headerStyle: React.CSSProperties = {

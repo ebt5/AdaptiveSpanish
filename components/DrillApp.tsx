@@ -375,8 +375,6 @@ export default function DrillApp() {
         {mode === 'phrases' && phraseCounts.unseen > 0 && <p className="unseen-note">{phraseCounts.unseen} phrases not yet introduced</p>}
 
         {mode === 'vocab' ? (
-          <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
-          <div style={{ flex: 1, minWidth: 0 }}>
           <>
             {!item ? (
               <section className="drill-panel"><div className="all-done"><div className="all-done-icon">🎉</div><div className="all-done-text">All words mastered!</div></div></section>
@@ -432,15 +430,6 @@ export default function DrillApp() {
               </div>
             )}
           </>
-          </div>
-          {isAdmin && (
-            <AdminPanel
-              username={username}
-              mode="vocab"
-              item={item ? { id: item.id, english: item.english, spanish: item.spanish, spanishDisplay: item.spanishDisplay, emoji: item.emoji } : null}
-            />
-          )}
-          </div>
         ) : mode === 'verbs' ? (
           <VerbDrillApp username={username} onAnswer={() => setHeatmapKey(k => k + 1)} />
         ) : (
@@ -460,6 +449,14 @@ export default function DrillApp() {
           <GrammarHeatmap username={username} refreshKey={heatmapKey} />
           <MasteredChartPhrases username={username} />
         </>
+      )}
+
+      {isAdmin && (
+        <AdminPanel
+          username={username}
+          mode={mode === 'verbs' ? 'verbs' : mode}
+          item={mode === 'vocab' && item ? { id: item.id, english: item.english, spanish: item.spanish, spanishDisplay: item.spanishDisplay, emoji: item.emoji } : null}
+        />
       )}
 
       {hoveredBucket && popoverAnchorRect && (
