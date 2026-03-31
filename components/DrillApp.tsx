@@ -46,7 +46,11 @@ const emptyState: DrillState = {
 }
 
 function cap(s: string) { return s.charAt(0).toUpperCase() + s.slice(1) }
-function normalize(s: string) { return s.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') }
+function normalize(s: string) {
+  return s.trim().toLowerCase().normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/^(el|la|los|las|un|una|unos|unas)\s+/i, '')
+}
 
 export default function DrillApp() {
   const [username, setUsername] = useState<string | null>(null)
