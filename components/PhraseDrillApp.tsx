@@ -46,9 +46,10 @@ function normalize(s: string) {
 interface Props {
   username: string
   onCounts?: (counts: { learning: number; learned: number; mastered: number; unseen: number }) => void
+  onAnswer?: () => void
 }
 
-export default function PhraseDrillApp({ username, onCounts }: Props) {
+export default function PhraseDrillApp({ username, onCounts, onAnswer }: Props) {
   const [drill, setDrill] = useState<PhraseDrillState>(emptyState)
   const [phase, setPhase] = useState<Phase>('answering')
   const [input, setInput] = useState('')
@@ -103,6 +104,7 @@ export default function PhraseDrillApp({ username, onCounts }: Props) {
         setGrammarNote(data.grammarNote ?? null)
         setQueuedNext({ item: data.item, counts: data.counts, unseenCount: data.unseenCount, stats: data.stats, lastMove: data.lastMove, lastMoveType: data.lastMoveType })
         onCounts?.(data.counts)
+        onAnswer?.()
       }
     } finally {
       setPendingSync(false)

@@ -7,6 +7,8 @@ import ConjugationHeatmap from './ConjugationHeatmap'
 import VerbDrillApp from './VerbDrillApp'
 import PhraseDrillApp from './PhraseDrillApp'
 import BucketPopover from './BucketPopover'
+import GrammarHeatmap from './GrammarHeatmap'
+import MasteredChartPhrases from './MasteredChartPhrases'
 
 type Bucket = 'unseen' | 'learning' | 'learned' | 'mastered'
 type MoveType = 'promote' | 'master' | 'demote' | null
@@ -302,7 +304,7 @@ export default function DrillApp() {
           </button>
         </div>
 
-        <div className="bucket-cards">
+        {mode !== 'verbs' && <div className="bucket-cards">
           {([
             ['Learning', 'learning'],
             ['Learned', 'learned'],
@@ -359,7 +361,7 @@ export default function DrillApp() {
               </div>
             )
           })}
-        </div>
+        </div>}
 
         {mode === 'vocab' && drill.unseenCount > 0 && <p className="unseen-note">{drill.unseenCount} words not yet introduced</p>}
         {mode === 'phrases' && phraseCounts.unseen > 0 && <p className="unseen-note">{phraseCounts.unseen} phrases not yet introduced</p>}
@@ -423,12 +425,23 @@ export default function DrillApp() {
         ) : mode === 'verbs' ? (
           <VerbDrillApp username={username} onAnswer={() => setHeatmapKey(k => k + 1)} />
         ) : (
-          <PhraseDrillApp username={username} onCounts={setPhraseCounts} />
+          <PhraseDrillApp username={username} onCounts={setPhraseCounts} onAnswer={() => setHeatmapKey(k => k + 1)} />
         )}
       </main>
 
-      <MasteredChart username={username} />
-      <ConjugationHeatmap username={username} refreshKey={heatmapKey} />
+      {/* Vocab tab: mastered-by-day bar chart only */}
+      {mode === 'vocab' && <MasteredChart username={username} />}
+
+      {/* Verbs tab: conjugation heatmap only */}
+      {mode === 'verbs' && <ConjugationHeatmap username={username} refreshKey={heatmapKey} />}
+
+      {/* Phrases tab: grammar progress heatmap + phrases mastered chart */}
+      {mode === 'phrases' && (
+        <>
+          <GrammarHeatmap username={username} refreshKey={heatmapKey} />
+          <MasteredChartPhrases username={username} />
+        </>
+      )}
 
       {hoveredBucket && popoverAnchorRect && (
         <BucketPopover
