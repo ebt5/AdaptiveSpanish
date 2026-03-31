@@ -88,6 +88,38 @@ export default function GrammarGuideModal({ tag, onClose }: Props) {
           {guide.pattern}
         </div>
 
+        {/* Forms table */}
+        {guide.forms && (
+          <>
+            <h3 style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--text-muted)', marginBottom: 8 }}>Forms</h3>
+            <div style={{ overflowX: 'auto', marginBottom: 18 }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+                <thead>
+                  <tr>
+                    {guide.forms.headers.map((h, i) => (
+                      <th key={i} style={{ textAlign: 'left', padding: '5px 10px', background: 'rgba(255,255,255,0.06)', color: 'var(--text-muted)', fontWeight: 600, borderBottom: '1px solid var(--border)', whiteSpace: 'nowrap' }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {guide.forms.rows.map((row, i) => (
+                    <tr key={i} style={{ borderBottom: '1px solid var(--border)' }}>
+                      {row.cells.map((cell, j) => (
+                        <td key={j} style={{ padding: '6px 10px', color: 'var(--text)', verticalAlign: 'top', lineHeight: 1.4 }}>{cell}</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {guide.forms.note && (
+              <div style={{ fontSize: 11, color: 'var(--text-muted)', fontStyle: 'italic', marginTop: -12, marginBottom: 18, lineHeight: 1.5 }}>
+                {guide.forms.note}
+              </div>
+            )}
+          </>
+        )}
+
         {/* Examples */}
         <h3 style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--text-muted)', marginBottom: 8 }}>Examples</h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 18 }}>

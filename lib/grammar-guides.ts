@@ -1,9 +1,17 @@
+export interface FormsTable {
+  type: 'table' | 'contrast'
+  headers: string[]
+  rows: Array<{ label: string; cells: string[] }>
+  note?: string
+}
+
 export interface GrammarGuide {
   tag: string
   name: string
   whatItIs: string
   whyTricky: string
   pattern: string
+  forms?: FormsTable
   examples: Array<{ es: string; en: string }>
   mistakes: Array<{ wrong: string; right: string; note: string }>
   triggers: string[]
@@ -33,6 +41,19 @@ export const GRAMMAR_GUIDES: GrammarGuide[] = [
     whatItIs: 'Spanish has two verbs for "to be": ser (permanent/essential) and estar (temporary/conditional). Using the wrong one changes meaning dramatically.',
     whyTricky: 'English has one verb — "to be" — for everything. Spanish splits it based on whether something is essential/identity (ser) or temporary/state (estar). But the rules aren\'t perfectly clean: location uses estar even for permanent things; events use ser even for temporary ones. And some adjectives change meaning entirely: ser aburrido = to be boring (personality); estar aburrido = to be bored (right now).',
     pattern: 'Ser: identity, origin, profession, characteristics, time, events\nEstar: location, temporary states, emotions, progressive tenses, results',
+    forms: {
+      type: 'contrast',
+      headers: ['Use SER for', 'Use ESTAR for'],
+      rows: [
+        { label: '', cells: ['Identity: Soy médico.', 'Temporary state: Estoy cansado.'] },
+        { label: '', cells: ['Origin: Soy de México.', 'Location: Estoy en casa.'] },
+        { label: '', cells: ['Characteristic: Es alta.', 'Emotion: Está triste.'] },
+        { label: '', cells: ['Time: Son las tres.', 'Condition: Está cerrado.'] },
+        { label: '', cells: ['Event location: La reunión es aquí.', 'Progressive: Está comiendo.'] },
+        { label: '', cells: ['Material: Es de madera.', 'Result: Está roto.'] },
+      ],
+      note: 'Key pairs that change meaning: ser aburrido (to be boring) vs. estar aburrido (to be bored); ser rico (to be rich) vs. estar rico (to taste delicious); ser malo (to be bad/evil) vs. estar malo (to be sick).',
+    },
     examples: [
       { es: '**Soy** médico. / **Estoy** enfermo.', en: 'I am a doctor (identity). / I am sick (temporary state).' },
       { es: '**Es** alta. / **Está** de pie.', en: 'She is tall (characteristic). / She is standing (position).' },
@@ -50,6 +71,23 @@ export const GRAMMAR_GUIDES: GrammarGuide[] = [
     whatItIs: 'A set of idiomatic phrases where Spanish uses tener (to have) where English uses "to be." You don\'t BE hungry — you HAVE hunger.',
     whyTricky: 'In English, bodily and emotional states use "to be": I am hungry, cold, right, afraid. In Spanish, these are expressed with tener + noun. This means the adjective becomes a noun (hambre, frío, razón) and tener replaces ser/estar. Learners constantly say estoy hambre or soy hambre — both are wrong.',
     pattern: 'tener + [noun] where English says "to be + [adjective]"',
+    forms: {
+      type: 'table',
+      headers: ['Spanish', 'English', 'Note'],
+      rows: [
+        { label: '', cells: ['tener hambre', 'to be hungry', 'lit. to have hunger'] },
+        { label: '', cells: ['tener sed', 'to be thirsty', 'lit. to have thirst'] },
+        { label: '', cells: ['tener frío', 'to be cold', 'lit. to have cold'] },
+        { label: '', cells: ['tener calor', 'to be hot', 'lit. to have heat'] },
+        { label: '', cells: ['tener sueño', 'to be sleepy', 'lit. to have sleep'] },
+        { label: '', cells: ['tener miedo', 'to be afraid', 'lit. to have fear'] },
+        { label: '', cells: ['tener prisa', 'to be in a hurry', 'lit. to have hurry'] },
+        { label: '', cells: ['tener razón', 'to be right', 'lit. to have reason'] },
+        { label: '', cells: ['tener X años', 'to be X years old', 'lit. to have X years'] },
+        { label: '', cells: ['tener suerte', 'to be lucky', 'lit. to have luck'] },
+        { label: '', cells: ['tener ganas de', 'to feel like / want to', 'lit. to have desire for'] },
+      ],
+    },
     examples: [
       { es: '**Tengo hambre.** No puedo esperar más.', en: 'I\'m hungry (I have hunger). I can\'t wait anymore.' },
       { es: 'Ella **tiene razón.** No lo sabía.', en: 'She\'s right (she has reason). I didn\'t know.' },
@@ -84,6 +122,19 @@ export const GRAMMAR_GUIDES: GrammarGuide[] = [
     whatItIs: 'Verbs where the subject acts on itself, indicated by adding a reflexive pronoun (me, te, se, nos, os, se). They can also indicate reciprocal actions or simply mark certain idiomatic verbs.',
     whyTricky: 'English has reflexive pronouns (myself, yourself) but uses them far less. Spanish reflexive verbs include things English doesn\'t treat reflexively: getting up (levantarse), being called (llamarse), going away (irse). Many verbs also change meaning when made reflexive: ir = to go; irse = to leave/take off. Dormir = to sleep; dormirse = to fall asleep.',
     pattern: '[reflexive pronoun] + [verb]: me levanto, te llamas, se despierta, nos vamos',
+    forms: {
+      type: 'table',
+      headers: ['Person', 'Pronoun', 'Example'],
+      rows: [
+        { label: '', cells: ['yo', 'me', 'Me llamo Erik. / Me levanto tarde.'] },
+        { label: '', cells: ['tú', 'te', 'Te llamas Ana. / ¿Cómo te sientes?'] },
+        { label: '', cells: ['él/ella/usted', 'se', 'Se llama María. / Se levanta a las ocho.'] },
+        { label: '', cells: ['nosotros', 'nos', 'Nos vamos ahora. / Nos llevamos bien.'] },
+        { label: '', cells: ['vosotros', 'os', 'Os llamáis igual. / ¿Os acordáis?'] },
+        { label: '', cells: ['ellos/ustedes', 'se', 'Se llaman Juan y Pedro. / Se van mañana.'] },
+      ],
+      note: 'With infinitives, the pronoun can attach to the end: voy a levantarme OR me voy a levantar. Both are correct.',
+    },
     examples: [
       { es: '**Me llamo** Ana. ¿Cómo **te llamas** tú?', en: 'My name is Ana (I call myself). What\'s your name?' },
       { es: '**Se levanta** a las siete todos los días.', en: 'She gets up at seven every day.' },
@@ -101,6 +152,19 @@ export const GRAMMAR_GUIDES: GrammarGuide[] = [
     whatItIs: 'A group of verbs that work "backwards" from English — the thing that pleases/hurts/interests acts as the subject, and the person experiencing it is the indirect object.',
     whyTricky: 'In English: "I like coffee" — I is the subject, coffee is the object. In Spanish: Me gusta el café — el café is the subject, me is the indirect object (to me). This means the verb agrees with the thing, not the person, and you must use the indirect object pronoun (me/te/le/nos/os/les), not the subject pronoun. Forgetting the pronoun or using yo instead of me is extremely common.',
     pattern: '[indirect object pronoun] + [verb] + [subject noun]:\nme/te/le/nos/os/les + gusta(n)/duele(n)/falta(n)/parece(n)/encanta(n)',
+    forms: {
+      type: 'table',
+      headers: ['Person', 'Pronoun', 'Singular subject', 'Plural subject'],
+      rows: [
+        { label: '', cells: ['to me', 'me', 'Me gusta el café.', 'Me gustan los deportes.'] },
+        { label: '', cells: ['to you', 'te', 'Te gusta la música.', 'Te gustan las películas.'] },
+        { label: '', cells: ['to him/her/you(formal)', 'le', 'Le duele la cabeza.', 'Le duelen las muelas.'] },
+        { label: '', cells: ['to us', 'nos', 'Nos falta tiempo.', 'Nos faltan ideas.'] },
+        { label: '', cells: ['to you all', 'os', 'Os encanta viajar.', 'Os encantan los viajes.'] },
+        { label: '', cells: ['to them/you all', 'les', 'Les parece bien.', 'Les parecen difíciles.'] },
+      ],
+      note: 'The verb agrees with what is liked/hurting (the subject), not the person. Add a + [person] for clarity: A María le gusta el café.',
+    },
     examples: [
       { es: '**Me gusta** el café. / **Me gustan** los deportes.', en: 'I like coffee (singular). / I like sports (plural, so gustan).' },
       { es: '**Le duele** la cabeza.', en: 'His/Her head hurts (the head hurts to him/her).' },
@@ -152,6 +216,19 @@ export const GRAMMAR_GUIDES: GrammarGuide[] = [
     whatItIs: 'Direct and indirect object pronouns (lo, la, le, me, te, nos, se...) replace nouns and are placed before conjugated verbs in Spanish — the opposite of English.',
     whyTricky: 'In English, pronouns come after the verb: "I see him," "She told me." In Spanish they come before: lo veo, me dijo. When two object pronouns are stacked, the indirect comes first: me lo dijo (he told it to me). And when le/les come before lo/la, they must change to se: se lo di (not le lo di). The pronoun must also attach to infinitives and gerunds in some positions.',
     pattern: 'Before conjugated verb: [IO pronoun] + [DO pronoun] + [verb]\nle/les → se when before lo/la/los/las\nAttach to infinitive: voy a verlo / lo voy a ver (both OK)',
+    forms: {
+      type: 'table',
+      headers: ['Person', 'Direct object', 'Indirect object'],
+      rows: [
+        { label: '', cells: ['1st singular', 'me (me)', 'me (to me)'] },
+        { label: '', cells: ['2nd singular', 'te (you)', 'te (to you)'] },
+        { label: '', cells: ['3rd singular', 'lo/la (him/her/it)', 'le → se before lo/la (to him/her)'] },
+        { label: '', cells: ['1st plural', 'nos (us)', 'nos (to us)'] },
+        { label: '', cells: ['2nd plural', 'os (you all)', 'os (to you all)'] },
+        { label: '', cells: ['3rd plural', 'los/las (them)', 'les → se before lo/la (to them)'] },
+      ],
+      note: 'When two pronouns stack: indirect first, then direct. Le lo → Se lo. Order: [IO] + [DO] + [verb]. Example: Me lo dijo (he told it to me). Se lo di a ella (I gave it to her).',
+    },
     examples: [
       { es: '**Lo vi** ayer en el parque.', en: 'I saw him/it yesterday in the park.' },
       { es: '**Me lo dijo** esta mañana.', en: 'He told it to me this morning.' },
@@ -169,6 +246,19 @@ export const GRAMMAR_GUIDES: GrammarGuide[] = [
     whatItIs: 'Both por and para translate to "for" in English, but they express fundamentally different relationships and are not interchangeable.',
     whyTricky: 'English uses "for" to cover a wide range of meanings. Spanish splits these into two prepositions with distinct functions. Por covers cause, exchange, duration, movement through, and means. Para covers purpose, destination, recipient, deadlines, and opinion. The confusion is compounded by idioms that don\'t follow the rules obviously: por supuesto (of course), para siempre (forever), por favor (please).',
     pattern: 'Por: cause, motivation, duration, means, movement through, exchange\nPara: purpose, goal, destination, recipient, deadline, opinion',
+    forms: {
+      type: 'contrast',
+      headers: ['POR (cause, means, duration)', 'PARA (purpose, goal, recipient)'],
+      rows: [
+        { label: '', cells: ['Cause: Lo hice por ti. (because of you)', 'Purpose: Estudio para aprender. (in order to learn)'] },
+        { label: '', cells: ['Duration: Estudié por dos horas.', 'Deadline: La tarea es para mañana.'] },
+        { label: '', cells: ['Means: Hablamos por teléfono.', 'Recipient: Este regalo es para ti.'] },
+        { label: '', cells: ['Movement: Caminé por el parque. (through)', 'Destination: Salgo para Madrid.'] },
+        { label: '', cells: ['Exchange: Te lo cambio por este.', 'Opinion: Para mí, es difícil.'] },
+        { label: '', cells: ['Motivation: Lucho por mis hijos.', 'Goal: Trabajo para ganar dinero.'] },
+      ],
+      note: 'Trick: Por looks backward (cause, reason, how). Para looks forward (goal, destination, who receives it).',
+    },
     examples: [
       { es: 'Lo hice **por** ti. / Esto es **para** ti.', en: 'I did it because of you (cause). / This is for you (recipient).' },
       { es: 'Salgo **para** Madrid mañana.', en: 'I\'m leaving for Madrid tomorrow (destination).' },
@@ -186,6 +276,19 @@ export const GRAMMAR_GUIDES: GrammarGuide[] = [
     whatItIs: 'Spanish uses double (or multiple) negatives as standard grammar — they reinforce, not cancel, each other. "No sé nada" literally says "I don\'t know nothing" but means "I don\'t know anything."',
     whyTricky: 'English grammar forbids double negatives ("I don\'t know nothing" is considered incorrect). In Spanish, they are required. When a negative word (nada, nadie, nunca, tampoco) follows the verb, no must also precede the verb. The negative word can also precede the verb alone (nunca viene = he never comes), in which case no is not needed. Remembering when to add no and when not to is the main challenge.',
     pattern: 'Negative word after verb: no + [verb] + [negative word]\nNegative word before verb: [negative word] + [verb] (no needed)\nNo → never; nada → nothing/anything; nadie → nobody/anyone; nunca → never; tampoco → neither/either',
+    forms: {
+      type: 'table',
+      headers: ['Positive', 'Negative', 'English'],
+      rows: [
+        { label: '', cells: ['algo', 'nada', 'something → nothing/anything'] },
+        { label: '', cells: ['alguien', 'nadie', 'someone → nobody/anyone'] },
+        { label: '', cells: ['algún/alguno', 'ningún/ninguno', 'some/any → none/no'] },
+        { label: '', cells: ['siempre', 'nunca / jamás', 'always → never'] },
+        { label: '', cells: ['también', 'tampoco', 'also/too → neither/either'] },
+        { label: '', cells: ['o...o', 'ni...ni', 'either...or → neither...nor'] },
+      ],
+      note: 'After verb: No veo a nadie. (double negative required) / Before verb: Nunca viene. (single negative OK, no redundant no needed)',
+    },
     examples: [
       { es: '**No sé nada.** No me preguntes.', en: 'I don\'t know anything. Don\'t ask me.' },
       { es: '**Nunca** viene a tiempo.', en: 'He never comes on time.' },
@@ -237,6 +340,20 @@ export const GRAMMAR_GUIDES: GrammarGuide[] = [
     whatItIs: 'The subjunctive is a verb mood (not a tense) used to express doubt, desire, emotion, hypothetical situations, and recommendations — whenever the speaker is not stating a plain fact.',
     whyTricky: 'English barely uses the subjunctive (compare "I suggest he leave" vs. common "I suggest he leaves"). Spanish uses it constantly. The key is recognizing trigger patterns: whenever one person wants/hopes/fears/doubts something about another person, the second verb goes subjunctive. The main challenge is learning the triggers and then forming the subjunctive correctly (different endings from indicative, with many irregulars).',
     pattern: 'Two subjects + que: [person A] + [trigger verb] + que + [person B] + [subjunctive]\nTrigger verbs: querer, esperar, temer, dudar, recomendar, alegrarse de, sorprender + que\nImpersonal triggers: es importante que, es posible que, ojalá',
+    forms: {
+      type: 'table',
+      headers: ['Infinitive', 'Present subjunctive', 'Note'],
+      rows: [
+        { label: '', cells: ['hablar', 'hable, hables, hable, hablemos, habléis, hablen', '-ar: drop -o, add -e endings'] },
+        { label: '', cells: ['comer', 'coma, comas, coma, comamos, comáis, coman', '-er/-ir: drop -o, add -a endings'] },
+        { label: '', cells: ['ser', 'sea, seas, sea, seamos, seáis, sean', 'irregular'] },
+        { label: '', cells: ['estar', 'esté, estés, esté, estemos, estéis, estén', 'irregular'] },
+        { label: '', cells: ['ir', 'vaya, vayas, vaya, vayamos, vayáis, vayan', 'irregular'] },
+        { label: '', cells: ['tener', 'tenga, tengas, tenga, tengamos, tengáis, tengan', 'go-verb: use yo form stem'] },
+        { label: '', cells: ['hacer', 'haga, hagas, haga, hagamos, hagáis, hagan', 'go-verb: use yo form stem'] },
+      ],
+      note: 'Key rule for regular verbs: take the yo form of present indicative → drop -o → add opposite vowel endings (-ar verbs get -e endings; -er/-ir verbs get -a endings).',
+    },
     examples: [
       { es: 'Espero que **vengas** a la fiesta.', en: 'I hope you come to the party (esperar que triggers subjunctive).' },
       { es: 'Es importante que **estudies** todos los días.', en: 'It\'s important that you study every day.' },
