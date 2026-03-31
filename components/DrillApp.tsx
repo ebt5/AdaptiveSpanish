@@ -9,6 +9,7 @@ import PhraseDrillApp from './PhraseDrillApp'
 import BucketPopover from './BucketPopover'
 import GrammarHeatmap from './GrammarHeatmap'
 import MasteredChartPhrases from './MasteredChartPhrases'
+import AdminPanel from './AdminPanel'
 
 type Bucket = 'unseen' | 'learning' | 'learned' | 'mastered'
 type MoveType = 'promote' | 'master' | 'demote' | null
@@ -49,6 +50,7 @@ function normalize(s: string) { return s.trim().toLowerCase().normalize('NFD').r
 
 export default function DrillApp() {
   const [username, setUsername] = useState<string | null>(null)
+  const [isAdmin, setIsAdmin] = useState(false)
   const [usernameInput, setUsernameInput] = useState('')
   const [drill, setDrill] = useState<DrillState>(emptyState)
   const [phase, setPhase] = useState<Phase>('answering')
@@ -82,8 +84,13 @@ export default function DrillApp() {
   useEffect(() => {
     if (!username) return
     setLoading(true)
-    fetch(`/api/drill/init?username=${encodeURIComponent(username)}`).then(r => r.json()).then((data: DrillState) => {
-      setDrill(data)
+    // Load drill state + check admin status in parallel
+    Promise.all([
+      fetch(`/api/drill/init?username=${encodeURIComponent(username)}`).then(r => r.json()),
+      fetch('/api/user/bootstrap', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username }) }).then(r => r.json()),
+    ]).then(([drillData, userData]) => {
+      setDrill(drillData)
+      setIsAdmin(userData.isAdmin ?? false)
       setLoading(false)
     })
   }, [username])
@@ -116,6 +123,7 @@ export default function DrillApp() {
     if (data.ok) {
       setStoredUsername(data.username)
       setUsername(data.username)
+      setIsAdmin(data.isAdmin ?? false)
       setUsernameInput('')
     }
   }
@@ -367,6 +375,8 @@ export default function DrillApp() {
         {mode === 'phrases' && phraseCounts.unseen > 0 && <p className="unseen-note">{phraseCounts.unseen} phrases not yet introduced</p>}
 
         {mode === 'vocab' ? (
+          <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
           <>
             {!item ? (
               <section className="drill-panel"><div className="all-done"><div className="all-done-icon">🎉</div><div className="all-done-text">All words mastered!</div></div></section>
@@ -422,6 +432,15 @@ export default function DrillApp() {
               </div>
             )}
           </>
+          </div>
+          {isAdmin && (
+            <AdminPanel
+              username={username}
+              mode="vocab"
+              item={item ? { id: item.id, english: item.english, spanish: item.spanish, spanishDisplay: item.spanishDisplay, emoji: item.emoji } : null}
+            />
+          )}
+          </div>
         ) : mode === 'verbs' ? (
           <VerbDrillApp username={username} onAnswer={() => setHeatmapKey(k => k + 1)} />
         ) : (
