@@ -247,8 +247,6 @@ export default function PhraseDrillApp({ username, onCounts, onAnswer }: Props) 
     }
   }
 
-  if (loading) return <section className="drill-panel"><p style={{ textAlign: 'center', color: 'var(--text-muted)' }}>Loading phrases…</p></section>
-
   return (
     <>
       <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
@@ -278,7 +276,7 @@ export default function PhraseDrillApp({ username, onCounts, onAnswer }: Props) 
         </div>
         {/* Drill pane */}
         <div style={{ flex: 1, minWidth: 0 }}>
-    <>
+          {loading ? <section className="drill-panel"><p style={{ textAlign: 'center', color: 'var(--text-muted)' }}>Loading phrases…</p></section> : <>
       {!item ? (
         <section className="drill-panel">
           <div className="all-done">
@@ -342,7 +340,7 @@ export default function PhraseDrillApp({ username, onCounts, onAnswer }: Props) 
           <span className="stat stat-wrong">✗ {drill.stats.wrong}</span>
         </div>
       )}
-      </>{/* end inner fragment */}
+      </>}{/* end loading ternary inner fragment */}
       </div>{/* end drill pane */}
       </div>{/* end sidebar+drill flex row */}
     </>

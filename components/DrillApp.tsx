@@ -455,11 +455,11 @@ export default function DrillApp() {
         </>
       )}
 
-      {isAdmin && (
+      {isAdmin && mode !== 'verbs' && (
         <AdminPanel
           username={username}
-          mode={mode === 'verbs' ? 'verbs' : mode}
-          item={mode === 'vocab' && item ? { id: item.id, english: item.english, spanish: item.spanish, spanishDisplay: item.spanishDisplay, emoji: item.emoji } : null}
+          mode={mode}
+          item={item ? { id: item.id, english: item.english, spanish: item.spanish, spanishDisplay: item.spanishDisplay, emoji: item.emoji } : null}
         />
       )}
 
