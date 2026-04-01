@@ -9,13 +9,14 @@ interface Props {
   onTranscript: (text: string) => void
   disabled?: boolean
   autoStart?: boolean         // start recording immediately on mount
+  hint?: string               // expected answer hint for Whisper context
 }
 
 const SILENCE_THRESHOLD = 0.01   // RMS below this = silence
 const SILENCE_DURATION = 1200    // ms of silence before auto-stop
 const MAX_DURATION = 8000        // ms max recording
 
-export default function VoiceInput({ language = 'es', onTranscript, disabled, autoStart }: Props) {
+export default function VoiceInput({ language = 'es', onTranscript, disabled, autoStart, hint }: Props) {
   const [voiceState, setVoiceState] = useState<VoiceState>('idle')
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
@@ -132,6 +133,7 @@ export default function VoiceInput({ language = 'es', onTranscript, disabled, au
       const formData = new FormData()
       formData.append('audio', file)
       formData.append('language', language)
+      if (hint) formData.append('hint', hint)
 
       const res = await fetch('/api/voice/transcribe', { method: 'POST', body: formData })
       const data = await res.json()

@@ -510,6 +510,7 @@ export default function DrillApp() {
                       onTranscript={handleVoiceTranscript}
                       disabled={isReviewing || pendingSync}
                       autoStart={true}
+                      hint={item.spanishDisplay ?? item.spanish}
                     />
                     <p className="drill-hint">Speak your answer in Spanish</p>
                   </div>
