@@ -109,7 +109,24 @@ async function fetchCandidateItems(userId: string, tags?: string[], excludeId?: 
       take: 24,
     }),
   ])
-  return [...learning, ...learned, ...mastered].map((row) => ({
+  let allRows = [...learning, ...learned, ...mastered]
+
+  // If nothing drillable for the selected tags, promote unseen phrases matching tags
+  if (allRows.length === 0 && tags && tags.length > 0) {
+    const unseenRows = await prisma.userPhraseProgress.findMany({
+      where: { userId, bucket: 'unseen', phrase: { grammarTag: { in: tags } } },
+      include: { phrase: true },
+      orderBy: { phrase: { sortOrder: 'asc' } },
+      take: PHRASE_LEARNING_TARGET,
+    })
+    for (const row of unseenRows) {
+      await prisma.userPhraseProgress.update({ where: { id: row.id }, data: { bucket: 'learning' } })
+      row.bucket = 'learning'
+    }
+    allRows = unseenRows
+  }
+
+  return allRows.map((row) => ({
     id: row.phraseId,
     english: row.phrase.english,
     spanish: row.phrase.spanish,
