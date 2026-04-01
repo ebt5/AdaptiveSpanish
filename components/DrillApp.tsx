@@ -181,12 +181,19 @@ export default function DrillApp() {
   }
 
   function handleVoiceTranscript(text: string) {
+    // Show transcript in input box so learner sees what Whisper heard
     setInput(text)
-    // Simulate form submission with the transcript
-    const syntheticEvent = { preventDefault: () => {} } as React.FormEvent
-    // Set input first then trigger submit via direct call
-    const normalizedInput = normalize(text)
+    setVoiceMode(false)  // show the input box with the transcript
+    // Auto-submit after 1.5s — learner can edit or just watch it submit
+    setTimeout(() => {
+      submitWithValue(text)
+      setTimeout(() => setVoiceMode(true), 600)
+    }, 1500)
+  }
+
+  function submitWithValue(value: string) {
     if (!item || isReviewing) return
+    const normalizedInput = normalize(value)
     const expected = item.spanishNormalized ?? normalize(item.spanish)
     const isBlank = normalizedInput === ''
     const isCorrect = normalizedInput === expected
@@ -204,11 +211,7 @@ export default function DrillApp() {
         })
         return
       }
-      if (!isCorrect) {
-        setPhase('wrong-first')
-        setInput('')
-        return
-      }
+      if (!isCorrect) { setPhase('wrong-first'); setInput(''); return }
       const optimisticCounts = { ...drill.counts }
       let lastMove: string | null = null
       let lastMoveType: MoveType = null
@@ -220,13 +223,41 @@ export default function DrillApp() {
         optimisticCounts.learned -= 1; optimisticCounts.mastered += 1
         lastMove = '★ Mastered!'; lastMoveType = 'master'
       }
-      void persistAndQueue(text, 1, 'correct', item.spanishDisplay ?? item.spanish, {
+      void persistAndQueue(value, 1, 'correct', item.spanishDisplay ?? item.spanish, {
         counts: optimisticCounts,
         unseenCount: optimisticCounts.unseen,
         stats: { ...drill.stats, correct: drill.stats.correct + 1, promoted: drill.stats.promoted + (lastMoveType ? 1 : 0) },
         lastMove,
         lastMoveType,
       })
+    } else if (phase === 'wrong-first') {
+      const optimisticCounts = { ...drill.counts }
+      if (!isBlank && isCorrect) {
+        let lastMove: string | null = null
+        let lastMoveType: MoveType = null
+        if (item.bucket === 'learning') {
+          optimisticCounts.learning -= 1; optimisticCounts.learned += 1
+          if (drill.unseenCount > 0) { optimisticCounts.learning += 1; optimisticCounts.unseen -= 1 }
+          lastMove = '↑ Promoted to Learned'; lastMoveType = 'promote'
+        } else if (item.bucket === 'learned') {
+          optimisticCounts.learned -= 1; optimisticCounts.mastered += 1
+          lastMove = '★ Mastered!'; lastMoveType = 'master'
+        }
+        void persistAndQueue(value, 2, 'correct', item.spanishDisplay ?? item.spanish, {
+          counts: optimisticCounts, unseenCount: optimisticCounts.unseen,
+          stats: { ...drill.stats, correct: drill.stats.correct + 1, promoted: drill.stats.promoted + (lastMoveType ? 1 : 0) },
+          lastMove, lastMoveType,
+        })
+      } else {
+        if (item.bucket === 'learned') { optimisticCounts.learned -= 1; optimisticCounts.learning += 1 }
+        else if (item.bucket === 'mastered') { optimisticCounts.mastered -= 1; optimisticCounts.learning += 1 }
+        void persistAndQueue(value, 2, 'revealed', item.spanishDisplay ?? item.spanish, {
+          counts: optimisticCounts,
+          stats: { ...drill.stats, wrong: drill.stats.wrong + 1, demoted: drill.stats.demoted + (item.bucket === 'learning' ? 0 : 1) },
+          lastMove: item.bucket === 'learning' ? null : '↓ Demoted to Learning',
+          lastMoveType: item.bucket === 'learning' ? null : 'demote',
+        })
+      }
     }
   }
 
