@@ -8,13 +8,14 @@ interface Props {
   language?: string           // 'es' for Spanish, 'en' for English
   onTranscript: (text: string) => void
   disabled?: boolean
+  autoStart?: boolean         // start recording immediately on mount
 }
 
 const SILENCE_THRESHOLD = 0.01   // RMS below this = silence
 const SILENCE_DURATION = 1200    // ms of silence before auto-stop
 const MAX_DURATION = 8000        // ms max recording
 
-export default function VoiceInput({ language = 'es', onTranscript, disabled }: Props) {
+export default function VoiceInput({ language = 'es', onTranscript, disabled, autoStart }: Props) {
   const [voiceState, setVoiceState] = useState<VoiceState>('idle')
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
@@ -156,7 +157,12 @@ export default function VoiceInput({ language = 'es', onTranscript, disabled }: 
     }
   }
 
-  useEffect(() => () => { stopRecording() }, [])
+  useEffect(() => {
+    if (autoStart && !disabled) {
+      startRecording()
+    }
+    return () => { stopRecording() }
+  }, [])
 
   const isRecording = voiceState === 'recording'
   const isProcessing = voiceState === 'processing'

@@ -503,9 +503,11 @@ export default function DrillApp() {
                 {voiceMode && !isReviewing ? (
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, marginTop: 8 }}>
                     <VoiceInput
+                      key={item.id}
                       language="es"
                       onTranscript={handleVoiceTranscript}
                       disabled={isReviewing || pendingSync}
+                      autoStart={true}
                     />
                     <p className="drill-hint">Speak your answer in Spanish</p>
                   </div>
