@@ -296,7 +296,7 @@ export default function DrillApp() {
     <div className="app">
       <header className="app-header">
         <h1>Adaptive Spanish</h1>
-        <p className="tagline">Type the Spanish. Earn your way up.</p>
+        <p className="tagline">Make your practice count.</p>
         <div className="session-stats" style={{ marginTop: 8 }}>
           <span className="stat">user: {username}</span>
           <span className="stat-sep">·</span>
