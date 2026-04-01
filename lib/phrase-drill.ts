@@ -150,23 +150,11 @@ export async function initializePhraseDrillState(username: string, tags?: string
   const missing = allPhrases.filter(p => !existingIds.has(p.id))
 
   if (missing.length > 0) {
+    // Only create unseen rows — promotion to learning is handled per-tag by fetchCandidateItems
     await prisma.userPhraseProgress.createMany({
       data: missing.map(p => ({ userId: user.id, phraseId: p.id, bucket: 'unseen', score: 0 })),
       skipDuplicates: true,
     })
-    // Promote first batch into learning if needed
-    const learningCount = await prisma.userPhraseProgress.count({ where: { userId: user.id, bucket: 'learning' } })
-    const needed = Math.max(0, PHRASE_LEARNING_TARGET - learningCount)
-    if (needed > 0) {
-      const unseenRows = await prisma.userPhraseProgress.findMany({
-        where: { userId: user.id, bucket: 'unseen' },
-        orderBy: { phrase: { sortOrder: 'asc' } },
-        take: needed,
-      })
-      for (const row of unseenRows) {
-        await prisma.userPhraseProgress.update({ where: { id: row.id }, data: { bucket: 'learning' } })
-      }
-    }
   }
 
   const [counts, items] = await Promise.all([fetchCounts(user.id), fetchCandidateItems(user.id, tags)])
