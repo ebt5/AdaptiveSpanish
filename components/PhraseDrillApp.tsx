@@ -74,9 +74,10 @@ interface Props {
   onCounts?: (counts: { learning: number; learned: number; mastered: number; unseen: number }) => void
   onAnswer?: () => void
   selectedTags?: string[]
+  onItemChange?: (item: { id: string; english: string; spanish: string; grammarTag: string; grammarNote: string | null } | null) => void
 }
 
-export default function PhraseDrillApp({ username, onCounts, onAnswer, selectedTags = ALL_TAGS }: Props) {
+export default function PhraseDrillApp({ username, onCounts, onAnswer, selectedTags = ALL_TAGS, onItemChange }: Props) {
   const [drill, setDrill] = useState<PhraseDrillState>(emptyState)
   const [phase, setPhase] = useState<Phase>('answering')
   const [input, setInput] = useState('')
@@ -93,6 +94,11 @@ export default function PhraseDrillApp({ username, onCounts, onAnswer, selectedT
   const isReviewing = phase === 'correct' || phase === 'revealed'
   const anyStats = drill.stats.correct + drill.stats.wrong > 0
   const toastKey = drill.lastMove ? `${drill.lastMove}-${drill.stats.promoted}-${drill.stats.demoted}` : ''
+
+  useEffect(() => {
+    onItemChange?.(item ? { id: item.id, english: item.english, spanish: item.spanish, grammarTag: item.grammarTag, grammarNote: item.grammarNote } : null)
+  }, [item?.id])
+
   useEffect(() => {
     setLoading(true)
     setDrill(emptyState)

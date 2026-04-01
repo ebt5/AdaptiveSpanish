@@ -68,6 +68,7 @@ export default function DrillApp() {
   const [heatmapKey, setHeatmapKey] = useState(0)
   const ALL_PHRASE_TAGS = ['survival','ser-estar','tener-expressions','hacer-expressions','reflexive','gustar-type','verb-infinitive','progressive','object-pronouns','por-para','negative-constructions','hay-que-impersonal','unintentional','subjunctive','conditional','idioms-discourse']
   const [selectedPhraseTags, setSelectedPhraseTags] = useState<string[]>(ALL_PHRASE_TAGS)
+  const [currentPhraseItem, setCurrentPhraseItem] = useState<{ id: string; english: string; spanish: string; grammarTag: string; grammarNote: string | null } | null>(null)
   function togglePhraseTag(tag: string) {
     setSelectedPhraseTags(prev => {
       if (prev.includes(tag)) { const n = prev.filter(t => t !== tag); return n.length === 0 ? prev : n }
@@ -448,7 +449,7 @@ export default function DrillApp() {
         ) : mode === 'verbs' ? (
           <VerbDrillApp username={username} onAnswer={() => setHeatmapKey(k => k + 1)} />
         ) : (
-          <PhraseDrillApp username={username} onCounts={setPhraseCounts} onAnswer={() => setHeatmapKey(k => k + 1)} selectedTags={selectedPhraseTags} />
+          <PhraseDrillApp username={username} onCounts={setPhraseCounts} onAnswer={() => setHeatmapKey(k => k + 1)} selectedTags={selectedPhraseTags} onItemChange={setCurrentPhraseItem} />
         )}
       </main>
 
@@ -470,7 +471,9 @@ export default function DrillApp() {
         <AdminPanel
           username={username}
           mode={mode}
-          item={item ? { id: item.id, english: item.english, spanish: item.spanish, spanishDisplay: item.spanishDisplay, emoji: item.emoji } : null}
+          item={mode === 'phrases'
+            ? currentPhraseItem
+            : item ? { id: item.id, english: item.english, spanish: item.spanish, spanishDisplay: item.spanishDisplay, emoji: item.emoji } : null}
         />
       )}
 
