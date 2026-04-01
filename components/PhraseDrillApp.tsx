@@ -132,7 +132,7 @@ export default function PhraseDrillApp({ username, onCounts, onAnswer, selectedT
       const res = await fetch('/api/phrases/drill/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, phraseId: item.id, answer: answerValue, attemptNumber }),
+        body: JSON.stringify({ username, phraseId: item.id, answer: answerValue, attemptNumber, tags: selectedTags.join(',') }),
       })
       const data = await res.json()
       if (data.phase !== 'wrong-first') {

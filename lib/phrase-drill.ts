@@ -88,9 +88,9 @@ async function fetchCounts(userId: string) {
 }
 
 async function fetchCandidateItems(userId: string, tags?: string[], excludeId?: string | null): Promise<PhraseDrillItem[]> {
-  const tagFilter = tags && tags.length > 0 ? { phrase: { grammarTag: { in: tags } } } : {}
+  // No tag filter here — drill pulls from all buckets normally
   const excludeFilter = excludeId ? { NOT: { phraseId: excludeId } } : {}
-  const baseWhere = { userId, ...tagFilter, ...excludeFilter }
+  const baseWhere = { userId, ...excludeFilter }
   const [learning, learned, mastered] = await Promise.all([
     prisma.userPhraseProgress.findMany({
       where: { ...baseWhere, bucket: 'learning' },
@@ -109,23 +109,7 @@ async function fetchCandidateItems(userId: string, tags?: string[], excludeId?: 
       take: 24,
     }),
   ])
-  let allRows = [...learning, ...learned, ...mastered]
-
-  // If nothing drillable for the selected tags, promote unseen phrases matching tags
-  if (allRows.length === 0 && tags && tags.length > 0) {
-    const unseenRows = await prisma.userPhraseProgress.findMany({
-      where: { userId, bucket: 'unseen', phrase: { grammarTag: { in: tags } } },
-      include: { phrase: true },
-      orderBy: { phrase: { sortOrder: 'asc' } },
-      take: PHRASE_LEARNING_TARGET,
-    })
-    for (const row of unseenRows) {
-      await prisma.userPhraseProgress.update({ where: { id: row.id }, data: { bucket: 'learning' } })
-      row.bucket = 'learning'
-    }
-    allRows = unseenRows
-  }
-
+  const allRows = [...learning, ...learned, ...mastered]
   return allRows.map((row) => ({
     id: row.phraseId,
     english: row.phrase.english,
@@ -162,7 +146,7 @@ export async function initializePhraseDrillState(username: string, tags?: string
   return { item, counts, unseenCount: counts.unseen, stats: { correct: 0, wrong: 0, promoted: 0, demoted: 0 }, lastMove: null, lastMoveType: null }
 }
 
-export async function submitPhraseAttempt(params: { username: string; phraseId: string; answer: string; attemptNumber: number }) {
+export async function submitPhraseAttempt(params: { username: string; phraseId: string; answer: string; attemptNumber: number; tags?: string[] }) {
   const user = await getCurrentUser(params.username)
   const progress = await prisma.userPhraseProgress.findFirstOrThrow({
     where: { userId: user.id, phraseId: params.phraseId },
@@ -176,7 +160,7 @@ export async function submitPhraseAttempt(params: { username: string; phraseId: 
   if (params.attemptNumber === 1) {
     if (isBlank) {
       await prisma.phraseAttempt.create({ data: { userId: user.id, phraseId: params.phraseId, correct: false } })
-      const state = await nextPhraseState(user.id, params.phraseId, false, true, progress.phrase.grammarNote ?? null)
+      const state = await nextPhraseState(user.id, params.phraseId, false, true, progress.phrase.grammarNote ?? null, params.tags)
       return { phase: 'revealed' as Phase, correct: false, answer: progress.phrase.spanish, ...state }
     }
     if (!isCorrect) return { phase: 'wrong-first' as Phase, correct: false, answer: null, grammarNote: null }
@@ -184,11 +168,11 @@ export async function submitPhraseAttempt(params: { username: string; phraseId: 
 
   const success = !isBlank && isCorrect
   await prisma.phraseAttempt.create({ data: { userId: user.id, phraseId: params.phraseId, correct: success } })
-  const state = await nextPhraseState(user.id, params.phraseId, success, false, progress.phrase.grammarNote ?? null)
+  const state = await nextPhraseState(user.id, params.phraseId, success, false, progress.phrase.grammarNote ?? null, params.tags)
   return { phase: success ? ('correct' as Phase) : ('revealed' as Phase), correct: success, answer: progress.phrase.spanish, ...state }
 }
 
-async function nextPhraseState(userId: string, phraseId: string, success: boolean, immediateReveal: boolean, grammarNote: string | null) {
+async function nextPhraseState(userId: string, phraseId: string, success: boolean, immediateReveal: boolean, grammarNote: string | null, tags?: string[]) {
   const progress = await prisma.userPhraseProgress.findFirstOrThrow({ where: { userId, phraseId } })
   const currentBucket = progress.bucket as Bucket
   let lastMove: string | null = null
@@ -201,8 +185,10 @@ async function nextPhraseState(userId: string, phraseId: string, success: boolea
         lastMove = '↑ Promoted to Learned'; lastMoveType = 'promote'
         const learningCount = await tx.userPhraseProgress.count({ where: { userId, bucket: 'learning' } })
         if (learningCount < PHRASE_LEARNING_TARGET) {
+          // Apply tag filter only here — only introduce new phrases from selected categories
+          const tagFilter = tags && tags.length > 0 ? { phrase: { grammarTag: { in: tags } } } : {}
           const unseen = await tx.userPhraseProgress.findFirst({
-            where: { userId, bucket: 'unseen' },
+            where: { userId, bucket: 'unseen', ...tagFilter },
             orderBy: { phrase: { sortOrder: 'asc' } },
           })
           if (unseen) await tx.userPhraseProgress.update({ where: { id: unseen.id }, data: { bucket: 'learning', score: 0 } })
