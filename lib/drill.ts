@@ -33,7 +33,9 @@ interface ProgressCounts {
 function normalize(s: string) {
   return s.trim().toLowerCase().normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
-    .replace(/^(el|la|los|las|un|una|unos|unas)\s+/i, '') // strip leading article
+    .replace(/[.,!?;:\u201c\u201d\u2018\u2019'"]/g, '')
+    .replace(/^(el|la|los|las|un|una|unos|unas)\s+/i, '')
+    .trim()
 }
 
 // Pick a mastered word using inverse-score weighting: weight = 1/(score+1).

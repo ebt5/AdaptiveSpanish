@@ -50,7 +50,9 @@ function cap(s: string) { return s.charAt(0).toUpperCase() + s.slice(1) }
 function normalize(s: string) {
   return s.trim().toLowerCase().normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[.,!?;:\u201c\u201d\u2018\u2019'"]/g, '')
     .replace(/^(el|la|los|las|un|una|unos|unas)\s+/i, '')
+    .trim()
 }
 
 const ALL_PHRASE_TAGS_CONST = ['survival','ser-estar','tener-expressions','hacer-expressions','reflexive','gustar-type','verb-infinitive','progressive','object-pronouns','por-para','negative-constructions','hay-que-impersonal','unintentional','subjunctive','conditional','idioms-discourse']
