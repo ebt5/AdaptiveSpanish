@@ -61,8 +61,8 @@ export default function GrammarHeatmap({ username, refreshKey, selectedTags, onT
 
       {/* Select all row */}
       {onTagToggleAll && selectedTags && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-          <label style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', cursor: 'pointer', userSelect: 'none' }}>
+        <div style={{ marginBottom: 8 }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', cursor: 'pointer', userSelect: 'none', marginBottom: 4 }}>
             <input
               type="checkbox"
               checked={selectedTags.length === categories.length}
@@ -71,6 +71,9 @@ export default function GrammarHeatmap({ username, refreshKey, selectedTags, onT
             />
             Drill all categories
           </label>
+          <p style={{ fontSize: 10, color: 'var(--text-muted)', opacity: 0.7, margin: 0, lineHeight: 1.4, paddingLeft: 16 }}>
+            Filters apply to new phrases only — existing phrases in your learning queue are drilled normally.
+          </p>
         </div>
       )}
 
