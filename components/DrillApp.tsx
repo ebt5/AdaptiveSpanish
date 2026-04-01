@@ -52,6 +52,8 @@ function normalize(s: string) {
     .replace(/^(el|la|los|las|un|una|unos|unas)\s+/i, '')
 }
 
+const ALL_PHRASE_TAGS_CONST = ['survival','ser-estar','tener-expressions','hacer-expressions','reflexive','gustar-type','verb-infinitive','progressive','object-pronouns','por-para','negative-constructions','hay-que-impersonal','unintentional','subjunctive','conditional','idioms-discourse']
+
 export default function DrillApp() {
   const [username, setUsername] = useState<string | null>(null)
   const [isAdmin, setIsAdmin] = useState(false)
@@ -66,8 +68,7 @@ export default function DrillApp() {
   const [milestone, setMilestone] = useState<number | null>(null)
   const [mode, setMode] = useState<Mode>('vocab')
   const [heatmapKey, setHeatmapKey] = useState(0)
-  const ALL_PHRASE_TAGS = ['survival','ser-estar','tener-expressions','hacer-expressions','reflexive','gustar-type','verb-infinitive','progressive','object-pronouns','por-para','negative-constructions','hay-que-impersonal','unintentional','subjunctive','conditional','idioms-discourse']
-  const [selectedPhraseTags, setSelectedPhraseTags] = useState<string[]>(ALL_PHRASE_TAGS)
+  const [selectedPhraseTags, setSelectedPhraseTags] = useState<string[]>(ALL_PHRASE_TAGS_CONST)
   const [currentPhraseItem, setCurrentPhraseItem] = useState<{ id: string; english: string; spanish: string; grammarTag: string; grammarNote: string | null } | null>(null)
   function togglePhraseTag(tag: string) {
     setSelectedPhraseTags(prev => {
@@ -76,7 +77,7 @@ export default function DrillApp() {
     })
   }
   function toggleAllPhraseTags() {
-    setSelectedPhraseTags(prev => prev.length === ALL_PHRASE_TAGS.length ? [ALL_PHRASE_TAGS[0]] : ALL_PHRASE_TAGS)
+    setSelectedPhraseTags(prev => prev.length === ALL_PHRASE_TAGS_CONST.length ? [ALL_PHRASE_TAGS_CONST[0]] : ALL_PHRASE_TAGS_CONST)
   }
   const [phraseCounts, setPhraseCounts] = useState<{ learning: number; learned: number; mastered: number; unseen: number }>({ learning: 0, learned: 0, mastered: 0, unseen: 0 })
   const [hoveredBucket, setHoveredBucket] = useState<'learning' | 'learned' | 'mastered' | null>(null)

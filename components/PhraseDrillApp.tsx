@@ -99,6 +99,8 @@ export default function PhraseDrillApp({ username, onCounts, onAnswer, selectedT
     onItemChange?.(item ? { id: item.id, english: item.english, spanish: item.spanish, grammarTag: item.grammarTag, grammarNote: item.grammarNote } : null)
   }, [item?.id])
 
+  const tagsKey = [...selectedTags].sort().join(',')
+
   useEffect(() => {
     setLoading(true)
     setDrill(emptyState)
@@ -112,7 +114,7 @@ export default function PhraseDrillApp({ username, onCounts, onAnswer, selectedT
       setLoading(false)
       onCounts?.(data.counts)
     })
-  }, [username, selectedTags])
+  }, [username, tagsKey])
 
   useEffect(() => {
     if (isReviewing) nextBtnRef.current?.focus()
