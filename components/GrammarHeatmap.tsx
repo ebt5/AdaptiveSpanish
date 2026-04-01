@@ -21,7 +21,15 @@ const COLORS = {
   unseen: 'var(--border)',
 }
 
-export default function GrammarHeatmap({ username, refreshKey }: { username: string; refreshKey?: number }) {
+interface Props {
+  username: string
+  refreshKey?: number
+  selectedTags?: string[]
+  onTagToggle?: (tag: string) => void
+  onTagToggleAll?: () => void
+}
+
+export default function GrammarHeatmap({ username, refreshKey, selectedTags, onTagToggle, onTagToggleAll }: Props) {
   const [categories, setCategories] = useState<CategoryStat[] | null>(null)
   const [tooltip, setTooltip] = useState<{ cat: CategoryStat; x: number; y: number } | null>(null)
   const [guideOpen, setGuideOpen] = useState<string | null>(null)
@@ -51,6 +59,21 @@ export default function GrammarHeatmap({ username, refreshKey }: { username: str
         ))}
       </div>
 
+      {/* Select all row */}
+      {onTagToggleAll && selectedTags && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', cursor: 'pointer', userSelect: 'none' }}>
+            <input
+              type="checkbox"
+              checked={selectedTags.length === categories.length}
+              onChange={onTagToggleAll}
+              style={{ accentColor: 'var(--green)', width: 11, height: 11 }}
+            />
+            Drill all categories
+          </label>
+        </div>
+      )}
+
       <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
         {categories.map(cat => {
           const unseen = cat.total - cat.seen
@@ -63,7 +86,15 @@ export default function GrammarHeatmap({ username, refreshKey }: { username: str
 
           return (
             <div key={cat.tag} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{ width: 152, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 4 }}>
+              <div style={{ width: 164, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 4 }}>
+                {onTagToggle && selectedTags && (
+                  <input
+                    type="checkbox"
+                    checked={selectedTags.includes(cat.tag)}
+                    onChange={() => onTagToggle(cat.tag)}
+                    style={{ accentColor: 'var(--green)', width: 11, height: 11, flexShrink: 0, cursor: 'pointer' }}
+                  />
+                )}
                 <span style={{ fontSize: 12, color: cat.seen > 0 ? 'var(--text)' : 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1 }}>{cat.label}</span>
                 <button
                   onClick={() => setGuideOpen(cat.tag)}

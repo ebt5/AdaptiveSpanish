@@ -66,6 +66,17 @@ export default function DrillApp() {
   const [milestone, setMilestone] = useState<number | null>(null)
   const [mode, setMode] = useState<Mode>('vocab')
   const [heatmapKey, setHeatmapKey] = useState(0)
+  const ALL_PHRASE_TAGS = ['survival','ser-estar','tener-expressions','hacer-expressions','reflexive','gustar-type','verb-infinitive','progressive','object-pronouns','por-para','negative-constructions','hay-que-impersonal','unintentional','subjunctive','conditional','idioms-discourse']
+  const [selectedPhraseTags, setSelectedPhraseTags] = useState<string[]>(ALL_PHRASE_TAGS)
+  function togglePhraseTag(tag: string) {
+    setSelectedPhraseTags(prev => {
+      if (prev.includes(tag)) { const n = prev.filter(t => t !== tag); return n.length === 0 ? prev : n }
+      return [...prev, tag]
+    })
+  }
+  function toggleAllPhraseTags() {
+    setSelectedPhraseTags(prev => prev.length === ALL_PHRASE_TAGS.length ? [ALL_PHRASE_TAGS[0]] : ALL_PHRASE_TAGS)
+  }
   const [phraseCounts, setPhraseCounts] = useState<{ learning: number; learned: number; mastered: number; unseen: number }>({ learning: 0, learned: 0, mastered: 0, unseen: 0 })
   const [hoveredBucket, setHoveredBucket] = useState<'learning' | 'learned' | 'mastered' | null>(null)
   const [popoverAnchorRect, setPopoverAnchorRect] = useState<DOMRect | null>(null)
@@ -437,7 +448,7 @@ export default function DrillApp() {
         ) : mode === 'verbs' ? (
           <VerbDrillApp username={username} onAnswer={() => setHeatmapKey(k => k + 1)} />
         ) : (
-          <PhraseDrillApp username={username} onCounts={setPhraseCounts} onAnswer={() => setHeatmapKey(k => k + 1)} />
+          <PhraseDrillApp username={username} onCounts={setPhraseCounts} onAnswer={() => setHeatmapKey(k => k + 1)} selectedTags={selectedPhraseTags} />
         )}
       </main>
 
@@ -450,7 +461,7 @@ export default function DrillApp() {
       {/* Phrases tab: grammar progress heatmap + phrases mastered chart */}
       {mode === 'phrases' && (
         <>
-          <GrammarHeatmap username={username} refreshKey={heatmapKey} />
+          <GrammarHeatmap username={username} refreshKey={heatmapKey} selectedTags={selectedPhraseTags} onTagToggle={togglePhraseTag} onTagToggleAll={toggleAllPhraseTags} />
           <MasteredChartPhrases username={username} />
         </>
       )}
