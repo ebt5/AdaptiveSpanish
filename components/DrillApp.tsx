@@ -10,6 +10,7 @@ import BucketPopover from './BucketPopover'
 import GrammarHeatmap from './GrammarHeatmap'
 import MasteredChartPhrases from './MasteredChartPhrases'
 import AdminPanel from './AdminPanel'
+import VoiceInput from './VoiceInput'
 
 type Bucket = 'unseen' | 'learning' | 'learned' | 'mastered'
 type MoveType = 'promote' | 'master' | 'demote' | null
@@ -80,6 +81,7 @@ export default function DrillApp() {
     setSelectedPhraseTags(prev => prev.length === ALL_PHRASE_TAGS_CONST.length ? [ALL_PHRASE_TAGS_CONST[0]] : ALL_PHRASE_TAGS_CONST)
   }
   const [phraseCounts, setPhraseCounts] = useState<{ learning: number; learned: number; mastered: number; unseen: number }>({ learning: 0, learned: 0, mastered: 0, unseen: 0 })
+  const [voiceMode, setVoiceMode] = useState(false)
   const [hoveredBucket, setHoveredBucket] = useState<'learning' | 'learned' | 'mastered' | null>(null)
   const [popoverAnchorRect, setPopoverAnchorRect] = useState<DOMRect | null>(null)
   const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -176,6 +178,56 @@ export default function DrillApp() {
     setPhase('answering')
     setAnswer(null)
     setInput('')
+  }
+
+  function handleVoiceTranscript(text: string) {
+    setInput(text)
+    // Simulate form submission with the transcript
+    const syntheticEvent = { preventDefault: () => {} } as React.FormEvent
+    // Set input first then trigger submit via direct call
+    const normalizedInput = normalize(text)
+    if (!item || isReviewing) return
+    const expected = item.spanishNormalized ?? normalize(item.spanish)
+    const isBlank = normalizedInput === ''
+    const isCorrect = normalizedInput === expected
+
+    if (phase === 'answering') {
+      if (isBlank) {
+        const optimisticCounts = { ...drill.counts }
+        if (item.bucket === 'learned') { optimisticCounts.learned -= 1; optimisticCounts.learning += 1 }
+        else if (item.bucket === 'mastered') { optimisticCounts.mastered -= 1; optimisticCounts.learning += 1 }
+        void persistAndQueue('', 1, 'revealed', item.spanishDisplay ?? item.spanish, {
+          counts: optimisticCounts,
+          stats: { ...drill.stats, wrong: drill.stats.wrong + 1, demoted: drill.stats.demoted + (item.bucket === 'learning' ? 0 : 1) },
+          lastMove: item.bucket === 'learning' ? null : '↓ Demoted to Learning',
+          lastMoveType: item.bucket === 'learning' ? null : 'demote',
+        })
+        return
+      }
+      if (!isCorrect) {
+        setPhase('wrong-first')
+        setInput('')
+        return
+      }
+      const optimisticCounts = { ...drill.counts }
+      let lastMove: string | null = null
+      let lastMoveType: MoveType = null
+      if (item.bucket === 'learning') {
+        optimisticCounts.learning -= 1; optimisticCounts.learned += 1
+        if (drill.unseenCount > 0) { optimisticCounts.learning += 1; optimisticCounts.unseen -= 1 }
+        lastMove = '↑ Promoted to Learned'; lastMoveType = 'promote'
+      } else if (item.bucket === 'learned') {
+        optimisticCounts.learned -= 1; optimisticCounts.mastered += 1
+        lastMove = '★ Mastered!'; lastMoveType = 'master'
+      }
+      void persistAndQueue(text, 1, 'correct', item.spanishDisplay ?? item.spanish, {
+        counts: optimisticCounts,
+        unseenCount: optimisticCounts.unseen,
+        stats: { ...drill.stats, correct: drill.stats.correct + 1, promoted: drill.stats.promoted + (lastMoveType ? 1 : 0) },
+        lastMove,
+        lastMoveType,
+      })
+    }
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -300,6 +352,15 @@ export default function DrillApp() {
         <div className="session-stats" style={{ marginTop: 8 }}>
           <span className="stat">user: {username}</span>
           <span className="stat-sep">·</span>
+          <button
+            className={`category-toggle${voiceMode ? ' category-toggle-active' : ' category-toggle-soon'}`}
+            type="button"
+            onClick={() => setVoiceMode(v => !v)}
+            title={voiceMode ? 'Switch to typing' : 'Switch to voice'}
+          >
+            {voiceMode ? '🎙 Voice' : '⌨️ Type'}
+          </button>
+          <span className="stat-sep">·</span>
           <button className="category-toggle category-toggle-soon" type="button" onClick={() => { clearStoredUsername(); setUsername(null); setDrill(emptyState); }}>switch user</button>
         </div>
       </header>
@@ -408,29 +469,48 @@ export default function DrillApp() {
                 {phase === 'correct' && <div className="feedback feedback-correct"><span className="feedback-icon">✓</span><span>Correct! <span className="answer-word">{answer}</span></span></div>}
                 {phase === 'revealed' && <div className="feedback feedback-revealed"><span className="feedback-icon">→</span><span>Answer: <span className="answer-word">{answer}</span></span></div>}
 
-                <form onSubmit={handleSubmit} className="drill-form">
-                  <input
-                    ref={inputRef}
-                    type="text"
-                    className={`drill-input${phase === 'wrong-first' ? ' input-wrong' : ''}`}
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    placeholder={phase === 'wrong-first' ? 'Try again…' : 'Type Spanish…'}
-                    disabled={isReviewing}
-                    autoComplete="off"
-                    autoCorrect="off"
-                    autoCapitalize="off"
-                    spellCheck={false}
-                  />
-                  <button ref={nextBtnRef} type="submit" className={`btn btn-submit${isReviewing ? ' btn-next' : ''}`}>
-                    {isReviewing ? (pendingSync ? 'Saving…' : 'Next →') : pendingSync ? 'Saving…' : 'Check'}
-                  </button>
-                </form>
+                {voiceMode && !isReviewing ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, marginTop: 8 }}>
+                    <VoiceInput
+                      language="es"
+                      onTranscript={handleVoiceTranscript}
+                      disabled={isReviewing || pendingSync}
+                    />
+                    <p className="drill-hint">Speak your answer in Spanish</p>
+                  </div>
+                ) : (
+                  <form onSubmit={handleSubmit} className="drill-form">
+                    <input
+                      ref={inputRef}
+                      type="text"
+                      className={`drill-input${phase === 'wrong-first' ? ' input-wrong' : ''}`}
+                      value={input}
+                      onChange={(e) => setInput(e.target.value)}
+                      placeholder={phase === 'wrong-first' ? 'Try again…' : 'Type Spanish…'}
+                      disabled={isReviewing}
+                      autoComplete="off"
+                      autoCorrect="off"
+                      autoCapitalize="off"
+                      spellCheck={false}
+                    />
+                    <button ref={nextBtnRef} type="submit" className={`btn btn-submit${isReviewing ? ' btn-next' : ''}`}>
+                      {isReviewing ? (pendingSync ? 'Saving…' : 'Next →') : pendingSync ? 'Saving…' : 'Check'}
+                    </button>
+                  </form>
+                )}
+
+                {isReviewing && (
+                  <form onSubmit={handleSubmit} className="drill-form" style={{ marginTop: 8 }}>
+                    <button ref={nextBtnRef} type="submit" className="btn btn-submit btn-next" style={{ width: '100%' }}>
+                      {pendingSync ? 'Saving…' : 'Next →'}
+                    </button>
+                  </form>
+                )}
 
                 <p className="drill-hint">
-                  {phase === 'answering' && 'Enter to check · blank Enter to skip & reveal'}
-                  {phase === 'wrong-first' && 'Last chance · blank Enter to reveal answer'}
-                  {isReviewing && (pendingSync ? 'Saving result… then Enter for next word' : 'Enter or click Next to continue')}
+                  {!voiceMode && phase === 'answering' && 'Enter to check · blank Enter to skip & reveal'}
+                  {!voiceMode && phase === 'wrong-first' && 'Last chance · blank Enter to reveal answer'}
+                  {isReviewing && (pendingSync ? 'Saving result…' : 'Enter or click Next to continue')}
                 </p>
               </section>
             )}
