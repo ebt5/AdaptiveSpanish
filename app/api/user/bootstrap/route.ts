@@ -25,5 +25,5 @@ export async function POST(request: NextRequest) {
     })
   }
 
-  return NextResponse.json({ ok: true, username: user.username, isAdmin: user.isAdmin ?? false })
+  return NextResponse.json({ ok: true, username: user.username, isAdmin: user.isAdmin ?? false, role: user.role ?? 'learner' })
 }

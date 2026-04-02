@@ -60,6 +60,7 @@ const ALL_PHRASE_TAGS_CONST = ['survival','ser-estar','tener-expressions','hacer
 export default function DrillApp() {
   const [username, setUsername] = useState<string | null>(null)
   const [isAdmin, setIsAdmin] = useState(false)
+  const [role, setRole] = useState<string>('learner')
   const [usernameInput, setUsernameInput] = useState('')
   const [drill, setDrill] = useState<DrillState>(emptyState)
   const [phase, setPhase] = useState<Phase>('answering')
@@ -112,6 +113,7 @@ export default function DrillApp() {
     ]).then(([drillData, userData]) => {
       setDrill(drillData)
       setIsAdmin(userData.isAdmin ?? false)
+      setRole(userData.role ?? 'learner')
       setLoading(false)
     })
   }, [username])
@@ -145,6 +147,7 @@ export default function DrillApp() {
       setStoredUsername(data.username)
       setUsername(data.username)
       setIsAdmin(data.isAdmin ?? false)
+      setRole(data.role ?? 'learner')
       setUsernameInput('')
     }
   }
@@ -395,6 +398,12 @@ export default function DrillApp() {
           </button>
           <span className="stat-sep">·</span>
           <button className="category-toggle category-toggle-soon" type="button" onClick={() => { clearStoredUsername(); setUsername(null); setDrill(emptyState); }}>switch user</button>
+          {role === 'teacher' && (
+            <>
+              <span className="stat-sep">·</span>
+              <a href="/instructor" className="category-toggle category-toggle-soon" style={{ textDecoration: 'none' }}>Instructor Portal</a>
+            </>
+          )}
         </div>
       </header>
 
