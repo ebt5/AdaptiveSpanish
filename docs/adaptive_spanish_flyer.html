@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adaptive Spanish — Sales Flyer</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #fff;
+    color: #1a1a1a;
+    width: 8.5in;
+    min-height: 11in;
+    padding: 0.55in 0.65in;
+  }
+
+  @media print {
+    body { padding: 0.5in 0.6in; }
+    @page { size: letter; margin: 0; }
+  }
+
+  .header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    border-bottom: 3px solid #1a1a1a;
+    padding-bottom: 14px;
+    margin-bottom: 22px;
+  }
+
+  .logo {
+    font-size: 28px;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    color: #1a1a1a;
+  }
+
+  .logo span {
+    color: #16a34a;
+  }
+
+  .tagline {
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .hero {
+    background: #1a1a1a;
+    color: #fff;
+    border-radius: 12px;
+    padding: 22px 26px;
+    margin-bottom: 22px;
+  }
+
+  .hero h1 {
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+
+  .hero h1 em {
+    color: #4ade80;
+    font-style: normal;
+  }
+
+  .hero p {
+    font-size: 13px;
+    color: #ccc;
+    line-height: 1.6;
+    max-width: 90%;
+  }
+
+  .columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-bottom: 18px;
+  }
+
+  .card {
+    border: 1.5px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+
+  .card-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    color: #16a34a;
+    margin-bottom: 8px;
+  }
+
+  .card h3 {
+    font-size: 16px;
+    font-weight: 800;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+    line-height: 1.2;
+  }
+
+  .card p {
+    font-size: 12.5px;
+    color: #444;
+    line-height: 1.6;
+  }
+
+  .pillars {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .pillar {
+    background: #f9fafb;
+    border-radius: 8px;
+    padding: 14px 16px;
+    border: 1px solid #e5e7eb;
+    text-align: center;
+  }
+
+  .pillar .icon {
+    font-size: 22px;
+    margin-bottom: 6px;
+  }
+
+  .pillar h4 {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 4px;
+  }
+
+  .pillar p {
+    font-size: 11.5px;
+    color: #666;
+    line-height: 1.5;
+  }
+
+  .metrics-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  .metric {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+  }
+
+  .metric .num {
+    font-size: 22px;
+    font-weight: 900;
+    color: #16a34a;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .metric .label {
+    font-size: 10.5px;
+    font-weight: 600;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+
+  .footer {
+    border-top: 1.5px solid #e5e7eb;
+    padding-top: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-cta {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1a1a;
+  }
+
+  .footer-url {
+    font-size: 13px;
+    font-weight: 700;
+    color: #16a34a;
+  }
+
+  .footer-note {
+    font-size: 11px;
+    color: #888;
+    margin-top: 3px;
+  }
+
+  .highlight {
+    color: #16a34a;
+    font-weight: 700;
+  }
+</style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo">Adaptive <span>Spanish</span></div>
+    <div class="tagline">Make your practice count.</div>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero">
+    <h1>Finally — practice that goes where<br><em>each student needs it most.</em></h1>
+    <p>Most apps move every student through the same sequence. Adaptive Spanish reads each learner's mastery map and targets their specific gaps — so every minute of practice does maximum work.</p>
+  </div>
+
+  <!-- Two-column cards -->
+  <div class="columns">
+    <div class="card">
+      <div class="card-title">For Students</div>
+      <h3>Drill your gaps. See your progress.</h3>
+      <p>Students see exactly where they stand — a visual mastery map across vocabulary, verb conjugations, and grammar constructions. Progress is visible, measurable, and genuinely motivating. No streaks. No gimmicks. Just real mastery, shown.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">For Teachers</div>
+      <h3>Know your class before the bell rings.</h3>
+      <p>A live instructor dashboard shows every student's drill activity, accuracy rates, mastered words, and trends — updated in real time. Teachers arrive knowing exactly who needs support and where. Class time gets sharper. Filter which grammar categories and tenses students are drilling to align with your lesson plan.</p>
+    </div>
+  </div>
+
+  <!-- Stats row -->
+  <div class="metrics-row">
+    <div class="metric">
+      <div class="num">3</div>
+      <div class="label">Drill pillars</div>
+    </div>
+    <div class="metric">
+      <div class="num">13</div>
+      <div class="label">Verb tenses</div>
+    </div>
+    <div class="metric">
+      <div class="num">300+</div>
+      <div class="label">Grammar phrases</div>
+    </div>
+    <div class="metric">
+      <div class="num">🎙</div>
+      <div class="label">Voice drilling</div>
+    </div>
+  </div>
+
+  <!-- Three pillars -->
+  <div class="pillars">
+    <div class="pillar">
+      <div class="icon">📖</div>
+      <h4>Vocabulary</h4>
+      <p>Core word list adaptively sequenced. Each word tracked and promoted through Learning → Learned → Mastered.</p>
+    </div>
+    <div class="pillar">
+      <div class="icon">🔤</div>
+      <h4>Conjugation</h4>
+      <p>Every major tense across the full verb set. A visual heatmap shows mastery by pronoun and tense. Built-in tense guide sheets explain each tense with examples and usage rules.</p>
+    </div>
+    <div class="pillar">
+      <div class="icon">💬</div>
+      <h4>Grammar &amp; Phrases</h4>
+      <p>The constructions that don't translate from English. 16 grammar categories — each with a built-in guide sheet explaining the pattern, examples, and common mistakes.</p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div>
+      <div class="footer-cta">Ready to see it in action?</div>
+      <div class="footer-note">Ask us about classroom pricing and free pilot programs.</div>
+    </div>
+    <div style="text-align: right;">
+      <div class="footer-url">adaptivespanish.com</div>
+      <div class="footer-note">Built for teachers. Loved by students.</div>
+    </div>
+  </div>
+
+</body>
+</html>
