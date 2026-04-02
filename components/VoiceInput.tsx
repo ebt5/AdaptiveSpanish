@@ -13,8 +13,9 @@ interface Props {
 }
 
 const SILENCE_THRESHOLD = 0.01   // RMS below this = silence
-const SILENCE_DURATION = 1200    // ms of silence before auto-stop
-const MAX_DURATION = 8000        // ms max recording
+const SILENCE_DURATION = 1800    // ms of silence before auto-stop (after speech detected)
+const GRACE_PERIOD = 2500        // ms before silence detection activates (let user start speaking)
+const MAX_DURATION = 12000       // ms max recording
 
 export default function VoiceInput({ language = 'es', onTranscript, disabled, autoStart, hint }: Props) {
   const [voiceState, setVoiceState] = useState<VoiceState>('idle')
@@ -79,6 +80,16 @@ export default function VoiceInput({ language = 'es', onTranscript, disabled, au
         ctx.close()
         if (chunksRef.current.length === 0) {
           setVoiceState('idle')
+          // Auto-restart if autoStart mode and nothing was captured
+          if (autoStart && !disabled) setTimeout(() => startRecording(), 300)
+          return
+        }
+        // Check if we got meaningful audio (not just silence)
+        const totalSize = chunksRef.current.reduce((sum, c) => sum + c.size, 0)
+        if (totalSize < 1000) {
+          // Too small — probably no speech, restart silently
+          setVoiceState('idle')
+          if (autoStart && !disabled) setTimeout(() => startRecording(), 300)
           return
         }
         setVoiceState('processing')
@@ -91,6 +102,8 @@ export default function VoiceInput({ language = 'es', onTranscript, disabled, au
       // Silence detection loop
       const dataArr = new Uint8Array(analyser.fftSize)
       let silenceStart: number | null = null
+      let speechDetected = false
+      const startTime = Date.now()
 
       function checkSilence() {
         if (mediaRecorderRef.current?.state !== 'recording') return
@@ -102,15 +115,24 @@ export default function VoiceInput({ language = 'es', onTranscript, disabled, au
           sum += v * v
         }
         const rms = Math.sqrt(sum / dataArr.length)
+        const elapsed = Date.now() - startTime
 
-        if (rms < SILENCE_THRESHOLD) {
+        // Don't start silence detection until grace period has passed
+        if (elapsed < GRACE_PERIOD) {
+          animFrameRef.current = requestAnimationFrame(checkSilence)
+          return
+        }
+
+        if (rms >= SILENCE_THRESHOLD) {
+          speechDetected = true
+          silenceStart = null
+        } else if (speechDetected) {
+          // Only count silence after speech has been detected
           if (silenceStart === null) silenceStart = Date.now()
           else if (Date.now() - silenceStart >= SILENCE_DURATION) {
             stopRecording()
             return
           }
-        } else {
-          silenceStart = null
         }
         animFrameRef.current = requestAnimationFrame(checkSilence)
       }
