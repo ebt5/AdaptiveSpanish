@@ -245,8 +245,8 @@ export default function PhraseDrillApp({ username, onCounts, onAnswer, selectedT
       {!item ? (
         <section className="drill-panel">
           <div className="all-done">
-            <div className="all-done-icon">🎉</div>
-            <div className="all-done-text">All phrases mastered!</div>
+            <div className="all-done-icon">{drill.unseenCount > 0 ? '⏳' : '🎉'}</div>
+            <div className="all-done-text">{drill.unseenCount > 0 ? 'Loading next phrase…' : 'All phrases mastered!'}</div>
           </div>
         </section>
       ) : (
