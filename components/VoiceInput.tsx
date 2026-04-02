@@ -13,9 +13,9 @@ interface Props {
 }
 
 const SILENCE_THRESHOLD = 0.01   // RMS below this = silence
-const SILENCE_DURATION = 1800    // ms of silence before auto-stop (after speech detected)
-const GRACE_PERIOD = 2500        // ms before silence detection activates (let user start speaking)
-const MAX_DURATION = 12000       // ms max recording
+const SILENCE_DURATION = 900     // ms of silence before auto-stop (after speech detected)
+const GRACE_PERIOD = 1200        // ms before silence detection activates (let user start speaking)
+const MAX_DURATION = 10000       // ms max recording
 
 export default function VoiceInput({ language = 'es', onTranscript, disabled, autoStart, hint }: Props) {
   const [voiceState, setVoiceState] = useState<VoiceState>('idle')
