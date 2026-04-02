@@ -13,6 +13,7 @@ model User {
   email     String?  @unique
   username  String?  @unique
   isAdmin   Boolean  @default(false)
+  role      String   @default("learner") // learner | teacher
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -22,6 +23,8 @@ model User {
   verbAttempts         VerbAttempt[]
   pronounTenseScores   UserPronounTenseScore[]
   masteredNetLog       MasteredNetLog[]
+  taughtClassrooms     Classroom[]           @relation("TeacherClassrooms")
+  enrolledClassrooms   ClassroomStudent[]
   phraseProgress       UserPhraseProgress[]
   phraseAttempts       PhraseAttempt[]
   phraseMasteredNetLog PhraseMasteredNetLog[]
@@ -111,6 +114,28 @@ model UserVocabProgress {
   entry DictionaryEntry @relation(fields: [entryId], references: [id])
 
   @@unique([userId, entryId])
+}
+
+model Classroom {
+  id        String   @id @default(cuid())
+  name      String
+  teacherId String
+  createdAt DateTime @default(now())
+
+  teacher  User               @relation("TeacherClassrooms", fields: [teacherId], references: [id])
+  students ClassroomStudent[]
+}
+
+model ClassroomStudent {
+  id          String   @id @default(cuid())
+  classroomId String
+  userId      String
+  joinedAt    DateTime @default(now())
+
+  classroom Classroom @relation(fields: [classroomId], references: [id])
+  user      User      @relation(fields: [userId], references: [id])
+
+  @@unique([classroomId, userId])
 }
 
 // Net mastered event log: +1 when promoted to mastered, -1 when demoted from mastered.
