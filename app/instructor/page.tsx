@@ -20,6 +20,12 @@ interface StudentRow {
   vocabCorrectPct: number | null
   phrasesCorrectPct: number | null
   verbsCorrectPct: number | null
+  totalDrills7: number
+  overallPct7: number | null
+  totalDrills30: number
+  overallPct30: number | null
+  netVocab30: number
+  vocabTrend: 'up' | 'down' | 'flat'
   lastActive: string | null
 }
 
@@ -419,7 +425,7 @@ export default function InstructorPage() {
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
                 <thead>
                   <tr style={{ borderBottom: '2px solid var(--border)' }}>
-                    {['Student', 'Active days (30d)', 'Vocab mastered', 'Phrases mastered', 'Vocab %', 'Phrases %', 'Verbs %', 'Last active', ''].map(h => (
+                    {['Student', 'Active (30d)', 'Drills (7d)', 'Drills (30d)', 'Net Vocab ↑', 'Vocab %', 'Phrases %', 'Verbs %', 'Last active', ''].map(h => (
                       <th key={h} style={{ padding: '8px 10px', textAlign: 'left', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>{h}</th>
                     ))}
                   </tr>
@@ -428,9 +434,20 @@ export default function InstructorPage() {
                   {students.map((s, i) => (
                     <tr key={s.userId} style={{ borderBottom: '1px solid var(--border)', background: i % 2 === 0 ? 'transparent' : 'var(--surface)' }}>
                       <td style={{ padding: '10px 10px', fontWeight: 600, color: 'var(--text)' }}>{s.username}</td>
-                      <td style={{ padding: '10px 10px', color: 'var(--text)', fontVariantNumeric: 'tabular-nums' }}>{s.activeDays30}</td>
-                      <td style={{ padding: '10px 10px', color: 'var(--text)', fontVariantNumeric: 'tabular-nums' }}>{s.vocabMastered}</td>
-                      <td style={{ padding: '10px 10px', color: 'var(--text)', fontVariantNumeric: 'tabular-nums' }}>{s.phrasesMastered}</td>
+                      <td style={{ padding: '10px 10px', color: 'var(--text)', fontVariantNumeric: 'tabular-nums' }}>{s.activeDays30}d</td>
+                      <td style={{ padding: '10px 10px', color: 'var(--text)', fontVariantNumeric: 'tabular-nums' }}>
+                        {s.totalDrills7 > 0 ? <>{s.totalDrills7} <span style={{ color: 'var(--text-muted)', fontSize: 11 }}>({s.overallPct7}%)</span></> : '—'}
+                      </td>
+                      <td style={{ padding: '10px 10px', color: 'var(--text)', fontVariantNumeric: 'tabular-nums' }}>
+                        {s.totalDrills30 > 0 ? <>{s.totalDrills30} <span style={{ color: 'var(--text-muted)', fontSize: 11 }}>({s.overallPct30}%)</span></> : '—'}
+                      </td>
+                      <td style={{ padding: '10px 10px', fontVariantNumeric: 'tabular-nums' }}>
+                        <span style={{ color: s.netVocab30 > 0 ? '#16a34a' : s.netVocab30 < 0 ? '#ef4444' : 'var(--text-muted)', fontWeight: 600 }}>
+                          {s.netVocab30 > 0 ? '▲' : s.netVocab30 < 0 ? '▼' : '—'} {s.netVocab30 !== 0 ? Math.abs(s.netVocab30) : ''}
+                          {s.vocabTrend === 'up' && s.netVocab30 > 0 && <span style={{ fontSize: 10, marginLeft: 4, color: '#16a34a' }}>↑</span>}
+                          {s.vocabTrend === 'down' && <span style={{ fontSize: 10, marginLeft: 4, color: '#ef4444' }}>↓</span>}
+                        </span>
+                      </td>
                       <td style={{ padding: '10px 10px' }}><PctCell pct={s.vocabCorrectPct} /></td>
                       <td style={{ padding: '10px 10px' }}><PctCell pct={s.phrasesCorrectPct} /></td>
                       <td style={{ padding: '10px 10px' }}><PctCell pct={s.verbsCorrectPct} /></td>

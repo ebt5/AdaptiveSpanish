@@ -24,6 +24,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
   const now = new Date()
   const since30 = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
+  const since7 = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+  const since60 = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000)
 
   const results = await Promise.all(enrollments.map(async (enr) => {
     const userId = enr.user.id
@@ -33,14 +35,24 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       drillAttempts30,
       phraseAttempts30,
       verbAttempts30,
+      drillAttempts7,
+      phraseAttempts7,
       vocabMastered,
       phrasesMastered,
+      masteredNet30,
+      masteredNetPrev30,
     ] = await Promise.all([
       prisma.drillAttempt.findMany({ where: { userId, createdAt: { gte: since30 } }, select: { correct: true, createdAt: true } }),
       prisma.phraseAttempt.findMany({ where: { userId, createdAt: { gte: since30 } }, select: { correct: true, createdAt: true } }),
       prisma.verbAttempt.findMany({ where: { userId, createdAt: { gte: since30 } }, select: { correct: true } }),
+      prisma.drillAttempt.findMany({ where: { userId, createdAt: { gte: since7 } }, select: { correct: true } }),
+      prisma.phraseAttempt.findMany({ where: { userId, createdAt: { gte: since7 } }, select: { correct: true } }),
       prisma.userVocabProgress.count({ where: { userId, bucket: 'mastered' } }),
       prisma.userPhraseProgress.count({ where: { userId, bucket: 'mastered' } }),
+      // Net vocab mastered in last 30 days
+      prisma.masteredNetLog.aggregate({ where: { userId, createdAt: { gte: since30 } }, _sum: { delta: true } }),
+      // Net vocab mastered in 30-60 days ago (for trend)
+      prisma.masteredNetLog.aggregate({ where: { userId, createdAt: { gte: since60, lt: since30 } }, _sum: { delta: true } }),
     ])
 
     // Active days: distinct calendar days with any drill or phrase attempt
@@ -64,6 +76,17 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       ? allDates.reduce((a, b) => a > b ? a : b).toISOString().slice(0, 10)
       : null
 
+    const netVocab30 = masteredNet30._sum.delta ?? 0
+    const netVocabPrev30 = masteredNetPrev30._sum.delta ?? 0
+    const vocabTrend = netVocab30 > netVocabPrev30 ? 'up' : netVocab30 < netVocabPrev30 ? 'down' : 'flat'
+
+    const totalDrills7 = drillAttempts7.length + phraseAttempts7.length
+    const totalDrills30 = drillAttempts30.length + phraseAttempts30.length
+    const allCorrect7 = [...drillAttempts7, ...phraseAttempts7].filter(a => a.correct).length
+    const overallPct7 = totalDrills7 > 0 ? Math.round((allCorrect7 / totalDrills7) * 100) : null
+    const allCorrect30 = [...drillAttempts30, ...phraseAttempts30].filter(a => a.correct).length
+    const overallPct30 = totalDrills30 > 0 ? Math.round((allCorrect30 / totalDrills30) * 100) : null
+
     return {
       userId,
       username: uname,
@@ -73,6 +96,12 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       vocabCorrectPct: pct(drillAttempts30),
       phrasesCorrectPct: pct(phraseAttempts30),
       verbsCorrectPct: pct(verbAttempts30),
+      totalDrills7,
+      overallPct7,
+      totalDrills30,
+      overallPct30,
+      netVocab30,
+      vocabTrend,
       lastActive,
     }
   }))
