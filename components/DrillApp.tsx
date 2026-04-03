@@ -11,6 +11,7 @@ import GrammarHeatmap from './GrammarHeatmap'
 import MasteredChartPhrases from './MasteredChartPhrases'
 import AdminPanel from './AdminPanel'
 import VoiceInput from './VoiceInput'
+import { playMasteredSound, playLearnedSound } from '@/lib/sounds'
 
 type Bucket = 'unseen' | 'learning' | 'learned' | 'mastered'
 type MoveType = 'promote' | 'master' | 'demote' | null
@@ -85,6 +86,7 @@ export default function DrillApp() {
   }
   const [phraseCounts, setPhraseCounts] = useState<{ learning: number; learned: number; mastered: number; unseen: number }>({ learning: 0, learned: 0, mastered: 0, unseen: 0 })
   const [voiceMode, setVoiceMode] = useState(false)
+  const [animatedBucket, setAnimatedBucket] = useState<'mastered' | 'learned' | null>(null)
   const [hoveredBucket, setHoveredBucket] = useState<'learning' | 'learned' | 'mastered' | null>(null)
   const [popoverAnchorRect, setPopoverAnchorRect] = useState<DOMRect | null>(null)
   const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -124,6 +126,18 @@ export default function DrillApp() {
       else inputRef.current?.focus()
     }
   }, [isReviewing, phase, item?.id, mode])
+
+  useEffect(() => {
+    if (drill.lastMoveType === 'master') {
+      playMasteredSound()
+      setAnimatedBucket('mastered')
+      setTimeout(() => setAnimatedBucket(null), 700)
+    } else if (drill.lastMoveType === 'promote') {
+      playLearnedSound()
+      setAnimatedBucket('learned')
+      setTimeout(() => setAnimatedBucket(null), 500)
+    }
+  }, [drill.lastMoveType, drill.lastMove])
 
   // Always fetch phrase counts so bucket cards show correct numbers in all modes
   useEffect(() => {
@@ -443,7 +457,7 @@ export default function DrillApp() {
             return (
               <div
                 key={key}
-                className={`bucket-card bucket-card-${key}`}
+                className={`bucket-card bucket-card-${key}${animatedBucket === bucketKey ? ` bucket-card-animate-${bucketKey}` : ''}`}
                 onMouseLeave={() => {
                   hoverTimeoutRef.current = setTimeout(() => {
                     setHoveredBucket(null)
