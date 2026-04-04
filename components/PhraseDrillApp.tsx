@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { playWrongSound } from '@/lib/sounds'
+import VoiceInput from './VoiceInput'
 
 const ALL_TAGS = [
   'survival','ser-estar','tener-expressions','hacer-expressions','reflexive',
@@ -86,6 +87,7 @@ export default function PhraseDrillApp({ username, onCounts, onAnswer, selectedT
   const [grammarNote, setGrammarNote] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [pendingSync, setPendingSync] = useState(false)
+  const [voiceMode, setVoiceMode] = useState(false)
   const [queuedNext, setQueuedNext] = useState<PhraseDrillState | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const nextBtnRef = useRef<HTMLButtonElement>(null)
@@ -156,6 +158,87 @@ export default function PhraseDrillApp({ username, onCounts, onAnswer, selectedT
     setAnswer(null)
     setGrammarNote(null)
     setInput('')
+  }
+
+  function submitWithValue(value: string) {
+    if (!item || isReviewing) return
+    const normalizedInput = normalize(value)
+    const expected = normalize(item.spanish)
+    const isBlank = normalizedInput === ''
+    const isCorrect = normalizedInput === expected
+
+    if (phase === 'answering') {
+      if (isBlank) {
+        const optimisticCounts = { ...drill.counts }
+        if (item.bucket === 'learned') { optimisticCounts.learned -= 1; optimisticCounts.learning += 1 }
+        else if (item.bucket === 'mastered') { optimisticCounts.mastered -= 1; optimisticCounts.learning += 1 }
+        playWrongSound()
+        void persistAndQueue('', 1, 'revealed', item.spanish, {
+          counts: optimisticCounts,
+          stats: { ...drill.stats, wrong: drill.stats.wrong + 1, demoted: drill.stats.demoted + (item.bucket === 'learning' ? 0 : 1) },
+          lastMove: item.bucket === 'learning' ? null : '↓ Demoted to Learning',
+          lastMoveType: item.bucket === 'learning' ? null : 'demote',
+        })
+        return
+      }
+      if (!isCorrect) { playWrongSound(); setPhase('wrong-first'); setInput(''); return }
+      const optimisticCounts = { ...drill.counts }
+      let lastMove: string | null = null
+      let lastMoveType: MoveType = null
+      if (item.bucket === 'learning') {
+        optimisticCounts.learning -= 1; optimisticCounts.learned += 1
+        if (drill.unseenCount > 0) { optimisticCounts.learning += 1; optimisticCounts.unseen -= 1 }
+        lastMove = '↑ Promoted to Learned'; lastMoveType = 'promote'
+      } else if (item.bucket === 'learned') {
+        optimisticCounts.learned -= 1; optimisticCounts.mastered += 1
+        lastMove = '★ Mastered!'; lastMoveType = 'master'
+      }
+      void persistAndQueue(value, 1, 'correct', item.spanish, {
+        counts: optimisticCounts,
+        unseenCount: optimisticCounts.unseen,
+        stats: { ...drill.stats, correct: drill.stats.correct + 1, promoted: drill.stats.promoted + (lastMoveType ? 1 : 0) },
+        lastMove,
+        lastMoveType,
+      })
+    } else if (phase === 'wrong-first') {
+      const optimisticCounts = { ...drill.counts }
+      if (!isBlank && isCorrect) {
+        let lastMove: string | null = null
+        let lastMoveType: MoveType = null
+        if (item.bucket === 'learning') {
+          optimisticCounts.learning -= 1; optimisticCounts.learned += 1
+          if (drill.unseenCount > 0) { optimisticCounts.learning += 1; optimisticCounts.unseen -= 1 }
+          lastMove = '↑ Promoted to Learned'; lastMoveType = 'promote'
+        } else if (item.bucket === 'learned') {
+          optimisticCounts.learned -= 1; optimisticCounts.mastered += 1
+          lastMove = '★ Mastered!'; lastMoveType = 'master'
+        }
+        void persistAndQueue(value, 2, 'correct', item.spanish, {
+          counts: optimisticCounts, unseenCount: optimisticCounts.unseen,
+          stats: { ...drill.stats, correct: drill.stats.correct + 1, promoted: drill.stats.promoted + (lastMoveType ? 1 : 0) },
+          lastMove, lastMoveType,
+        })
+      } else {
+        if (item.bucket === 'learned') { optimisticCounts.learned -= 1; optimisticCounts.learning += 1 }
+        else if (item.bucket === 'mastered') { optimisticCounts.mastered -= 1; optimisticCounts.learning += 1 }
+        playWrongSound()
+        void persistAndQueue(value, 2, 'revealed', item.spanish, {
+          counts: optimisticCounts,
+          stats: { ...drill.stats, wrong: drill.stats.wrong + 1, demoted: drill.stats.demoted + (item.bucket === 'learning' ? 0 : 1) },
+          lastMove: item.bucket === 'learning' ? null : '↓ Demoted to Learning',
+          lastMoveType: item.bucket === 'learning' ? null : 'demote',
+        })
+      }
+    }
+  }
+
+  function handleVoiceTranscript(text: string) {
+    setInput(text)
+    setVoiceMode(false)
+    setTimeout(() => {
+      submitWithValue(text)
+      setTimeout(() => setVoiceMode(true), 600)
+    }, 1500)
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -274,30 +357,62 @@ export default function PhraseDrillApp({ username, onCounts, onAnswer, selectedT
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="drill-form">
-            <input
-              ref={inputRef}
-              type="text"
-              className={`drill-input${phase === 'wrong-first' ? ' input-wrong' : ''}`}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder={phase === 'wrong-first' ? 'Try again…' : 'Type Spanish…'}
-              disabled={isReviewing}
-              autoComplete="off"
-              autoCorrect="off"
-              autoCapitalize="off"
-              spellCheck={false}
-            />
-            <button ref={nextBtnRef} type="submit" className={`btn btn-submit${isReviewing ? ' btn-next' : ''}`}>
-              {isReviewing ? (pendingSync ? 'Saving…' : 'Next →') : pendingSync ? 'Saving…' : 'Check'}
-            </button>
-          </form>
+          {voiceMode && !isReviewing ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, marginTop: 8 }}>
+              <VoiceInput
+                key={item.id}
+                language="es"
+                onTranscript={handleVoiceTranscript}
+                disabled={isReviewing || pendingSync}
+                autoStart={true}
+                hint={item.spanish}
+              />
+              <p className="drill-hint">Speak your answer in Spanish</p>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="drill-form">
+              <input
+                ref={inputRef}
+                type="text"
+                className={`drill-input${phase === 'wrong-first' ? ' input-wrong' : ''}`}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder={phase === 'wrong-first' ? 'Try again…' : 'Type Spanish…'}
+                disabled={isReviewing}
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
+                spellCheck={false}
+              />
+              <button ref={nextBtnRef} type="submit" className={`btn btn-submit${isReviewing ? ' btn-next' : ''}`}>
+                {isReviewing ? (pendingSync ? 'Saving…' : 'Next →') : pendingSync ? 'Saving…' : 'Check'}
+              </button>
+            </form>
+          )}
+
+          {isReviewing && (
+            <form onSubmit={handleSubmit} className="drill-form" style={{ marginTop: 8 }}>
+              <button ref={nextBtnRef} type="submit" className="btn btn-submit btn-next" style={{ width: '100%' }}>
+                {pendingSync ? 'Saving…' : 'Next →'}
+              </button>
+            </form>
+          )}
 
           <p className="drill-hint">
-            {phase === 'answering' && 'Enter to check · blank Enter to skip & reveal'}
-            {phase === 'wrong-first' && 'Last chance · blank Enter to reveal answer'}
+            {!voiceMode && phase === 'answering' && 'Enter to check · blank Enter to skip & reveal'}
+            {!voiceMode && phase === 'wrong-first' && 'Last chance · blank Enter to reveal answer'}
             {isReviewing && (pendingSync ? 'Saving result…' : 'Enter or click Next to continue')}
           </p>
+          <div style={{ textAlign: 'center', marginTop: 4 }}>
+            <button
+              className={`category-toggle${voiceMode ? ' category-toggle-active' : ' category-toggle-soon'}`}
+              type="button"
+              onClick={() => setVoiceMode(v => !v)}
+              title={voiceMode ? 'Switch to typing' : 'Switch to voice'}
+            >
+              {voiceMode ? '🎙 Voice' : '⌨️ Type'}
+            </button>
+          </div>
         </section>
       )}
 
