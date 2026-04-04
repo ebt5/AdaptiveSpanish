@@ -354,6 +354,7 @@ export default function DrillApp() {
       const optimisticCounts = { ...drill.counts }
       if (item.bucket === 'learned') { optimisticCounts.learned -= 1; optimisticCounts.learning += 1 }
       else if (item.bucket === 'mastered') { optimisticCounts.mastered -= 1; optimisticCounts.learning += 1 }
+      playWrongSound()
       void persistAndQueue(input, 2, 'revealed', item.spanishDisplay ?? item.spanish, {
         counts: optimisticCounts,
         stats: { ...drill.stats, wrong: drill.stats.wrong + 1, demoted: drill.stats.demoted + (item.bucket === 'learning' ? 0 : 1) },
