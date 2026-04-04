@@ -403,16 +403,6 @@ export default function PhraseDrillApp({ username, onCounts, onAnswer, selectedT
             {!voiceMode && phase === 'wrong-first' && 'Last chance · blank Enter to reveal answer'}
             {isReviewing && (pendingSync ? 'Saving result…' : 'Enter or click Next to continue')}
           </p>
-          <div style={{ textAlign: 'center', marginTop: 4 }}>
-            <button
-              className={`category-toggle${voiceMode ? ' category-toggle-active' : ' category-toggle-soon'}`}
-              type="button"
-              onClick={() => setVoiceMode(v => !v)}
-              title={voiceMode ? 'Switch to typing' : 'Switch to voice'}
-            >
-              {voiceMode ? '🎙 Voice' : '⌨️ Type'}
-            </button>
-          </div>
         </section>
       )}
 
@@ -421,6 +411,15 @@ export default function PhraseDrillApp({ username, onCounts, onAnswer, selectedT
           <span className="stat stat-correct">✓ {drill.stats.correct}</span>
           <span className="stat-sep">·</span>
           <span className="stat stat-wrong">✗ {drill.stats.wrong}</span>
+          <span className="stat-sep">·</span>
+          <button
+            className={`category-toggle${voiceMode ? ' category-toggle-active' : ' category-toggle-soon'}`}
+            type="button"
+            onClick={() => setVoiceMode(v => !v)}
+            title={voiceMode ? 'Switch to typing' : 'Switch to voice'}
+          >
+            {voiceMode ? '🎙 Voice' : '⌨️ Type'}
+          </button>
         </div>
       )}
       </>}
