@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { playWrongSound } from '@/lib/sounds'
 
 const ALL_TAGS = [
   'survival','ser-estar','tener-expressions','hacer-expressions','reflexive',
@@ -183,7 +184,7 @@ export default function PhraseDrillApp({ username, onCounts, onAnswer, selectedT
         })
         return
       }
-      if (!isCorrect) { setPhase('wrong-first'); setInput(''); return }
+      if (!isCorrect) { playWrongSound(); setPhase('wrong-first'); setInput(''); return }
       const optimisticCounts = { ...drill.counts }
       let lastMove: string | null = null
       let lastMoveType: MoveType = null

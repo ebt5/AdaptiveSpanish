@@ -11,7 +11,7 @@ import GrammarHeatmap from './GrammarHeatmap'
 import MasteredChartPhrases from './MasteredChartPhrases'
 import AdminPanel from './AdminPanel'
 import VoiceInput from './VoiceInput'
-import { playMasteredSound, playLearnedSound } from '@/lib/sounds'
+import { playMasteredSound, playLearnedSound, playWrongSound } from '@/lib/sounds'
 
 type Bucket = 'unseen' | 'learning' | 'learned' | 'mastered'
 type MoveType = 'promote' | 'master' | 'demote' | null
@@ -230,7 +230,7 @@ export default function DrillApp() {
         })
         return
       }
-      if (!isCorrect) { setPhase('wrong-first'); setInput(''); return }
+      if (!isCorrect) { playWrongSound(); setPhase('wrong-first'); setInput(''); return }
       const optimisticCounts = { ...drill.counts }
       let lastMove: string | null = null
       let lastMoveType: MoveType = null
@@ -307,7 +307,7 @@ export default function DrillApp() {
         })
         return
       }
-      if (!isCorrect) { setPhase('wrong-first'); setInput(''); return }
+      if (!isCorrect) { playWrongSound(); setPhase('wrong-first'); setInput(''); return }
       const optimisticCounts = { ...drill.counts }
       let lastMove: string | null = null
       let lastMoveType: MoveType = null

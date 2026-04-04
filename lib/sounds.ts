@@ -42,3 +42,12 @@ export function playLearnedSound() {
   // E5, short and soft
   playTone(ctx, 659.25, now, 0.3, 0.10)
 }
+
+/** Quick descending buzzer — for Wrong answer */
+export function playWrongSound() {
+  const ctx = getCtx()
+  if (!ctx) return
+  const now = ctx.currentTime
+  // Low buzz tone descending, quick and punchy
+  playTone(ctx, 220, now, 0.15, 0.15, 'square') // A3, square wave for buzzer effect
+}
