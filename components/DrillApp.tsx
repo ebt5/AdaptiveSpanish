@@ -86,6 +86,7 @@ export default function DrillApp() {
   }
   const [phraseCounts, setPhraseCounts] = useState<{ learning: number; learned: number; mastered: number; unseen: number }>({ learning: 0, learned: 0, mastered: 0, unseen: 0 })
   const [voiceMode, setVoiceMode] = useState(false)
+  const [showingTranscript, setShowingTranscript] = useState(false)
   const [animatedBucket, setAnimatedBucket] = useState<'mastered' | 'learned' | null>(null)
   const [hoveredBucket, setHoveredBucket] = useState<'learning' | 'learned' | 'mastered' | null>(null)
   const [popoverAnchorRect, setPopoverAnchorRect] = useState<DOMRect | null>(null)
@@ -202,9 +203,11 @@ export default function DrillApp() {
   function handleVoiceTranscript(text: string) {
     // Show transcript in input box so learner sees what Whisper heard
     setInput(text)
+    setShowingTranscript(true)
     setVoiceMode(false)  // show the input box with the transcript
     // Auto-submit after 1.5s — learner can edit or just watch it submit
     setTimeout(() => {
+      setShowingTranscript(false)
       submitWithValue(text)
       setTimeout(() => setVoiceMode(true), 600)
     }, 1500)
@@ -545,7 +548,7 @@ export default function DrillApp() {
                     <input
                       ref={inputRef}
                       type="text"
-                      className={`drill-input${phase === 'wrong-first' ? ' input-wrong' : ''}`}
+                      className={`drill-input${phase === 'wrong-first' && !showingTranscript ? ' input-wrong' : ''}`}
                       value={input}
                       onChange={(e) => setInput(e.target.value)}
                       placeholder={phase === 'wrong-first' ? 'Try again…' : 'Type Spanish…'}

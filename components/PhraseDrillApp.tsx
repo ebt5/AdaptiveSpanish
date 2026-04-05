@@ -89,6 +89,7 @@ export default function PhraseDrillApp({ username, onCounts, onAnswer, selectedT
   const [grammarNote, setGrammarNote] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [pendingSync, setPendingSync] = useState(false)
+  const [showingTranscript, setShowingTranscript] = useState(false)
   const [queuedNext, setQueuedNext] = useState<PhraseDrillState | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const nextBtnRef = useRef<HTMLButtonElement>(null)
@@ -235,8 +236,10 @@ export default function PhraseDrillApp({ username, onCounts, onAnswer, selectedT
 
   function handleVoiceTranscript(text: string) {
     setInput(text)
+    setShowingTranscript(true)
     onVoicePause?.(true)   // temporarily show the input box with transcript
     setTimeout(() => {
+      setShowingTranscript(false)
       submitWithValue(text)
       setTimeout(() => onVoicePause?.(false), 600)  // resume voice mode
     }, 1500)
@@ -381,7 +384,7 @@ export default function PhraseDrillApp({ username, onCounts, onAnswer, selectedT
               <input
                 ref={inputRef}
                 type="text"
-                className={`drill-input${phase === 'wrong-first' ? ' input-wrong' : ''}`}
+                className={`drill-input${phase === 'wrong-first' && !showingTranscript ? ' input-wrong' : ''}`}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder={phase === 'wrong-first' ? 'Try again…' : 'Type Spanish…'}
