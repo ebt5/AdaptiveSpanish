@@ -24,8 +24,8 @@ export const LEVEL_BACKGROUNDS: LevelBackground[] = [
   {
     level: 3,
     image: '/backgrounds/level-3.jpg',
-    name: 'Puebla',
-    description: 'Talavera-tiled domes and baroque bell towers rise above a bustling plaza, with cacti framing the view. The historic center of Puebla is a jewel of Mexican colonial architecture.',
+    name: 'La Alhambra, Granada',
+    description: 'The red fortress towers and lush gardens of the Alhambra, with the snow-capped Sierra Nevada rising behind. The last great Moorish palace in Spain and one of the most visited monuments in Europe.',
   },
   {
     level: 4,
