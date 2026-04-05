@@ -109,7 +109,21 @@ async function fetchCandidateItems(userId: string, tags?: string[], excludeId?: 
       take: 24,
     }),
   ])
-  const allRows = [...learning, ...learned, ...mastered]
+  let allRows = [...learning, ...learned, ...mastered]
+  // Fallback: if nothing drillable, promote from unseen
+  if (allRows.length === 0) {
+    const unseenRows = await prisma.userPhraseProgress.findMany({
+      where: { userId, bucket: 'unseen', ...excludeFilter },
+      include: { phrase: true },
+      orderBy: { phrase: { sortOrder: 'asc' } },
+      take: PHRASE_LEARNING_TARGET,
+    })
+    for (const row of unseenRows) {
+      await prisma.userPhraseProgress.update({ where: { id: row.id }, data: { bucket: 'learning' } })
+      row.bucket = 'learning'
+    }
+    allRows = unseenRows
+  }
   return allRows.map((row) => ({
     id: row.phraseId,
     english: row.phrase.english,
@@ -134,11 +148,26 @@ export async function initializePhraseDrillState(username: string, tags?: string
   const missing = allPhrases.filter(p => !existingIds.has(p.id))
 
   if (missing.length > 0) {
-    // Only create unseen rows — promotion to learning is handled per-tag by fetchCandidateItems
     await prisma.userPhraseProgress.createMany({
       data: missing.map(p => ({ userId: user.id, phraseId: p.id, bucket: 'unseen', score: 0 })),
       skipDuplicates: true,
     })
+  }
+
+  // Ensure enough phrases are in learning bucket
+  const learningCount = await prisma.userPhraseProgress.count({ where: { userId: user.id, bucket: 'learning' } })
+  if (learningCount < PHRASE_LEARNING_TARGET) {
+    const needed = PHRASE_LEARNING_TARGET - learningCount
+    const tagFilter = tags && tags.length > 0 ? { phrase: { grammarTag: { in: tags } } } : {}
+    const unseenRows = await prisma.userPhraseProgress.findMany({
+      where: { userId: user.id, bucket: 'unseen', ...tagFilter },
+      include: { phrase: true },
+      orderBy: { phrase: { sortOrder: 'asc' } },
+      take: needed,
+    })
+    for (const row of unseenRows) {
+      await prisma.userPhraseProgress.update({ where: { id: row.id }, data: { bucket: 'learning' } })
+    }
   }
 
   const [counts, items] = await Promise.all([fetchCounts(user.id), fetchCandidateItems(user.id, tags)])
