@@ -12,6 +12,7 @@ import MasteredChartPhrases from './MasteredChartPhrases'
 import AdminPanel from './AdminPanel'
 import VoiceInput from './VoiceInput'
 import { playMasteredSound, playLearnedSound, playWrongSound } from '@/lib/sounds'
+import { clientWeightedPick, clientNormalize } from '@/lib/drill-client'
 
 type Bucket = 'unseen' | 'learning' | 'learned' | 'mastered'
 type MoveType = 'promote' | 'master' | 'demote' | null
@@ -25,14 +26,15 @@ type DrillItem = {
   spanishDisplay?: string
   spanishNormalized?: string
   emoji: string | null
-  bucket: Bucket
-  score?: number
+  bucket: Bucket | string
+  score: number
 }
 
 type DrillState = {
   item: DrillItem | null
   counts: { learning: number; learned: number; mastered: number; unseen: number }
   unseenCount: number
+  pool?: DrillItem[]
   stats: { correct: number; wrong: number; promoted: number; demoted: number }
   lastMove: string | null
   lastMoveType: MoveType
@@ -70,6 +72,8 @@ export default function DrillApp() {
   const [loading, setLoading] = useState(true)
   const [pendingSync, setPendingSync] = useState(false)
   const [queuedNext, setQueuedNext] = useState<DrillState | null>(null)
+  const [pool, setPool] = useState<DrillItem[]>([])
+  const [serverSynced, setServerSynced] = useState(true)
   const [milestone, setMilestone] = useState<number | null>(null)
   const [mode, setMode] = useState<Mode>('vocab')
   const [heatmapKey, setHeatmapKey] = useState(0)
@@ -115,6 +119,7 @@ export default function DrillApp() {
       fetch('/api/user/bootstrap', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username }) }).then(r => r.json()),
     ]).then(([drillData, userData]) => {
       setDrill(drillData)
+      if (drillData.pool) setPool(drillData.pool)
       setIsAdmin(userData.isAdmin ?? false)
       setRole(userData.role ?? 'learner')
       setLoading(false)
@@ -173,6 +178,22 @@ export default function DrillApp() {
     setPhase(optimisticPhase)
     setAnswer(optimisticAnswer)
     setInput('')
+
+    // Instant client-side pick from pool
+    const isMasteredMiss = optimisticState?.lastMoveType === 'demote' && item.bucket === 'mastered'
+    const nextItem = clientWeightedPick(pool, item.id, isMasteredMiss)
+    if (nextItem && optimisticState?.counts) {
+      setQueuedNext({
+        item: nextItem as any,
+        counts: optimisticState.counts as any,
+        unseenCount: optimisticState.counts.unseen ?? drill.unseenCount,
+        stats: optimisticState.stats ?? drill.stats,
+        lastMove: optimisticState.lastMove ?? null,
+        lastMoveType: optimisticState.lastMoveType ?? null,
+      })
+    }
+
+    // Fire server sync in background — reconcile pool on response
     setPendingSync(true)
     try {
       const res = await fetch('/api/drill/submit', {
@@ -182,7 +203,16 @@ export default function DrillApp() {
       })
       const data = await res.json()
       if (data.phase !== 'wrong-first') {
-        setQueuedNext({ item: data.item, counts: data.counts, unseenCount: data.unseenCount, stats: data.stats, lastMove: data.lastMove, lastMoveType: data.lastMoveType })
+        // Server is authoritative — update pool and reconcile next item
+        if (data.pool) setPool(data.pool)
+        setQueuedNext({
+          item: data.item,
+          counts: data.counts,
+          unseenCount: data.unseenCount,
+          stats: data.stats,
+          lastMove: data.lastMove,
+          lastMoveType: data.lastMoveType,
+        })
       }
     } finally {
       setPendingSync(false)
