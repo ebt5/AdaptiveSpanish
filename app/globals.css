@@ -95,6 +95,89 @@ body.has-bg .bucket-card {
   border-color: rgba(255, 255, 255, 0.12);
 }
 
+/* ── Background info button ──────────────────────────────────────────── */
+.bg-info-btn {
+  position: fixed;
+  bottom: 16px;
+  left: 16px;
+  z-index: 100;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(30, 30, 30, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.bg-info-btn:hover {
+  background: rgba(30, 30, 30, 0.8);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* ── Background showcase overlay ─────────────────────────────────────── */
+.bg-showcase {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 24px 80px;
+  cursor: pointer;
+  animation: bg-showcase-in 0.4s ease;
+}
+
+.bg-showcase::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.25);
+  z-index: -1;
+}
+
+.bg-showcase-text {
+  text-align: center;
+  color: #fff;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.7), 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.bg-showcase-title {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+}
+
+.bg-showcase-desc {
+  font-size: 16px;
+  font-weight: 400;
+  opacity: 0.9;
+  max-width: 400px;
+  line-height: 1.5;
+}
+
+.bg-showcase-dismiss {
+  font-size: 12px;
+  opacity: 0.5;
+  margin-top: 16px;
+}
+
+@keyframes bg-showcase-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
 .app {
   max-width: 520px;
   margin: 0 auto;

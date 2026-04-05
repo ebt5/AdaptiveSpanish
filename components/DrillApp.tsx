@@ -74,6 +74,7 @@ export default function DrillApp() {
   const [queuedNext, setQueuedNext] = useState<DrillState | null>(null)
   const [pool, setPool] = useState<DrillItem[]>([])
   const [serverSynced, setServerSynced] = useState(true)
+  const [showBgInfo, setShowBgInfo] = useState(false)
   const [milestone, setMilestone] = useState<number | null>(null)
   const [mode, setMode] = useState<Mode>('vocab')
   const [heatmapKey, setHeatmapKey] = useState(0)
@@ -681,6 +682,26 @@ export default function DrillApp() {
             }, 200)
           }}
         />
+      )}
+
+      {/* Background info button */}
+      <button className="bg-info-btn" onClick={() => setShowBgInfo(true)} title="About this scene">
+        ℹ
+      </button>
+
+      {/* Background showcase overlay */}
+      {showBgInfo && (
+        <div className="bg-showcase" onClick={() => setShowBgInfo(false)}>
+          <div className="bg-showcase-text">
+            <div className="bg-showcase-title">Antigua Guatemala</div>
+            <div className="bg-showcase-desc">
+              The cobblestone streets and colorful colonial architecture of Antigua, 
+              framed by the Volcán de Agua. A UNESCO World Heritage Site and one of 
+              Latin America's most beautiful cities.
+            </div>
+            <div className="bg-showcase-dismiss">tap anywhere to close</div>
+          </div>
+        </div>
       )}
     </div>
   )
