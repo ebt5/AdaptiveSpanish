@@ -13,6 +13,7 @@ import AdminPanel from './AdminPanel'
 import VoiceInput from './VoiceInput'
 import { playMasteredSound, playLearnedSound, playWrongSound } from '@/lib/sounds'
 import { clientWeightedPick, clientNormalize } from '@/lib/drill-client'
+import type { LevelState } from '@/lib/levels'
 
 type Bucket = 'unseen' | 'learning' | 'learned' | 'mastered'
 type MoveType = 'promote' | 'master' | 'demote' | null
@@ -75,6 +76,7 @@ export default function DrillApp() {
   const [pool, setPool] = useState<DrillItem[]>([])
   const [serverSynced, setServerSynced] = useState(true)
   const [showBgInfo, setShowBgInfo] = useState(false)
+  const [levelState, setLevelState] = useState<LevelState | null>(null)
   const [milestone, setMilestone] = useState<number | null>(null)
   const [mode, setMode] = useState<Mode>('vocab')
   const [heatmapKey, setHeatmapKey] = useState(0)
@@ -111,15 +113,44 @@ export default function DrillApp() {
     setLoading(false)
   }, [])
 
-  // Add background when logged in
+  // Fetch level state
+  useEffect(() => {
+    if (!username) return
+    fetch(`/api/level?username=${encodeURIComponent(username)}`)
+      .then(r => r.json())
+      .then((data: LevelState) => setLevelState(data))
+  }, [username])
+
+  // Refresh level after each drill answer
+  function refreshLevel() {
+    if (!username) return
+    fetch(`/api/level?username=${encodeURIComponent(username)}`)
+      .then(r => r.json())
+      .then((data: LevelState) => setLevelState(data))
+  }
+
+  // Add background when logged in — use level background
   useEffect(() => {
     if (username) {
       document.body.classList.add('has-bg')
+      const bgImage = levelState?.currentBg?.image
+      if (bgImage) {
+        document.body.style.backgroundImage = `url('${bgImage}')`
+      } else {
+        document.body.style.backgroundImage = 'none'
+        document.body.style.background = '#000'
+      }
     } else {
       document.body.classList.remove('has-bg')
+      document.body.style.backgroundImage = ''
+      document.body.style.background = ''
     }
-    return () => document.body.classList.remove('has-bg')
-  }, [username])
+    return () => {
+      document.body.classList.remove('has-bg')
+      document.body.style.backgroundImage = ''
+      document.body.style.background = ''
+    }
+  }, [username, levelState?.currentBg?.image])
 
   useEffect(() => {
     if (!username) return
@@ -239,6 +270,7 @@ export default function DrillApp() {
     setPhase('answering')
     setAnswer(null)
     setInput('')
+    refreshLevel()
   }
 
   function handleVoiceTranscript(text: string) {
@@ -445,6 +477,16 @@ export default function DrillApp() {
     <div className="app">
       <header className="app-header">
         <h1>Adaptive Spanish</h1>
+        {levelState && (
+          <div style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 2, marginBottom: 2 }}>
+            Level {levelState.totalLevel}
+            {mode === 'vocab' && <span> · {levelState.vocabToNext} words to next level</span>}
+            {mode === 'phrases' && <span> · {levelState.phrasesToNext} phrases to next level</span>}
+            {mode === 'verbs' && levelState.verbNearestTense && (
+              <span> · {levelState.verbNearestTense.tense}: {levelState.verbNearestTense.pronounsDone}/{levelState.verbNearestTense.total} pronouns</span>
+            )}
+          </div>
+        )}
         <p className="tagline">Make your practice count.</p>
         <div className="session-stats" style={{ marginTop: 8 }}>
           <span className="stat">user: {username}</span>
@@ -634,9 +676,9 @@ export default function DrillApp() {
             )}
           </>
         ) : mode === 'verbs' ? (
-          <VerbDrillApp username={username} onAnswer={() => setHeatmapKey(k => k + 1)} voiceMode={voiceMode} onVoicePause={(paused) => setVoiceMode(!paused)} />
+          <VerbDrillApp username={username} onAnswer={() => { setHeatmapKey(k => k + 1); refreshLevel() }} voiceMode={voiceMode} onVoicePause={(paused) => setVoiceMode(!paused)} />
         ) : (
-          <PhraseDrillApp username={username} onCounts={setPhraseCounts} onAnswer={() => setHeatmapKey(k => k + 1)} selectedTags={selectedPhraseTags} onItemChange={setCurrentPhraseItem} voiceMode={voiceMode} onVoicePause={(paused) => setVoiceMode(!paused)} />
+          <PhraseDrillApp username={username} onCounts={setPhraseCounts} onAnswer={() => { setHeatmapKey(k => k + 1); refreshLevel() }} selectedTags={selectedPhraseTags} onItemChange={setCurrentPhraseItem} voiceMode={voiceMode} onVoicePause={(paused) => setVoiceMode(!paused)} />
         )}
       </main>
 
@@ -693,12 +735,8 @@ export default function DrillApp() {
       {showBgInfo && (
         <div className="bg-showcase" onClick={() => { setShowBgInfo(false); document.body.classList.remove('bg-showcase-open') }}>
           <div className="bg-showcase-text">
-            <div className="bg-showcase-title">Antigua Guatemala</div>
-            <div className="bg-showcase-desc">
-              The cobblestone streets and colorful colonial architecture of Antigua, 
-              framed by the Volcán de Agua. A UNESCO World Heritage Site and one of 
-              Latin America's most beautiful cities.
-            </div>
+            <div className="bg-showcase-title">{levelState?.currentBg?.name ?? 'Unknown'}</div>
+            <div className="bg-showcase-desc">{levelState?.currentBg?.description ?? ''}</div>
             <div className="bg-showcase-dismiss">tap anywhere to close</div>
           </div>
         </div>

@@ -38,7 +38,10 @@ body {
 
 /* ── Level background ──────────────────────────────────────────────────── */
 body.has-bg {
-  background: url('/backgrounds/level-1.jpg') center center / cover no-repeat fixed;
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 body.has-bg::before {

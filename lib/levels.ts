@@ -1,0 +1,146 @@
+// Level backgrounds — add new entries as images are provided
+// Level 1 is the starting background, higher levels unlock in order
+
+export interface LevelBackground {
+  level: number
+  image: string | null      // path under /backgrounds/, null = solid black
+  name: string
+  description: string
+}
+
+export const LEVEL_BACKGROUNDS: LevelBackground[] = [
+  {
+    level: 1,
+    image: '/backgrounds/level-1.jpg',
+    name: 'Antigua Guatemala',
+    description: 'The cobblestone streets and colorful colonial architecture of Antigua, framed by the Volcán de Agua. A UNESCO World Heritage Site and one of Latin America\'s most beautiful cities.',
+  },
+  {
+    level: 2,
+    image: null,
+    name: 'Coming soon…',
+    description: 'Keep drilling to discover new scenes.',
+  },
+  {
+    level: 3,
+    image: null,
+    name: 'Coming soon…',
+    description: 'Keep drilling to discover new scenes.',
+  },
+  {
+    level: 4,
+    image: null,
+    name: 'Coming soon…',
+    description: 'Keep drilling to discover new scenes.',
+  },
+  {
+    level: 5,
+    image: null,
+    name: 'Coming soon…',
+    description: 'Keep drilling to discover new scenes.',
+  },
+  {
+    level: 6,
+    image: null,
+    name: 'Coming soon…',
+    description: 'Keep drilling to discover new scenes.',
+  },
+  {
+    level: 7,
+    image: null,
+    name: 'Coming soon…',
+    description: 'Keep drilling to discover new scenes.',
+  },
+  {
+    level: 8,
+    image: null,
+    name: 'Coming soon…',
+    description: 'Keep drilling to discover new scenes.',
+  },
+  {
+    level: 9,
+    image: null,
+    name: 'Coming soon…',
+    description: 'Keep drilling to discover new scenes.',
+  },
+  {
+    level: 10,
+    image: null,
+    name: 'Coming soon…',
+    description: 'Keep drilling to discover new scenes.',
+  },
+]
+
+// Level-up triggers:
+//  - Vocab:   every 50 words mastered
+//  - Verbs:   each tense with all 6 pronouns at score >= 8
+//  - Phrases: every 10 phrases mastered
+
+export const VOCAB_WORDS_PER_LEVEL = 50
+export const PHRASES_PER_LEVEL = 10
+export const VERB_TENSE_THRESHOLD = 8  // score >= this on all 6 pronouns = tense complete
+
+export interface LevelState {
+  totalLevel: number
+  vocabLevels: number
+  verbLevels: number
+  phraseLevels: number
+  vocabMastered: number
+  vocabToNext: number
+  phraseMastered: number
+  phrasesToNext: number
+  verbTensesComplete: string[]
+  verbNearestTense: { tense: string; pronounsDone: number; total: number } | null
+  currentBg: LevelBackground
+}
+
+export function calculateLevel(
+  vocabMastered: number,
+  phraseMastered: number,
+  verbScores: Record<string, Record<string, number>>,  // { pronoun: { tense: score } }
+  allTenses: string[],
+  allPronouns: string[],
+): LevelState {
+  const vocabLevels = Math.floor(vocabMastered / VOCAB_WORDS_PER_LEVEL)
+  const phraseLevels = Math.floor(phraseMastered / PHRASES_PER_LEVEL)
+
+  // Count complete tenses (all 6 pronouns at threshold)
+  const verbTensesComplete: string[] = []
+  let nearestTense: { tense: string; pronounsDone: number; total: number } | null = null
+  let nearestCount = -1
+
+  for (const tense of allTenses) {
+    let done = 0
+    for (const pronoun of allPronouns) {
+      const score = verbScores[pronoun]?.[tense] ?? 0
+      if (score >= VERB_TENSE_THRESHOLD) done++
+    }
+    if (done === allPronouns.length) {
+      verbTensesComplete.push(tense)
+    } else if (done > nearestCount) {
+      nearestCount = done
+      nearestTense = { tense, pronounsDone: done, total: allPronouns.length }
+    }
+  }
+
+  const verbLevels = verbTensesComplete.length
+  const totalLevel = vocabLevels + phraseLevels + verbLevels
+
+  // Current background: use the highest level that has an entry
+  const bgIndex = Math.min(totalLevel, LEVEL_BACKGROUNDS.length - 1)
+  const currentBg = LEVEL_BACKGROUNDS[bgIndex] ?? LEVEL_BACKGROUNDS[0]
+
+  return {
+    totalLevel: totalLevel + 1,  // 1-indexed for display
+    vocabLevels,
+    verbLevels,
+    phraseLevels,
+    vocabMastered,
+    vocabToNext: VOCAB_WORDS_PER_LEVEL - (vocabMastered % VOCAB_WORDS_PER_LEVEL),
+    phraseMastered,
+    phrasesToNext: PHRASES_PER_LEVEL - (phraseMastered % PHRASES_PER_LEVEL),
+    verbTensesComplete,
+    verbNearestTense: nearestTense,
+    currentBg,
+  }
+}
