@@ -35,9 +35,9 @@ export const LEVEL_BACKGROUNDS: LevelBackground[] = [
   },
   {
     level: 5,
-    image: null,
-    name: 'Coming soon…',
-    description: 'Keep drilling to discover new scenes.',
+    image: '/backgrounds/level-5.jpg',
+    name: 'Buenos Aires',
+    description: 'The Torre Monumental rises above the lush trees of Plaza San Martín, with the modern skyline of Retiro behind. The Paris of South America — where tango, steak, and porteño culture come alive.',
   },
   {
     level: 6,
