@@ -36,7 +36,7 @@ interface ProgressCounts {
 export function normalize(s: string) {
   return s.trim().toLowerCase().normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[.,!?;:\u201c\u201d\u2018\u2019'"]/g, '')
+    .replace(/[.,!?¿¡;:\u201c\u201d\u2018\u2019'"]/g, '')
     .replace(/^(el|la|los|las|un|una|unos|unas)\s+/i, '')
     .trim()
 }
