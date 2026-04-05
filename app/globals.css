@@ -142,13 +142,14 @@ body.has-bg .bucket-card {
   content: '';
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.15);
+  background: rgba(0, 0, 0, 0);
   z-index: -1;
 }
 
 /* When showcase is open, hide the dark body overlay and app content */
 body.bg-showcase-open::before {
-  background: rgba(0, 0, 0, 0.2) !important;
+  background: rgba(0, 0, 0, 0) !important;
+  transition: background 0.3s ease;
 }
 
 body.bg-showcase-open .app > *:not(.bg-showcase):not(.bg-info-btn) {
