@@ -124,6 +124,10 @@ export default function PhraseDrillApp({ username, onCounts, onAnswer, selectedT
     else inputRef.current?.focus()
   }, [isReviewing, phase, item?.id])
 
+  useEffect(() => {
+    setVoiceMode(false)
+  }, [item?.id])
+
   async function persistAndQueue(answerValue: string, attemptNumber: number, optimisticPhase: Phase, optimisticAnswer: string | null, optimisticState?: Partial<PhraseDrillState>) {
     if (!item) return
     if (optimisticState) setDrill(prev => ({ ...prev, ...optimisticState }))
