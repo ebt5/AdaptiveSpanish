@@ -685,13 +685,13 @@ export default function DrillApp() {
       )}
 
       {/* Background info button */}
-      <button className="bg-info-btn" onClick={() => setShowBgInfo(true)} title="About this scene">
+      <button className="bg-info-btn" onClick={() => { setShowBgInfo(true); document.body.classList.add('bg-showcase-open') }} title="About this scene">
         ℹ
       </button>
 
       {/* Background showcase overlay */}
       {showBgInfo && (
-        <div className="bg-showcase" onClick={() => setShowBgInfo(false)}>
+        <div className="bg-showcase" onClick={() => { setShowBgInfo(false); document.body.classList.remove('bg-showcase-open') }}>
           <div className="bg-showcase-text">
             <div className="bg-showcase-title">Antigua Guatemala</div>
             <div className="bg-showcase-desc">
