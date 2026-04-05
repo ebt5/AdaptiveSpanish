@@ -592,7 +592,7 @@ export default function DrillApp() {
         ) : mode === 'verbs' ? (
           <VerbDrillApp username={username} onAnswer={() => setHeatmapKey(k => k + 1)} />
         ) : (
-          <PhraseDrillApp username={username} onCounts={setPhraseCounts} onAnswer={() => setHeatmapKey(k => k + 1)} selectedTags={selectedPhraseTags} onItemChange={setCurrentPhraseItem} />
+          <PhraseDrillApp username={username} onCounts={setPhraseCounts} onAnswer={() => setHeatmapKey(k => k + 1)} selectedTags={selectedPhraseTags} onItemChange={setCurrentPhraseItem} voiceMode={voiceMode} />
         )}
       </main>
 

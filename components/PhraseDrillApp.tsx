@@ -77,9 +77,10 @@ interface Props {
   onAnswer?: () => void
   selectedTags?: string[]
   onItemChange?: (item: { id: string; english: string; spanish: string; grammarTag: string; grammarNote: string | null } | null) => void
+  voiceMode?: boolean
 }
 
-export default function PhraseDrillApp({ username, onCounts, onAnswer, selectedTags = ALL_TAGS, onItemChange }: Props) {
+export default function PhraseDrillApp({ username, onCounts, onAnswer, selectedTags = ALL_TAGS, onItemChange, voiceMode = false }: Props) {
   const [drill, setDrill] = useState<PhraseDrillState>(emptyState)
   const [phase, setPhase] = useState<Phase>('answering')
   const [input, setInput] = useState('')
@@ -87,7 +88,6 @@ export default function PhraseDrillApp({ username, onCounts, onAnswer, selectedT
   const [grammarNote, setGrammarNote] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [pendingSync, setPendingSync] = useState(false)
-  const [voiceMode, setVoiceMode] = useState(false)
   const [queuedNext, setQueuedNext] = useState<PhraseDrillState | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const nextBtnRef = useRef<HTMLButtonElement>(null)
@@ -123,10 +123,6 @@ export default function PhraseDrillApp({ username, onCounts, onAnswer, selectedT
     if (isReviewing) nextBtnRef.current?.focus()
     else inputRef.current?.focus()
   }, [isReviewing, phase, item?.id])
-
-  useEffect(() => {
-    setVoiceMode(false)
-  }, [item?.id])
 
   async function persistAndQueue(answerValue: string, attemptNumber: number, optimisticPhase: Phase, optimisticAnswer: string | null, optimisticState?: Partial<PhraseDrillState>) {
     if (!item) return
@@ -238,10 +234,8 @@ export default function PhraseDrillApp({ username, onCounts, onAnswer, selectedT
 
   function handleVoiceTranscript(text: string) {
     setInput(text)
-    setVoiceMode(false)
     setTimeout(() => {
       submitWithValue(text)
-      setTimeout(() => setVoiceMode(true), 600)
     }, 1500)
   }
 
@@ -364,15 +358,21 @@ export default function PhraseDrillApp({ username, onCounts, onAnswer, selectedT
           {voiceMode && !isReviewing ? (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, marginTop: 8 }}>
               <VoiceInput
-                key={item.id}
+                key={`${item.id}-${phase}`}
                 language="es"
                 onTranscript={handleVoiceTranscript}
-                disabled={isReviewing || pendingSync}
+                disabled={pendingSync}
                 autoStart={true}
                 hint={item.spanish}
               />
               <p className="drill-hint">Speak your answer in Spanish</p>
             </div>
+          ) : isReviewing ? (
+            <form onSubmit={handleSubmit} className="drill-form">
+              <button ref={nextBtnRef} type="submit" className="btn btn-submit btn-next" style={{ width: '100%' }}>
+                {pendingSync ? 'Saving…' : 'Next →'}
+              </button>
+            </form>
           ) : (
             <form onSubmit={handleSubmit} className="drill-form">
               <input
@@ -382,22 +382,13 @@ export default function PhraseDrillApp({ username, onCounts, onAnswer, selectedT
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder={phase === 'wrong-first' ? 'Try again…' : 'Type Spanish…'}
-                disabled={isReviewing}
                 autoComplete="off"
                 autoCorrect="off"
                 autoCapitalize="off"
                 spellCheck={false}
               />
-              <button ref={nextBtnRef} type="submit" className={`btn btn-submit${isReviewing ? ' btn-next' : ''}`}>
-                {isReviewing ? (pendingSync ? 'Saving…' : 'Next →') : pendingSync ? 'Saving…' : 'Check'}
-              </button>
-            </form>
-          )}
-
-          {isReviewing && (
-            <form onSubmit={handleSubmit} className="drill-form" style={{ marginTop: 8 }}>
-              <button ref={nextBtnRef} type="submit" className="btn btn-submit btn-next" style={{ width: '100%' }}>
-                {pendingSync ? 'Saving…' : 'Next →'}
+              <button ref={nextBtnRef} type="submit" className="btn btn-submit">
+                {pendingSync ? 'Saving…' : 'Check'}
               </button>
             </form>
           )}
@@ -410,22 +401,13 @@ export default function PhraseDrillApp({ username, onCounts, onAnswer, selectedT
         </section>
       )}
 
-      {anyStats && (
-        <div className="session-stats">
+      <div className="session-stats">
+        {anyStats && <>
           <span className="stat stat-correct">✓ {drill.stats.correct}</span>
           <span className="stat-sep">·</span>
           <span className="stat stat-wrong">✗ {drill.stats.wrong}</span>
-          <span className="stat-sep">·</span>
-          <button
-            className={`category-toggle${voiceMode ? ' category-toggle-active' : ' category-toggle-soon'}`}
-            type="button"
-            onClick={() => setVoiceMode(v => !v)}
-            title={voiceMode ? 'Switch to typing' : 'Switch to voice'}
-          >
-            {voiceMode ? '🎙 Voice' : '⌨️ Type'}
-          </button>
-        </div>
-      )}
+        </>}
+      </div>
       </>}
     </>
   )
