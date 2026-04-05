@@ -78,9 +78,10 @@ interface Props {
   selectedTags?: string[]
   onItemChange?: (item: { id: string; english: string; spanish: string; grammarTag: string; grammarNote: string | null } | null) => void
   voiceMode?: boolean
+  onVoicePause?: (paused: boolean) => void
 }
 
-export default function PhraseDrillApp({ username, onCounts, onAnswer, selectedTags = ALL_TAGS, onItemChange, voiceMode = false }: Props) {
+export default function PhraseDrillApp({ username, onCounts, onAnswer, selectedTags = ALL_TAGS, onItemChange, voiceMode = false, onVoicePause }: Props) {
   const [drill, setDrill] = useState<PhraseDrillState>(emptyState)
   const [phase, setPhase] = useState<Phase>('answering')
   const [input, setInput] = useState('')
@@ -234,8 +235,10 @@ export default function PhraseDrillApp({ username, onCounts, onAnswer, selectedT
 
   function handleVoiceTranscript(text: string) {
     setInput(text)
+    onVoicePause?.(true)   // temporarily show the input box with transcript
     setTimeout(() => {
       submitWithValue(text)
+      setTimeout(() => onVoicePause?.(false), 600)  // resume voice mode
     }, 1500)
   }
 
