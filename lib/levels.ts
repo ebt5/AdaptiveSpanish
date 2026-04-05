@@ -41,9 +41,9 @@ export const LEVEL_BACKGROUNDS: LevelBackground[] = [
   },
   {
     level: 6,
-    image: null,
-    name: 'Coming soon…',
-    description: 'Keep drilling to discover new scenes.',
+    image: '/backgrounds/level-6.jpg',
+    name: 'Valle de Viñales, Cuba',
+    description: 'Terraced tobacco fields wind between the mogotes — the dramatic limestone hills of western Cuba. Oxcarts and thatched-roof bohíos dot the valley, where some of the world\'s finest cigars begin their journey.',
   },
   {
     level: 7,
