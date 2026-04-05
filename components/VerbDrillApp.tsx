@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react'
 import TenseGuideModal from './TenseGuideModal'
+import VoiceInput from './VoiceInput'
+import { playWrongSound } from '@/lib/sounds'
 
 type Bucket = 'unseen' | 'learning' | 'learned' | 'mastered'
 type MoveType = 'promote' | 'master' | 'demote' | null
@@ -62,9 +64,11 @@ function normalize(s: string) { return s.trim().toLowerCase().normalize('NFD').r
 interface Props {
   username: string
   onAnswer: () => void
+  voiceMode?: boolean
+  onVoicePause?: (paused: boolean) => void
 }
 
-export default function VerbDrillApp({ username, onAnswer }: Props) {
+export default function VerbDrillApp({ username, onAnswer, voiceMode = false, onVoicePause }: Props) {
   const [drill, setDrill] = useState<VerbDrillState>(emptyState)
   const [phase, setPhase] = useState<Phase>('answering')
   const [input, setInput] = useState('')
@@ -74,6 +78,7 @@ export default function VerbDrillApp({ username, onAnswer }: Props) {
   const [queuedNext, setQueuedNext] = useState<VerbDrillState | null>(null)
   const [selectedTenses, setSelectedTenses] = useState<string[]>(['present'])
   const [guideOpen, setGuideOpen] = useState<string | null>(null)
+  const [showingTranscript, setShowingTranscript] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const nextBtnRef = useRef<HTMLButtonElement>(null)
 
@@ -144,12 +149,9 @@ export default function VerbDrillApp({ username, onAnswer }: Props) {
     setInput('')
   }
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    if (!item) return
-    if (isReviewing) { advanceToQueued(); return }
-
-    const normalizedInput = normalize(input)
+  function submitWithValue(value: string) {
+    if (!item || isReviewing) return
+    const normalizedInput = normalize(value)
     const expected = normalize(item.form)
     const isBlank = normalizedInput === ''
     const isCorrect = normalizedInput === expected
@@ -160,6 +162,7 @@ export default function VerbDrillApp({ username, onAnswer }: Props) {
         const optimisticCounts = { ...drill.counts }
         if (item.bucket === 'learned') { optimisticCounts.learned -= 1; optimisticCounts.learning += 1 }
         else if (item.bucket === 'mastered') { optimisticCounts.mastered -= 1; optimisticCounts.learned += 1 }
+        playWrongSound()
         void persistAndQueue('', 1, 'revealed', item.form, {
           counts: optimisticCounts,
           stats: { ...drill.stats, wrong: drill.stats.wrong + 1, demoted: drill.stats.demoted + (item.bucket === 'learning' ? 0 : 1) },
@@ -168,7 +171,7 @@ export default function VerbDrillApp({ username, onAnswer }: Props) {
         })
         return
       }
-      if (!isCorrect) { setPhase('wrong-first'); setInput(''); return }
+      if (!isCorrect) { playWrongSound(); setPhase('wrong-first'); setInput(''); return }
       const optimisticCounts = { ...drill.counts }
       let lastMove: string | null = null
       let lastMoveType: MoveType = null
@@ -180,7 +183,7 @@ export default function VerbDrillApp({ username, onAnswer }: Props) {
         optimisticCounts.learned -= 1; optimisticCounts.mastered += 1
         lastMove = '★ Mastered!'; lastMoveType = 'master'
       }
-      void persistAndQueue(input, 1, 'correct', item.form, {
+      void persistAndQueue(value, 1, 'correct', item.form, {
         counts: optimisticCounts,
         unseenCount: optimisticCounts.unseen,
         stats: { ...drill.stats, correct: drill.stats.correct + 1, promoted: drill.stats.promoted + (lastMoveType ? 1 : 0) },
@@ -203,7 +206,7 @@ export default function VerbDrillApp({ username, onAnswer }: Props) {
           optimisticCounts.learned -= 1; optimisticCounts.mastered += 1
           lastMove = '★ Mastered!'; lastMoveType = 'master'
         }
-        void persistAndQueue(input, 2, 'correct', item.form, {
+        void persistAndQueue(value, 2, 'correct', item.form, {
           counts: optimisticCounts,
           unseenCount: optimisticCounts.unseen,
           stats: { ...drill.stats, correct: drill.stats.correct + 1, promoted: drill.stats.promoted + (lastMoveType ? 1 : 0) },
@@ -216,13 +219,32 @@ export default function VerbDrillApp({ username, onAnswer }: Props) {
       const optimisticCounts = { ...drill.counts }
       if (item.bucket === 'learned') { optimisticCounts.learned -= 1; optimisticCounts.learning += 1 }
       else if (item.bucket === 'mastered') { optimisticCounts.mastered -= 1; optimisticCounts.learned += 1 }
-      void persistAndQueue(input, 2, 'revealed', item.form, {
+      playWrongSound()
+      void persistAndQueue(value, 2, 'revealed', item.form, {
         counts: optimisticCounts,
         stats: { ...drill.stats, wrong: drill.stats.wrong + 1, demoted: drill.stats.demoted + (item.bucket === 'learning' ? 0 : 1) },
         lastMove: item.bucket === 'learning' ? null : nextBucket === 'learned' ? '↓ Demoted to Learned' : '↓ Demoted to Learning',
         lastMoveType: item.bucket === 'learning' ? null : 'demote',
       })
     }
+  }
+
+  function handleVoiceTranscript(text: string) {
+    setInput(text)
+    setShowingTranscript(true)
+    onVoicePause?.(true)
+    setTimeout(() => {
+      setShowingTranscript(false)
+      submitWithValue(text)
+      setTimeout(() => onVoicePause?.(false), 600)
+    }, 1500)
+  }
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!item) return
+    if (isReviewing) { advanceToQueued(); return }
+    submitWithValue(input)
   }
 
   if (loading) return <section className="drill-panel"><p style={{ textAlign: 'center', color: 'var(--text-muted)' }}>Loading verbs…</p></section>
@@ -290,28 +312,50 @@ export default function VerbDrillApp({ username, onAnswer }: Props) {
           {phase === 'correct' && <div className="feedback feedback-correct"><span className="feedback-icon">✓</span><span>Correct! <span className="answer-word">{answer}</span></span></div>}
           {phase === 'revealed' && <div className="feedback feedback-revealed"><span className="feedback-icon">→</span><span>Answer: <span className="answer-word">{answer}</span></span></div>}
 
-          <form onSubmit={handleSubmit} className="drill-form">
-            <input
-              ref={inputRef}
-              type="text"
-              className={`drill-input${phase === 'wrong-first' ? ' input-wrong' : ''}`}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder={phase === 'wrong-first' ? 'Try again…' : 'Type conjugation…'}
-              disabled={isReviewing}
-              autoComplete="off"
-              autoCorrect="off"
-              autoCapitalize="off"
-              spellCheck={false}
-            />
-            <button ref={nextBtnRef} type="submit" className={`btn btn-submit${isReviewing ? ' btn-next' : ''}`}>
-              {isReviewing ? (pendingSync ? 'Saving…' : 'Next →') : pendingSync ? 'Saving…' : 'Check'}
-            </button>
-          </form>
+          {voiceMode && !isReviewing ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, marginTop: 8 }}>
+              <VoiceInput
+                key={item.id}
+                language="es"
+                onTranscript={handleVoiceTranscript}
+                disabled={isReviewing || pendingSync}
+                autoStart={true}
+                hint={item.form}
+              />
+              <p className="drill-hint">Speak the conjugation in Spanish</p>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="drill-form">
+              <input
+                ref={inputRef}
+                type="text"
+                className={`drill-input${phase === 'wrong-first' && !showingTranscript ? ' input-wrong' : ''}`}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder={phase === 'wrong-first' ? 'Try again…' : 'Type conjugation…'}
+                disabled={isReviewing}
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
+                spellCheck={false}
+              />
+              <button ref={nextBtnRef} type="submit" className={`btn btn-submit${isReviewing ? ' btn-next' : ''}`}>
+                {isReviewing ? (pendingSync ? 'Saving…' : 'Next →') : pendingSync ? 'Saving…' : 'Check'}
+              </button>
+            </form>
+          )}
+
+          {isReviewing && (
+            <form onSubmit={handleSubmit} className="drill-form" style={{ marginTop: 8 }}>
+              <button ref={nextBtnRef} type="submit" className="btn btn-submit btn-next" style={{ width: '100%' }}>
+                {pendingSync ? 'Saving…' : 'Next →'}
+              </button>
+            </form>
+          )}
 
           <p className="drill-hint">
-            {phase === 'answering' && 'Enter to check · blank Enter to skip & reveal'}
-            {phase === 'wrong-first' && 'Last chance · blank Enter to reveal answer'}
+            {!voiceMode && phase === 'answering' && 'Enter to check · blank Enter to skip & reveal'}
+            {!voiceMode && phase === 'wrong-first' && 'Last chance · blank Enter to reveal answer'}
             {isReviewing && (pendingSync ? 'Saving result…' : 'Enter or click Next to continue')}
           </p>
         </section>
