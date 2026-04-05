@@ -59,7 +59,12 @@ const emptyState: VerbDrillState = {
 }
 
 function cap(s: string) { return s.charAt(0).toUpperCase() + s.slice(1) }
-function normalize(s: string) { return s.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') }
+function normalize(s: string) {
+  return s.trim().toLowerCase().normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[.,!?;:\u201c\u201d\u2018\u2019'"]/g, '')
+    .trim()
+}
 
 interface Props {
   username: string
@@ -341,14 +346,6 @@ export default function VerbDrillApp({ username, onAnswer, voiceMode = false, on
               />
               <button ref={nextBtnRef} type="submit" className={`btn btn-submit${isReviewing ? ' btn-next' : ''}`}>
                 {isReviewing ? (pendingSync ? 'Saving…' : 'Next →') : pendingSync ? 'Saving…' : 'Check'}
-              </button>
-            </form>
-          )}
-
-          {isReviewing && (
-            <form onSubmit={handleSubmit} className="drill-form" style={{ marginTop: 8 }}>
-              <button ref={nextBtnRef} type="submit" className="btn btn-submit btn-next" style={{ width: '100%' }}>
-                {pendingSync ? 'Saving…' : 'Next →'}
               </button>
             </form>
           )}
