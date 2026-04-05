@@ -17,9 +17,9 @@ export const LEVEL_BACKGROUNDS: LevelBackground[] = [
   },
   {
     level: 2,
-    image: null,
-    name: 'Coming soon…',
-    description: 'Keep drilling to discover new scenes.',
+    image: '/backgrounds/level-2.jpg',
+    name: 'Mexico City',
+    description: 'The golden domes and baroque towers of the capital, with the Mexican flag flying over a sea of colorful buildings stretching to the horizon. One of the world\'s largest and most vibrant cities.',
   },
   {
     level: 3,
