@@ -110,6 +110,16 @@ export default function DrillApp() {
     setLoading(false)
   }, [])
 
+  // Add background when logged in
+  useEffect(() => {
+    if (username) {
+      document.body.classList.add('has-bg')
+    } else {
+      document.body.classList.remove('has-bg')
+    }
+    return () => document.body.classList.remove('has-bg')
+  }, [username])
+
   useEffect(() => {
     if (!username) return
     setLoading(true)
