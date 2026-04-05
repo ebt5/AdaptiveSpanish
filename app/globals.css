@@ -79,6 +79,22 @@ body.has-bg .session-stats {
   padding: 8px 12px;
 }
 
+body.has-bg .grammar-heatmap-panel,
+body.has-bg .bucket-cards,
+body.has-bg .mastered-chart {
+  background: rgba(30, 30, 30, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: var(--radius);
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+body.has-bg .bucket-card {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
 .app {
   max-width: 520px;
   margin: 0 auto;

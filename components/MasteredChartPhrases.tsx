@@ -31,7 +31,7 @@ export default function MasteredChartPhrases({ username }: { username: string | 
   const barAreaHeight = svgHeight - 4
 
   return (
-    <div style={{ width: '100%', marginTop: '2rem', paddingBottom: '1rem' }}>
+    <div className="mastered-chart" style={{ width: '100%', marginTop: '2rem', paddingBottom: '1rem' }}>
       <div
         style={{
           fontSize: '0.7rem',

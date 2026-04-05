@@ -50,7 +50,7 @@ export default function ConjugationHeatmap({ username, refreshKey }: { username:
   const { pronouns, tenses, scores } = data
 
   return (
-    <div style={{ marginTop: 24 }}>
+    <div className="grammar-heatmap-panel" style={{ marginTop: 24 }}>
       <h2 style={{ fontSize: 13, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.6px', color: 'var(--text-muted)', marginBottom: 10 }}>
         Conjugation Progress
       </h2>

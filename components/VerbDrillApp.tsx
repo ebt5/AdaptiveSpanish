@@ -267,7 +267,7 @@ export default function VerbDrillApp({ username, onAnswer, voiceMode = false, on
     <>
       <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
         {/* Tense filter — vertical sidebar */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 5, paddingTop: 4, flexShrink: 0 }}>
+        <div className="grammar-heatmap-panel" style={{ display: 'flex', flexDirection: 'column', gap: 5, paddingTop: 4, flexShrink: 0 }}>
           {ALL_TENSES.map(tense => (
             <div key={tense} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
               <input

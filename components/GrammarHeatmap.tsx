@@ -44,7 +44,7 @@ export default function GrammarHeatmap({ username, refreshKey, selectedTags, onT
   if (!categories) return null
 
   return (
-    <div style={{ marginTop: 24 }}>
+    <div className="grammar-heatmap-panel" style={{ marginTop: 24 }}>
       <h2 style={{ fontSize: 13, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.6px', color: 'var(--text-muted)', marginBottom: 10 }}>
         Grammar Progress
       </h2>
