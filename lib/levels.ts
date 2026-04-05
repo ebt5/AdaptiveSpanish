@@ -29,9 +29,9 @@ export const LEVEL_BACKGROUNDS: LevelBackground[] = [
   },
   {
     level: 4,
-    image: null,
-    name: 'Coming soon…',
-    description: 'Keep drilling to discover new scenes.',
+    image: '/backgrounds/level-4.jpg',
+    name: 'Salamanca',
+    description: 'The golden sandstone Plaza Mayor and twin cathedrals of Salamanca, home to one of the oldest universities in Europe. Look closely — there\'s an astronaut carved into the cathedral facade.',
   },
   {
     level: 5,
