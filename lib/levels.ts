@@ -23,9 +23,9 @@ export const LEVEL_BACKGROUNDS: LevelBackground[] = [
   },
   {
     level: 3,
-    image: null,
-    name: 'Coming soon…',
-    description: 'Keep drilling to discover new scenes.',
+    image: '/backgrounds/level-3.jpg',
+    name: 'Puebla',
+    description: 'Talavera-tiled domes and baroque bell towers rise above a bustling plaza, with cacti framing the view. The historic center of Puebla is a jewel of Mexican colonial architecture.',
   },
   {
     level: 4,
