@@ -186,8 +186,14 @@ body.bg-showcase-open .app > *:not(.bg-showcase):not(.bg-info-btn) {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 24px;
+  gap: 16px;
   margin-bottom: 12px;
+}
+
+.bg-showcase-center {
+  width: 220px;
+  text-align: center;
+  flex-shrink: 0;
 }
 
 .bg-showcase-arrow {

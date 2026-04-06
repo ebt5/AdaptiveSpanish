@@ -807,18 +807,30 @@ export default function DrillApp() {
               <div className="bg-showcase-nav">
                 <button
                   className="bg-showcase-arrow"
-                  onClick={() => setShowcaseIndex(i => Math.max(0, i - 1))}
+                  onClick={() => {
+                    const next = Math.max(0, showcaseIndex - 1)
+                    setShowcaseIndex(next)
+                    const nextBg = LEVEL_BACKGROUNDS[next]
+                    if (nextBg?.image) document.body.style.backgroundImage = `url('${nextBg.image}')`
+                    else { document.body.style.backgroundImage = 'none'; document.body.style.background = '#000' }
+                  }}
                   disabled={showcaseIndex <= 0}
                 >
                   ◀
                 </button>
-                <div style={{ textAlign: 'center' }}>
+                <div className="bg-showcase-center">
                   <div className="bg-showcase-title">{bg?.name ?? 'Unknown'}</div>
                   <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', marginTop: 2 }}>Level {showcaseIndex + 1}</div>
                 </div>
                 <button
                   className="bg-showcase-arrow"
-                  onClick={() => setShowcaseIndex(i => Math.min(maxUnlocked, i + 1))}
+                  onClick={() => {
+                    const next = Math.min(maxUnlocked, showcaseIndex + 1)
+                    setShowcaseIndex(next)
+                    const nextBg = LEVEL_BACKGROUNDS[next]
+                    if (nextBg?.image) document.body.style.backgroundImage = `url('${nextBg.image}')`
+                    else { document.body.style.backgroundImage = 'none'; document.body.style.background = '#000' }
+                  }}
                   disabled={showcaseIndex >= maxUnlocked}
                 >
                   ▶
