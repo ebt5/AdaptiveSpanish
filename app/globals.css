@@ -42,6 +42,14 @@ body.has-bg {
   background-size: cover;
   background-repeat: no-repeat;
   background-attachment: fixed;
+  /* Force dark-mode colors regardless of system preference */
+  --bg:         #111111;
+  --surface:    #1e1e1e;
+  --border:     #2e2e2e;
+  --text:       #f0f0f0;
+  --text-muted: #aaa;
+  --amber:      #fcd34d;
+  color: #f0f0f0;
 }
 
 body.has-bg::before {
