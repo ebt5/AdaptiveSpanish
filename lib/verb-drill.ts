@@ -32,29 +32,19 @@ function normalize(s: string) {
   return s.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
 }
 
-function weightedPick(items: VerbDrillItem[], excludeId?: string | null) {
-  const learning = items.filter(i => i.bucket === 'learning')
-  const learned = items.filter(i => i.bucket === 'learned')
-  const mastered = items.filter(i => i.bucket === 'mastered')
-  const weighted: VerbDrillItem[] = [
-    ...learning, ...learning, ...learning,
-    ...learned, ...learned,
-  ]
-  if (mastered.length > 0 && weighted.length > 0) {
-    const masteredWeights = mastered.flatMap((item) => {
-      const weight = Math.max(1, 12 - item.score)
-      return Array.from({ length: weight }, () => item)
-    })
-    const masteredDrawCount = Math.max(1, Math.floor(weighted.length / 4))
-    for (let i = 0; i < masteredDrawCount; i++) {
-      const picked = masteredWeights[Math.floor(Math.random() * masteredWeights.length)]
-      if (picked) weighted.push(picked)
-    }
+function randomPick(items: VerbDrillItem[], excludeId?: string | null): VerbDrillItem | null {
+  if (items.length === 0) return null
+  const pool = excludeId ? items.filter(i => i.id !== excludeId) : items
+  const draw = pool.length > 0 ? pool : items
+  // Inverse-score weighting: lower score = higher chance
+  const weights = draw.map(i => 1 / (i.score + 1))
+  const total = weights.reduce((a, b) => a + b, 0)
+  let rand = Math.random() * total
+  for (let i = 0; i < draw.length; i++) {
+    rand -= weights[i]
+    if (rand <= 0) return draw[i]
   }
-  if (weighted.length === 0) return null
-  const pool = excludeId ? weighted.filter(i => i.id !== excludeId) : weighted
-  const draw = pool.length > 0 ? pool : weighted
-  return draw[Math.floor(Math.random() * draw.length)]
+  return draw[draw.length - 1]
 }
 
 async function getCurrentUser(username: string) {
@@ -78,41 +68,18 @@ async function fetchCounts(userId: string) {
 }
 
 async function fetchCandidateItems(userId: string, tenses: string[], excludeId?: string | null): Promise<VerbDrillItem[]> {
-  const tenseFilter = { conjugation: { tense: { in: tenses } } }
   const excludeFilter = excludeId ? { NOT: { conjugationId: excludeId } } : {}
-  const [learning, learned, mastered] = await Promise.all([
-    prisma.userVerbProgress.findMany({
-      where: { userId, bucket: 'learning', ...tenseFilter, ...excludeFilter },
-      include: { conjugation: { include: { verb: true } } },
-      take: 24,
-    }),
-    prisma.userVerbProgress.findMany({
-      where: { userId, bucket: 'learned', ...tenseFilter, ...excludeFilter },
-      include: { conjugation: { include: { verb: true } } },
-      take: 18,
-    }),
-    prisma.userVerbProgress.findMany({
-      where: { userId, bucket: 'mastered', ...tenseFilter, ...excludeFilter },
-      include: { conjugation: { include: { verb: true } } },
-      orderBy: [{ score: 'asc' }, { lastSeenAt: 'asc' }],
-      take: 24,
-    }),
-  ])
-  let allRows = [...learning, ...learned, ...mastered]
-  // If nothing drillable, pull from unseen as fallback and promote them
-  if (allRows.length === 0) {
-    const unseenRows = await prisma.userVerbProgress.findMany({
-      where: { userId, bucket: 'unseen', ...tenseFilter, ...excludeFilter },
-      include: { conjugation: { include: { verb: true } } },
-      take: VERB_LEARNING_TARGET,
-    })
-    for (const row of unseenRows) {
-      await prisma.userVerbProgress.update({ where: { id: row.id }, data: { bucket: 'learning' } })
-      row.bucket = 'learning'
-    }
-    allRows = unseenRows
-  }
-  return allRows.map((row) => ({
+  // Simple: grab all conjugations in selected tenses (no bucket filtering)
+  const rows = await prisma.userVerbProgress.findMany({
+    where: {
+      userId,
+      conjugation: { tense: { in: tenses } },
+      ...excludeFilter,
+    },
+    include: { conjugation: { include: { verb: true } } },
+    orderBy: [{ score: 'asc' }, { lastSeenAt: 'asc' }],
+  })
+  return rows.map((row) => ({
     id: row.conjugationId,
     infinitive: row.conjugation.verb.infinitive,
     english: row.conjugation.verb.english,
@@ -171,32 +138,14 @@ export async function initializeVerbDrillState(username: string, tenses: string[
   const missing = conjugationsForTenses.filter(c => !existingIds.has(c.id))
 
   if (missing.length > 0) {
-    // Create unseen rows for new conjugations
     await prisma.userVerbProgress.createMany({
       data: missing.map(c => ({ userId: user.id, conjugationId: c.id, bucket: 'unseen', score: 0 })),
       skipDuplicates: true,
     })
   }
 
-  // Always ensure enough items in learning bucket (not just when creating new rows)
-  const learningCount = await prisma.userVerbProgress.count({
-    where: { userId: user.id, bucket: 'learning', conjugation: { tense: { in: tenses } } },
-  })
-  if (learningCount < VERB_LEARNING_TARGET) {
-    const needed = VERB_LEARNING_TARGET - learningCount
-    const unseenRows = await prisma.userVerbProgress.findMany({
-      where: { userId: user.id, bucket: 'unseen', conjugation: { tense: { in: tenses } } },
-      include: { conjugation: { include: { verb: true } } },
-      orderBy: { conjugation: { verb: { sortOrder: 'asc' } } },
-      take: needed,
-    })
-    for (const row of unseenRows) {
-      await prisma.userVerbProgress.update({ where: { id: row.id }, data: { bucket: 'learning' } })
-    }
-  }
-
   const [counts, items] = await Promise.all([fetchCounts(user.id), fetchCandidateItems(user.id, tenses)])
-  const item = weightedPick(items)
+  const item = randomPick(items)
   return { item, counts, unseenCount: counts.unseen, stats: { correct: 0, wrong: 0, promoted: 0, demoted: 0 }, lastMove: null, lastMoveType: null }
 }
 
@@ -231,70 +180,43 @@ async function nextVerbState(userId: string, conjugationId: string, success: boo
     prisma.userVerbProgress.findFirstOrThrow({ where: { userId, conjugationId } }),
     prisma.verbConjugation.findUniqueOrThrow({ where: { id: conjugationId } }),
   ])
-  const currentBucket = progress.bucket as Bucket
-  let lastMove: string | null = null
-  let lastMoveType: MoveType = null
 
   const pronoun = conjugation.pronoun
   const tense = conjugation.tense
 
   await prisma.$transaction(async (tx) => {
     if (success) {
-      if (currentBucket === 'learning') {
-        await tx.userVerbProgress.update({ where: { id: progress.id }, data: { bucket: 'learned', score: Math.min(10, progress.score + 1), lastSeenAt: new Date() } })
-        lastMove = '↑ Promoted to Learned'; lastMoveType = 'promote'
-        const learningCount = await tx.userVerbProgress.count({ where: { userId, bucket: 'learning' } })
-        if (learningCount < VERB_LEARNING_TARGET) {
-          const unseen = await tx.userVerbProgress.findFirst({
-            where: { userId, bucket: 'unseen' },
-            orderBy: { conjugation: { verb: { sortOrder: 'asc' } } },
-          })
-          if (unseen) await tx.userVerbProgress.update({ where: { id: unseen.id }, data: { bucket: 'learning', score: 0 } })
-        }
-      } else if (currentBucket === 'learned') {
-        await tx.userVerbProgress.update({ where: { id: progress.id }, data: { bucket: 'mastered', score: Math.min(10, progress.score + 1), lastSeenAt: new Date(), masteredAt: progress.masteredAt ?? new Date() } })
-        lastMove = '★ Mastered!'; lastMoveType = 'master'
-      } else {
-        await tx.userVerbProgress.update({ where: { id: progress.id }, data: { score: Math.min(10, progress.score + 1), lastSeenAt: new Date() } })
-      }
-      // Update pronoun+tense heatmap score
+      // Correct: increment score, update heatmap
+      await tx.userVerbProgress.update({ where: { id: progress.id }, data: { score: Math.min(10, progress.score + 1), lastSeenAt: new Date() } })
       const existing = await tx.userPronounTenseScore.findUnique({ where: { userId_pronoun_tense: { userId, pronoun, tense } } })
       await tx.userPronounTenseScore.upsert({
         where: { userId_pronoun_tense: { userId, pronoun, tense } },
         update: { score: Math.min(10, (existing?.score ?? 0) + 1) },
         create: { userId, pronoun, tense, score: 1 },
       })
-    } else if (!immediateReveal || currentBucket !== 'learning') {
-      if (currentBucket === 'mastered') {
-        await tx.userVerbProgress.update({ where: { id: progress.id }, data: { bucket: 'learned', score: 0, lastSeenAt: new Date() } })
-        lastMove = '↓ Demoted to Learned'; lastMoveType = 'demote'
-      } else if (currentBucket === 'learned') {
-        await tx.userVerbProgress.update({ where: { id: progress.id }, data: { bucket: 'learning', score: 0, lastSeenAt: new Date() } })
-        lastMove = '↓ Demoted to Learning'; lastMoveType = 'demote'
-      } else {
-        await tx.userVerbProgress.update({ where: { id: progress.id }, data: { score: Math.max(0, progress.score - 2), lastSeenAt: new Date() } })
-      }
-      // Update pronoun+tense heatmap score (penalize on wrong)
-      const existing = await tx.userPronounTenseScore.findUnique({ where: { userId_pronoun_tense: { userId, pronoun, tense } } })
-      await tx.userPronounTenseScore.upsert({
-        where: { userId_pronoun_tense: { userId, pronoun, tense } },
-        update: { score: Math.max(0, (existing?.score ?? 0) - 2) },
-        create: { userId, pronoun, tense, score: 0 },
-      })
     } else {
+      // Wrong: penalize score, penalize heatmap
       await tx.userVerbProgress.update({ where: { id: progress.id }, data: { score: Math.max(0, progress.score - 2), lastSeenAt: new Date() } })
+      if (!immediateReveal) {
+        const existing = await tx.userPronounTenseScore.findUnique({ where: { userId_pronoun_tense: { userId, pronoun, tense } } })
+        await tx.userPronounTenseScore.upsert({
+          where: { userId_pronoun_tense: { userId, pronoun, tense } },
+          update: { score: Math.max(0, (existing?.score ?? 0) - 2) },
+          create: { userId, pronoun, tense, score: 0 },
+        })
+      }
     }
   })
 
   const [counts, items] = await Promise.all([fetchCounts(userId), fetchCandidateItems(userId, [conjugation.tense], conjugationId)])
-  const item = weightedPick(items, conjugationId)
+  const item = randomPick(items, conjugationId)
   return {
     item,
     counts,
     unseenCount: counts.unseen,
-    stats: { correct: 0, wrong: 0, promoted: lastMoveType === 'promote' || lastMoveType === 'master' ? 1 : 0, demoted: lastMoveType === 'demote' ? 1 : 0 },
-    lastMove,
-    lastMoveType,
+    stats: { correct: 0, wrong: 0, promoted: 0, demoted: 0 },
+    lastMove: null,
+    lastMoveType: null,
   }
 }
 
