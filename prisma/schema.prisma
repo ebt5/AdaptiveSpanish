@@ -92,6 +92,8 @@ model DictionaryEntry {
   spanishDisplay      String?
   emoji               String?
   category            String  @default("vocabulary")
+  exampleEs           String?
+  exampleEn           String?
 
   vocabProgress  UserVocabProgress[]
   drillAttempts  DrillAttempt[]

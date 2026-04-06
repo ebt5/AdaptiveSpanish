@@ -7,6 +7,8 @@ export type DrillItem = {
   spanishDisplay?: string
   spanishNormalized?: string
   emoji: string | null
+  exampleEs?: string | null
+  exampleEn?: string | null
   bucket: string
   score: number
 }

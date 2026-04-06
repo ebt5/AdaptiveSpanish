@@ -28,6 +28,8 @@ type DrillItem = {
   spanishDisplay?: string
   spanishNormalized?: string
   emoji: string | null
+  exampleEs?: string | null
+  exampleEn?: string | null
   bucket: Bucket | string
   score: number
 }
@@ -631,12 +633,23 @@ export default function DrillApp() {
                 <div className="drill-card">
                   <div className="drill-emoji">{item.emoji}</div>
                   <div className="drill-prompt">{item.english}</div>
+                  {item.exampleEn && <div style={{ fontSize: 13, fontStyle: 'italic', color: 'var(--text-muted)', marginTop: 6, opacity: 0.8 }}>"{item.exampleEn}"</div>}
                   <div className={`drill-bucket-tag bucket-tag-${currentBucket}`}>{cap(currentBucket!)}</div>
                 </div>
 
                 {phase === 'wrong-first' && <div className="feedback feedback-wrong"><span className="feedback-icon">✗</span><span>Not quite — one more chance</span><span className="feedback-attempt">2 / 2</span></div>}
-                {phase === 'correct' && <div className="feedback feedback-correct"><span className="feedback-icon">✓</span><span>Correct! <span className="answer-word">{answer}</span></span></div>}
-                {phase === 'revealed' && <div className="feedback feedback-revealed"><span className="feedback-icon">→</span><span>Answer: <span className="answer-word">{answer}</span></span></div>}
+                {phase === 'correct' && (
+                  <div>
+                    <div className="feedback feedback-correct"><span className="feedback-icon">✓</span><span>Correct! <span className="answer-word">{answer}</span></span></div>
+                    {item.exampleEs && <div style={{ fontSize: 13, fontStyle: 'italic', color: 'var(--text-muted)', marginTop: 6, textAlign: 'center' }}>"{item.exampleEs}"</div>}
+                  </div>
+                )}
+                {phase === 'revealed' && (
+                  <div>
+                    <div className="feedback feedback-revealed"><span className="feedback-icon">→</span><span>Answer: <span className="answer-word">{answer}</span></span></div>
+                    {item.exampleEs && <div style={{ fontSize: 13, fontStyle: 'italic', color: 'var(--text-muted)', marginTop: 6, textAlign: 'center' }}>"{item.exampleEs}"</div>}
+                  </div>
+                )}
 
                 {voiceMode && !isReviewing ? (
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, marginTop: 8 }}>

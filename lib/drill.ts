@@ -12,6 +12,8 @@ export interface DrillItem {
   spanishDisplay?: string
   spanishNormalized?: string
   emoji: string | null
+  exampleEs: string | null
+  exampleEn: string | null
   bucket: Bucket
   score: number
 }
@@ -114,6 +116,8 @@ async function fetchCandidateItems(userId: string, excludeId?: string | null): P
     spanishDisplay: row.entry.spanishDisplay ?? row.entry.spanish,
     spanishNormalized: normalize(row.entry.spanish),
     emoji: row.entry.emoji,
+    exampleEs: row.entry.exampleEs ?? null,
+    exampleEn: row.entry.exampleEn ?? null,
     bucket: row.bucket as Bucket,
     score: row.score,
   }))
