@@ -14,6 +14,7 @@ interface Classroom {
 interface StudentRow {
   userId: string
   username: string
+  level: number
   activeDays30: number
   vocabMastered: number
   phrasesMastered: number
@@ -425,7 +426,7 @@ export default function InstructorPage() {
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
                 <thead>
                   <tr style={{ borderBottom: '2px solid var(--border)' }}>
-                    {['Student', 'Active (30d)', 'Drills (7d)', 'Drills (30d)', 'Net Vocab ↑', 'Vocab %', 'Phrases %', 'Verbs %', 'Last active', ''].map(h => (
+                    {['Student', 'Level', 'Active (30d)', 'Drills (7d)', 'Drills (30d)', 'Net Vocab ↑', 'Vocab %', 'Phrases %', 'Verbs %', 'Last active', ''].map(h => (
                       <th key={h} style={{ padding: '8px 10px', textAlign: 'left', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>{h}</th>
                     ))}
                   </tr>
@@ -434,6 +435,7 @@ export default function InstructorPage() {
                   {students.map((s, i) => (
                     <tr key={s.userId} style={{ borderBottom: '1px solid var(--border)', background: i % 2 === 0 ? 'transparent' : 'var(--surface)' }}>
                       <td style={{ padding: '10px 10px', fontWeight: 600, color: 'var(--text)' }}>{s.username}</td>
+                      <td style={{ padding: '10px 10px', color: '#fcd34d', fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{s.level ?? '—'}</td>
                       <td style={{ padding: '10px 10px', color: 'var(--text)', fontVariantNumeric: 'tabular-nums' }}>{s.activeDays30}d</td>
                       <td style={{ padding: '10px 10px', color: 'var(--text)', fontVariantNumeric: 'tabular-nums' }}>
                         {s.totalDrills7 > 0 ? <>{s.totalDrills7} <span style={{ color: 'var(--text-muted)', fontSize: 11 }}>({s.overallPct7}%)</span></> : '—'}

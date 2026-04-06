@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { calculateLevel } from '@/lib/levels'
+
+const ALL_PRONOUNS = ['yo', 'tú', 'él', 'nosotros', 'vosotros', 'ellos']
+const ALL_TENSES = ['present','preterite','imperfect','future','conditional','present_subjunctive','imperfect_subjunctive','present_perfect','imperative','past_perfect','future_perfect','conditional_perfect','present_perfect_subjunctive']
 
 async function verifyTeacher(username: string, classroomId: string) {
   const user = await prisma.user.findFirst({ where: { username } })
@@ -41,6 +45,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       phrasesMastered,
       masteredNet30,
       masteredNetPrev30,
+      verbScoreRows,
     ] = await Promise.all([
       prisma.drillAttempt.findMany({ where: { userId, createdAt: { gte: since30 } }, select: { correct: true, createdAt: true } }),
       prisma.phraseAttempt.findMany({ where: { userId, createdAt: { gte: since30 } }, select: { correct: true, createdAt: true } }),
@@ -53,6 +58,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       prisma.masteredNetLog.aggregate({ where: { userId, createdAt: { gte: since30 } }, _sum: { delta: true } }),
       // Net vocab mastered in 30-60 days ago (for trend)
       prisma.masteredNetLog.aggregate({ where: { userId, createdAt: { gte: since60, lt: since30 } }, _sum: { delta: true } }),
+      // Verb heatmap scores for level calc
+      prisma.userPronounTenseScore.findMany({ where: { userId } }),
     ])
 
     // Active days: distinct calendar days with any drill or phrase attempt
@@ -87,9 +94,18 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const allCorrect30 = [...drillAttempts30, ...phraseAttempts30].filter(a => a.correct).length
     const overallPct30 = totalDrills30 > 0 ? Math.round((allCorrect30 / totalDrills30) * 100) : null
 
+    // Calculate level
+    const verbScores: Record<string, Record<string, number>> = {}
+    for (const row of verbScoreRows) {
+      if (!verbScores[row.pronoun]) verbScores[row.pronoun] = {}
+      verbScores[row.pronoun][row.tense] = row.score
+    }
+    const level = calculateLevel(vocabMastered, phrasesMastered, verbScores, ALL_TENSES, ALL_PRONOUNS)
+
     return {
       userId,
       username: uname,
+      level: level.totalLevel,
       activeDays30,
       vocabMastered,
       phrasesMastered,
