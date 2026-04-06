@@ -684,13 +684,7 @@ export default function DrillApp() {
                   </form>
                 )}
 
-                {isReviewing && (
-                  <form onSubmit={handleSubmit} className="drill-form" style={{ marginTop: 8 }}>
-                    <button ref={nextBtnRef} type="submit" className="btn btn-submit btn-next" style={{ width: '100%' }}>
-                      {pendingSync ? 'Saving…' : 'Next →'}
-                    </button>
-                  </form>
-                )}
+
 
                 <p className="drill-hint">
                   {!voiceMode && phase === 'answering' && 'Enter to check · blank Enter to skip & reveal'}
