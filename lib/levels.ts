@@ -53,9 +53,9 @@ export const LEVEL_BACKGROUNDS: LevelBackground[] = [
   },
   {
     level: 8,
-    image: null,
-    name: 'Coming soon…',
-    description: 'Keep drilling to discover new scenes.',
+    image: '/backgrounds/level-8.jpg',
+    name: 'Plaza San Martín, Buenos Aires',
+    description: 'The Torre Monumental rises above the lush canopy of Plaza San Martín, viewed from a stone balustrade. A peaceful corner of Buenos Aires where jacarandas bloom and clay dogs roam the green.',
   },
   {
     level: 9,
