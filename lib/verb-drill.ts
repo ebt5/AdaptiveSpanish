@@ -176,17 +176,22 @@ export async function initializeVerbDrillState(username: string, tenses: string[
       data: missing.map(c => ({ userId: user.id, conjugationId: c.id, bucket: 'unseen', score: 0 })),
       skipDuplicates: true,
     })
-    // Move up to VERB_LEARNING_TARGET of them into learning if learning bucket is low
-    const learningCount = await prisma.userVerbProgress.count({ where: { userId: user.id, bucket: 'learning' } })
-    const needed = Math.max(0, VERB_LEARNING_TARGET - learningCount)
-    if (needed > 0) {
-      const unseenRows = await prisma.userVerbProgress.findMany({
-        where: { userId: user.id, bucket: 'unseen', conjugationId: { in: missing.map(c => c.id) } },
-        take: needed,
-      })
-      for (const row of unseenRows) {
-        await prisma.userVerbProgress.update({ where: { id: row.id }, data: { bucket: 'learning' } })
-      }
+  }
+
+  // Always ensure enough items in learning bucket (not just when creating new rows)
+  const learningCount = await prisma.userVerbProgress.count({
+    where: { userId: user.id, bucket: 'learning', conjugation: { tense: { in: tenses } } },
+  })
+  if (learningCount < VERB_LEARNING_TARGET) {
+    const needed = VERB_LEARNING_TARGET - learningCount
+    const unseenRows = await prisma.userVerbProgress.findMany({
+      where: { userId: user.id, bucket: 'unseen', conjugation: { tense: { in: tenses } } },
+      include: { conjugation: { include: { verb: true } } },
+      orderBy: { conjugation: { verb: { sortOrder: 'asc' } } },
+      take: needed,
+    })
+    for (const row of unseenRows) {
+      await prisma.userVerbProgress.update({ where: { id: row.id }, data: { bucket: 'learning' } })
     }
   }
 
