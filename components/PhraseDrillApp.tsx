@@ -150,9 +150,16 @@ export default function PhraseDrillApp({ username, onCounts, onAnswer, selectedT
   }
 
   function advanceToQueued() {
-    if (queuedNext) {
+    if (queuedNext?.item) {
       setDrill({ ...queuedNext, lastMove: null, lastMoveType: null })
       setQueuedNext(null)
+    } else {
+      // Server hasn't responded yet — re-init
+      setQueuedNext(null)
+      const tagsParam = selectedTags.join(',')
+      fetch(`/api/phrases/drill/init?username=${encodeURIComponent(username)}&tags=${tagsParam}`)
+        .then(r => r.json())
+        .then((data: PhraseDrillState) => { setDrill(data); onCounts?.(data.counts) })
     }
     setPhase('answering')
     setAnswer(null)

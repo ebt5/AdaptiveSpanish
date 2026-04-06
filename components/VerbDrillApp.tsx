@@ -142,18 +142,16 @@ export default function VerbDrillApp({ username, onAnswer, voiceMode = false, on
   }
 
   function advanceToQueued() {
-    if (queuedNext) {
-      if (queuedNext.item) {
-        setDrill(queuedNext)
-        setQueuedNext(null)
-      } else {
-        // No next item returned — re-init to pull from available pool
-        setQueuedNext(null)
-        const tensesParam = selectedTenses.join(',')
-        fetch(`/api/verbs/drill/init?username=${encodeURIComponent(username)}&tenses=${tensesParam}`)
-          .then(r => r.json())
-          .then((data: VerbDrillState) => setDrill(data))
-      }
+    if (queuedNext?.item) {
+      setDrill(queuedNext)
+      setQueuedNext(null)
+    } else {
+      // Server hasn't responded yet or returned null — re-init
+      setQueuedNext(null)
+      const tensesParam = selectedTenses.join(',')
+      fetch(`/api/verbs/drill/init?username=${encodeURIComponent(username)}&tenses=${tensesParam}`)
+        .then(r => r.json())
+        .then((data: VerbDrillState) => setDrill(data))
     }
     onAnswer()
     setPhase('answering')
