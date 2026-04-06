@@ -14,6 +14,7 @@ import VoiceInput from './VoiceInput'
 import { playMasteredSound, playLearnedSound, playWrongSound, playLevelUpSound } from '@/lib/sounds'
 import { clientWeightedPick, clientNormalize } from '@/lib/drill-client'
 import type { LevelState } from '@/lib/levels'
+import { LEVEL_BACKGROUNDS } from '@/lib/levels'
 
 type Bucket = 'unseen' | 'learning' | 'learned' | 'mastered'
 type MoveType = 'promote' | 'master' | 'demote' | null
@@ -79,6 +80,8 @@ export default function DrillApp() {
   const [levelState, setLevelState] = useState<LevelState | null>(null)
   const [showLevelUp, setShowLevelUp] = useState<LevelState | null>(null)
   const prevLevelRef = useRef<number | null>(null)
+  const [showcaseIndex, setShowcaseIndex] = useState(0)   // which bg is shown in showcase
+  const [activeBgIndex, setActiveBgIndex] = useState(0)   // which bg is the active wallpaper
   const [milestone, setMilestone] = useState<number | null>(null)
   const [mode, setMode] = useState<Mode>('vocab')
   const [heatmapKey, setHeatmapKey] = useState(0)
@@ -142,13 +145,21 @@ export default function DrillApp() {
       })
   }
 
-  // Add background when logged in — use level background
+  // Set activeBgIndex when level state loads (default to current level's bg)
+  useEffect(() => {
+    if (levelState) {
+      const idx = Math.min(levelState.totalLevel - 1, LEVEL_BACKGROUNDS.length - 1)
+      setActiveBgIndex(idx)
+    }
+  }, [levelState?.totalLevel])
+
+  // Add background when logged in — use activeBgIndex
   useEffect(() => {
     if (username) {
       document.body.classList.add('has-bg')
-      const bgImage = levelState?.currentBg?.image
-      if (bgImage) {
-        document.body.style.backgroundImage = `url('${bgImage}')`
+      const bg = LEVEL_BACKGROUNDS[activeBgIndex]
+      if (bg?.image) {
+        document.body.style.backgroundImage = `url('${bg.image}')`
       } else {
         document.body.style.backgroundImage = 'none'
         document.body.style.background = '#000'
@@ -163,7 +174,7 @@ export default function DrillApp() {
       document.body.style.backgroundImage = ''
       document.body.style.background = ''
     }
-  }, [username, levelState?.currentBg?.image])
+  }, [username, activeBgIndex])
 
   useEffect(() => {
     if (!username) return
@@ -740,7 +751,11 @@ export default function DrillApp() {
       )}
 
       {/* Background info button */}
-      <button className="bg-info-btn" onClick={() => { setShowBgInfo(true); document.body.classList.add('bg-showcase-open') }} title="About this scene">
+      <button className="bg-info-btn" onClick={() => {
+        setShowcaseIndex(activeBgIndex)
+        setShowBgInfo(true)
+        document.body.classList.add('bg-showcase-open')
+      }} title="About this scene">
         ℹ
       </button>
 
@@ -777,16 +792,44 @@ export default function DrillApp() {
         </div>
       )}
 
-      {/* Background showcase overlay */}
-      {showBgInfo && (
-        <div className="bg-showcase" onClick={() => { setShowBgInfo(false); document.body.classList.remove('bg-showcase-open') }}>
-          <div className="bg-showcase-text">
-            <div className="bg-showcase-title">{levelState?.currentBg?.name ?? 'Unknown'}</div>
-            <div className="bg-showcase-desc">{levelState?.currentBg?.description ?? ''}</div>
-            <div className="bg-showcase-dismiss">tap anywhere to close</div>
+      {/* Background showcase overlay with paging */}
+      {showBgInfo && (() => {
+        const maxUnlocked = levelState ? Math.min(levelState.totalLevel - 1, LEVEL_BACKGROUNDS.length - 1) : 0
+        const bg = LEVEL_BACKGROUNDS[showcaseIndex]
+        const closeShowcase = () => {
+          setActiveBgIndex(showcaseIndex)
+          setShowBgInfo(false)
+          document.body.classList.remove('bg-showcase-open')
+        }
+        return (
+          <div className="bg-showcase" onClick={closeShowcase}>
+            <div className="bg-showcase-text" onClick={(e) => e.stopPropagation()}>
+              <div className="bg-showcase-nav">
+                <button
+                  className="bg-showcase-arrow"
+                  onClick={() => setShowcaseIndex(i => Math.max(0, i - 1))}
+                  disabled={showcaseIndex <= 0}
+                >
+                  ◀
+                </button>
+                <div style={{ textAlign: 'center' }}>
+                  <div className="bg-showcase-title">{bg?.name ?? 'Unknown'}</div>
+                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', marginTop: 2 }}>Level {showcaseIndex + 1}</div>
+                </div>
+                <button
+                  className="bg-showcase-arrow"
+                  onClick={() => setShowcaseIndex(i => Math.min(maxUnlocked, i + 1))}
+                  disabled={showcaseIndex >= maxUnlocked}
+                >
+                  ▶
+                </button>
+              </div>
+              <div className="bg-showcase-desc">{bg?.description ?? ''}</div>
+              <div className="bg-showcase-dismiss" onClick={closeShowcase}>tap background to close · keeps this scene</div>
+            </div>
           </div>
-        </div>
-      )}
+        )
+      })()}
     </div>
   )
 }
