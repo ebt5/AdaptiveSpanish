@@ -54,20 +54,20 @@ export const LEVEL_BACKGROUNDS: LevelBackground[] = [
   {
     level: 8,
     image: '/backgrounds/level-8.jpg',
-    name: 'Plaza San Martín, Buenos Aires',
-    description: 'The Torre Monumental rises above the lush canopy of Plaza San Martín, viewed from a stone balustrade. A peaceful corner of Buenos Aires where jacarandas bloom and clay dogs roam the green.',
+    name: 'Cusco, Peru',
+    description: 'Incan stone walls merge with Spanish colonial churches as red-tiled roofs cascade down the hillsides. Llamas wander cobblestone streets beneath the snow-capped Andes — the ancient capital of the Inca Empire.',
   },
   {
     level: 9,
-    image: null,
-    name: 'Coming soon…',
-    description: 'Keep drilling to discover new scenes.',
+    image: '/backgrounds/level-9.jpg',
+    name: 'Barcelona',
+    description: 'Gaudí\'s Sagrada Familia soars above a mosaic of terracotta rooftops, with the Mediterranean shimmering in the distance. The creative capital of Catalonia where art and architecture defy convention.',
   },
   {
     level: 10,
-    image: null,
-    name: 'Coming soon…',
-    description: 'Keep drilling to discover new scenes.',
+    image: '/backgrounds/level-10.jpg',
+    name: 'La Habana, Cuba',
+    description: 'Pastel colonial facades, classic American cars, and salsa rhythms on the Malecón. Old Havana is a time capsule where Caribbean warmth meets crumbling grandeur beneath the dome of El Capitolio.',
   },
 ]
 
