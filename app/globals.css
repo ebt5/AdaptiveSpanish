@@ -59,6 +59,7 @@ body.has-bg::before {
   background: rgba(0, 0, 0, 0.55);
   z-index: 0;
   pointer-events: none;
+  transition: background 0.4s ease;
 }
 
 body.has-bg .app {
@@ -163,10 +164,13 @@ body.bg-showcase-open::before {
   transition: background 0.3s ease;
 }
 
+body.has-bg .app > * {
+  transition: opacity 0.4s ease;
+}
+
 body.bg-showcase-open .app > *:not(.bg-showcase):not(.bg-info-btn) {
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s ease;
 }
 
 .bg-showcase-text {
