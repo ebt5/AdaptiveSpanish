@@ -47,9 +47,9 @@ export const LEVEL_BACKGROUNDS: LevelBackground[] = [
   },
   {
     level: 7,
-    image: null,
-    name: 'Coming soon…',
-    description: 'Keep drilling to discover new scenes.',
+    image: '/backgrounds/level-7.jpg',
+    name: 'Cartagena, Colombia',
+    description: 'The colorful walled old city of Cartagena, where the iconic Torre del Reloj watches over cobblestone streets lined with bougainvillea-draped balconies. A Caribbean jewel where colonial history meets tropical warmth.',
   },
   {
     level: 8,
