@@ -43,6 +43,23 @@ export function playLearnedSound() {
   playTone(ctx, 659.25, now, 0.3, 0.10)
 }
 
+/** Level up fanfare — ascending arpeggio with harmony */
+export function playLevelUpSound() {
+  const ctx = getCtx()
+  if (!ctx) return
+  const now = ctx.currentTime
+  // C5 - E5 - G5 - C6 ascending fanfare with longer sustain
+  playTone(ctx, 523.25, now,        0.4, 0.15)  // C5
+  playTone(ctx, 659.25, now + 0.15, 0.4, 0.15)  // E5
+  playTone(ctx, 783.99, now + 0.30, 0.4, 0.18)  // G5
+  playTone(ctx, 1046.5, now + 0.45, 0.6, 0.22)  // C6 (octave up, longer)
+  // Harmony chord at the end
+  playTone(ctx, 523.25, now + 0.60, 0.8, 0.10)  // C5
+  playTone(ctx, 659.25, now + 0.60, 0.8, 0.10)  // E5
+  playTone(ctx, 783.99, now + 0.60, 0.8, 0.12)  // G5
+  playTone(ctx, 1046.5, now + 0.60, 0.8, 0.12)  // C6
+}
+
 /** Quick descending buzzer — for Wrong answer */
 export function playWrongSound() {
   const ctx = getCtx()

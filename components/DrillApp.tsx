@@ -11,7 +11,7 @@ import GrammarHeatmap from './GrammarHeatmap'
 import MasteredChartPhrases from './MasteredChartPhrases'
 import AdminPanel from './AdminPanel'
 import VoiceInput from './VoiceInput'
-import { playMasteredSound, playLearnedSound, playWrongSound } from '@/lib/sounds'
+import { playMasteredSound, playLearnedSound, playWrongSound, playLevelUpSound } from '@/lib/sounds'
 import { clientWeightedPick, clientNormalize } from '@/lib/drill-client'
 import type { LevelState } from '@/lib/levels'
 
@@ -77,6 +77,8 @@ export default function DrillApp() {
   const [serverSynced, setServerSynced] = useState(true)
   const [showBgInfo, setShowBgInfo] = useState(false)
   const [levelState, setLevelState] = useState<LevelState | null>(null)
+  const [showLevelUp, setShowLevelUp] = useState<LevelState | null>(null)
+  const prevLevelRef = useRef<number | null>(null)
   const [milestone, setMilestone] = useState<number | null>(null)
   const [mode, setMode] = useState<Mode>('vocab')
   const [heatmapKey, setHeatmapKey] = useState(0)
@@ -118,15 +120,26 @@ export default function DrillApp() {
     if (!username) return
     fetch(`/api/level?username=${encodeURIComponent(username)}`)
       .then(r => r.json())
-      .then((data: LevelState) => setLevelState(data))
+      .then((data: LevelState) => {
+        prevLevelRef.current = data.totalLevel
+        setLevelState(data)
+      })
   }, [username])
 
-  // Refresh level after each drill answer
+  // Refresh level after each drill answer — detect level-ups
   function refreshLevel() {
     if (!username) return
     fetch(`/api/level?username=${encodeURIComponent(username)}`)
       .then(r => r.json())
-      .then((data: LevelState) => setLevelState(data))
+      .then((data: LevelState) => {
+        if (prevLevelRef.current !== null && data.totalLevel > prevLevelRef.current) {
+          // Level up!
+          setShowLevelUp(data)
+          playLevelUpSound()
+        }
+        prevLevelRef.current = data.totalLevel
+        setLevelState(data)
+      })
   }
 
   // Add background when logged in — use level background
@@ -730,6 +743,39 @@ export default function DrillApp() {
       <button className="bg-info-btn" onClick={() => { setShowBgInfo(true); document.body.classList.add('bg-showcase-open') }} title="About this scene">
         ℹ
       </button>
+
+      {/* Level up celebration overlay */}
+      {showLevelUp && (
+        <div className="level-up-overlay" onClick={() => setShowLevelUp(null)}>
+          <div className="level-up-particles">
+            {Array.from({ length: 20 }).map((_, i) => (
+              <div
+                key={i}
+                className="level-up-particle"
+                style={{
+                  left: '50%',
+                  top: '50%',
+                  background: ['#fcd34d', '#f59e0b', '#ef4444', '#22c55e', '#3b82f6', '#a855f7'][i % 6],
+                  ['--px' as string]: `${(Math.random() - 0.5) * 400}px`,
+                  ['--py' as string]: `${(Math.random() - 0.5) * 400}px`,
+                  animationDelay: `${0.1 + Math.random() * 0.3}s`,
+                }}
+              />
+            ))}
+          </div>
+          <div className="level-up-badge">🎉</div>
+          <div className="level-up-title">Level {showLevelUp.totalLevel}!</div>
+          <div className="level-up-subtitle">New scene unlocked</div>
+          {showLevelUp.currentBg?.image && (
+            <div
+              className="level-up-bg-preview"
+              style={{ backgroundImage: `url('${showLevelUp.currentBg.image}')` }}
+            />
+          )}
+          <div className="level-up-location">{showLevelUp.currentBg?.name}</div>
+          <div className="level-up-dismiss">tap to continue</div>
+        </div>
+      )}
 
       {/* Background showcase overlay */}
       {showBgInfo && (
