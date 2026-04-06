@@ -126,29 +126,27 @@ export default function PhraseDrillApp({ username, onCounts, onAnswer, selectedT
     else inputRef.current?.focus()
   }, [isReviewing, phase, item?.id])
 
-  async function persistAndQueue(answerValue: string, attemptNumber: number, optimisticPhase: Phase, optimisticAnswer: string | null, optimisticState?: Partial<PhraseDrillState>) {
+  function persistAndQueue(answerValue: string, attemptNumber: number, optimisticPhase: Phase, optimisticAnswer: string | null, optimisticState?: Partial<PhraseDrillState>) {
     if (!item) return
+    const currentItemId = item.id
     if (optimisticState) setDrill(prev => ({ ...prev, ...optimisticState }))
     setPhase(optimisticPhase)
     setAnswer(optimisticAnswer)
+    setGrammarNote(item.grammarNote ?? null)
     setInput('')
-    setPendingSync(true)
-    try {
-      const res = await fetch('/api/phrases/drill/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, phraseId: item.id, answer: answerValue, attemptNumber, tags: selectedTags.join(',') }),
-      })
-      const data = await res.json()
+
+    // Fire-and-forget server sync
+    fetch('/api/phrases/drill/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, phraseId: currentItemId, answer: answerValue, attemptNumber, tags: selectedTags.join(',') }),
+    }).then(r => r.json()).then(data => {
       if (data.phase !== 'wrong-first') {
-        setGrammarNote(data.grammarNote ?? null)
         setQueuedNext({ item: data.item, counts: data.counts, unseenCount: data.unseenCount, stats: data.stats, lastMove: data.lastMove, lastMoveType: data.lastMoveType })
         onCounts?.(data.counts)
         onAnswer?.()
       }
-    } finally {
-      setPendingSync(false)
-    }
+    }).catch(() => {})
   }
 
   function advanceToQueued() {
@@ -237,19 +235,19 @@ export default function PhraseDrillApp({ username, onCounts, onAnswer, selectedT
   function handleVoiceTranscript(text: string) {
     setInput(text)
     setShowingTranscript(true)
-    onVoicePause?.(true)   // temporarily show the input box with transcript
+    onVoicePause?.(true)
+    // Grade immediately — show result alongside transcript
+    submitWithValue(text)
     setTimeout(() => {
       setShowingTranscript(false)
-      submitWithValue(text)
-      setTimeout(() => onVoicePause?.(false), 600)  // resume voice mode
-    }, 1500)
+      onVoicePause?.(false)
+    }, 600)
   }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!item) return
     if (isReviewing) {
-      if (pendingSync) return
       advanceToQueued()
       return
     }
@@ -367,7 +365,7 @@ export default function PhraseDrillApp({ username, onCounts, onAnswer, selectedT
                 key={`${item.id}-${phase}`}
                 language="es"
                 onTranscript={handleVoiceTranscript}
-                disabled={pendingSync}
+                disabled={false}
                 autoStart={true}
                 hint={item.spanish}
               />
@@ -376,7 +374,7 @@ export default function PhraseDrillApp({ username, onCounts, onAnswer, selectedT
           ) : isReviewing ? (
             <form onSubmit={handleSubmit} className="drill-form">
               <button ref={nextBtnRef} type="submit" className="btn btn-submit btn-next" style={{ width: '100%' }}>
-                {pendingSync ? 'Saving…' : 'Next →'}
+                {'Next →'}
               </button>
             </form>
           ) : (
@@ -394,7 +392,7 @@ export default function PhraseDrillApp({ username, onCounts, onAnswer, selectedT
                 spellCheck={false}
               />
               <button ref={nextBtnRef} type="submit" className="btn btn-submit">
-                {pendingSync ? 'Saving…' : 'Check'}
+                {'Check'}
               </button>
             </form>
           )}
@@ -402,7 +400,7 @@ export default function PhraseDrillApp({ username, onCounts, onAnswer, selectedT
           <p className="drill-hint">
             {!voiceMode && phase === 'answering' && 'Enter to check · blank Enter to skip & reveal'}
             {!voiceMode && phase === 'wrong-first' && 'Last chance · blank Enter to reveal answer'}
-            {isReviewing && (pendingSync ? 'Saving result…' : 'Enter or click Next to continue')}
+            {isReviewing && ('Enter or click Next to continue')}
           </p>
         </section>
       )}

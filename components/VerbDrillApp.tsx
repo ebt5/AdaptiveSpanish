@@ -121,26 +121,24 @@ export default function VerbDrillApp({ username, onAnswer, voiceMode = false, on
     else inputRef.current?.focus()
   }, [isReviewing, phase, item?.id])
 
-  async function persistAndQueue(answerValue: string, attemptNumber: number, optimisticPhase: Phase, optimisticAnswer: string | null, optimisticState?: Partial<VerbDrillState>) {
+  function persistAndQueue(answerValue: string, attemptNumber: number, optimisticPhase: Phase, optimisticAnswer: string | null, optimisticState?: Partial<VerbDrillState>) {
     if (!item) return
+    const currentItemId = item.id
     if (optimisticState) setDrill(prev => ({ ...prev, ...optimisticState }))
     setPhase(optimisticPhase)
     setAnswer(optimisticAnswer)
     setInput('')
-    setPendingSync(true)
-    try {
-      const res = await fetch('/api/verbs/drill/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, conjugationId: item.id, answer: answerValue, attemptNumber }),
-      })
-      const data = await res.json()
+
+    // Fire-and-forget server sync
+    fetch('/api/verbs/drill/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, conjugationId: currentItemId, answer: answerValue, attemptNumber }),
+    }).then(r => r.json()).then(data => {
       if (data.phase !== 'wrong-first') {
         setQueuedNext({ item: data.item, counts: data.counts, unseenCount: data.unseenCount, stats: data.stats, lastMove: data.lastMove, lastMoveType: data.lastMoveType })
       }
-    } finally {
-      setPendingSync(false)
-    }
+    }).catch(() => {})
   }
 
   function advanceToQueued() {
@@ -247,11 +245,12 @@ export default function VerbDrillApp({ username, onAnswer, voiceMode = false, on
     setInput(text)
     setShowingTranscript(true)
     onVoicePause?.(true)
+    // Grade immediately
+    submitWithValue(text)
     setTimeout(() => {
       setShowingTranscript(false)
-      submitWithValue(text)
-      setTimeout(() => onVoicePause?.(false), 600)
-    }, 1500)
+      onVoicePause?.(false)
+    }, 600)
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -332,7 +331,7 @@ export default function VerbDrillApp({ username, onAnswer, voiceMode = false, on
                 key={item.id}
                 language="es"
                 onTranscript={handleVoiceTranscript}
-                disabled={isReviewing || pendingSync}
+                disabled={isReviewing}
                 autoStart={true}
                 hint={item.form}
               />
@@ -354,7 +353,7 @@ export default function VerbDrillApp({ username, onAnswer, voiceMode = false, on
                 spellCheck={false}
               />
               <button ref={nextBtnRef} type="submit" className={`btn btn-submit${isReviewing ? ' btn-next' : ''}`}>
-                {isReviewing ? (pendingSync ? 'Saving…' : 'Next →') : pendingSync ? 'Saving…' : 'Check'}
+                {isReviewing ? 'Next →' : 'Check'}
               </button>
             </form>
           )}
@@ -362,7 +361,7 @@ export default function VerbDrillApp({ username, onAnswer, voiceMode = false, on
           <p className="drill-hint">
             {!voiceMode && phase === 'answering' && 'Enter to check · blank Enter to skip & reveal'}
             {!voiceMode && phase === 'wrong-first' && 'Last chance · blank Enter to reveal answer'}
-            {isReviewing && (pendingSync ? 'Saving result…' : 'Enter or click Next to continue')}
+            {isReviewing && ('Enter or click Next to continue')}
           </p>
         </section>
       )}

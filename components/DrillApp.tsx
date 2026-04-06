@@ -240,51 +240,48 @@ export default function DrillApp() {
     }
   }
 
-  async function persistAndQueue(answerValue: string, attemptNumber: number, optimisticPhase: Phase, optimisticAnswer: string | null, optimisticState?: Partial<DrillState>) {
+  // Fire-and-forget server sync — never blocks UI
+  function serverSync(entryId: string, answerValue: string, attemptNumber: number) {
+    fetch('/api/drill/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, entryId, answer: answerValue, attemptNumber }),
+    }).then(r => r.json()).then(data => {
+      // Update pool from server (authoritative)
+      if (data.pool) setPool(data.pool)
+    }).catch(() => {})
+  }
+
+  function persistAndQueue(answerValue: string, attemptNumber: number, optimisticPhase: Phase, optimisticAnswer: string | null, optimisticState?: Partial<DrillState>) {
     if (!item || !username) return
+    const currentItemId = item.id
+
+    // Update UI immediately
     if (optimisticState) setDrill(prev => ({ ...prev, ...optimisticState }))
     setPhase(optimisticPhase)
     setAnswer(optimisticAnswer)
     setInput('')
 
-    // Instant client-side pick from pool
+    // Pick next item from pool instantly — exclude current item
     const isMasteredMiss = optimisticState?.lastMoveType === 'demote' && item.bucket === 'mastered'
-    const nextItem = clientWeightedPick(pool, item.id, isMasteredMiss)
-    if (nextItem && optimisticState?.counts) {
+    const nextItem = clientWeightedPick(pool, currentItemId, isMasteredMiss)
+
+    // Also remove current item from pool to prevent repeats
+    setPool(prev => prev.filter(p => p.id !== currentItemId))
+
+    if (nextItem) {
       setQueuedNext({
         item: nextItem as any,
-        counts: optimisticState.counts as any,
-        unseenCount: optimisticState.counts.unseen ?? drill.unseenCount,
-        stats: optimisticState.stats ?? drill.stats,
-        lastMove: optimisticState.lastMove ?? null,
-        lastMoveType: optimisticState.lastMoveType ?? null,
+        counts: (optimisticState?.counts as any) ?? drill.counts,
+        unseenCount: optimisticState?.counts?.unseen ?? drill.unseenCount,
+        stats: optimisticState?.stats ?? drill.stats,
+        lastMove: optimisticState?.lastMove ?? null,
+        lastMoveType: optimisticState?.lastMoveType ?? null,
       })
     }
 
-    // Fire server sync in background — reconcile pool on response
-    setPendingSync(true)
-    try {
-      const res = await fetch('/api/drill/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, entryId: item.id, answer: answerValue, attemptNumber }),
-      })
-      const data = await res.json()
-      if (data.phase !== 'wrong-first') {
-        // Server is authoritative — update pool and reconcile next item
-        if (data.pool) setPool(data.pool)
-        setQueuedNext({
-          item: data.item,
-          counts: data.counts,
-          unseenCount: data.unseenCount,
-          stats: data.stats,
-          lastMove: data.lastMove,
-          lastMoveType: data.lastMoveType,
-        })
-      }
-    } finally {
-      setPendingSync(false)
-    }
+    // Fire-and-forget server sync
+    serverSync(currentItemId, answerValue, attemptNumber)
   }
 
   function advanceToQueued() {
@@ -292,24 +289,25 @@ export default function DrillApp() {
       setDrill({ ...queuedNext, lastMove: null, lastMoveType: null })
       setQueuedNext(null)
     }
-    setMilestone(null)
     setPhase('answering')
     setAnswer(null)
     setInput('')
+    setMilestone(null)
     refreshLevel()
   }
 
   function handleVoiceTranscript(text: string) {
-    // Show transcript in input box so learner sees what Whisper heard
+    // Show transcript AND grade simultaneously
     setInput(text)
     setShowingTranscript(true)
-    setVoiceMode(false)  // show the input box with the transcript
-    // Auto-submit after 1.5s — learner can edit or just watch it submit
+    setVoiceMode(false)
+    // Grade immediately
+    submitWithValue(text)
+    // Re-enable voice after brief display
     setTimeout(() => {
       setShowingTranscript(false)
-      submitWithValue(text)
-      setTimeout(() => setVoiceMode(true), 600)
-    }, 1500)
+      setVoiceMode(true)
+    }, 600)
   }
 
   function submitWithValue(value: string) {
@@ -387,8 +385,6 @@ export default function DrillApp() {
     e.preventDefault()
     if (!item) return
     if (isReviewing) {
-      // Don't advance until the queued next item is ready
-      if (pendingSync) return
       advanceToQueued()
       return
     }
@@ -657,7 +653,7 @@ export default function DrillApp() {
                       key={item.id}
                       language="es"
                       onTranscript={handleVoiceTranscript}
-                      disabled={isReviewing || pendingSync}
+                      disabled={isReviewing}
                       autoStart={true}
                       hint={item.spanishDisplay ?? item.spanish}
                     />
@@ -679,7 +675,7 @@ export default function DrillApp() {
                       spellCheck={false}
                     />
                     <button ref={nextBtnRef} type="submit" className={`btn btn-submit${isReviewing ? ' btn-next' : ''}`}>
-                      {isReviewing ? (pendingSync ? 'Saving…' : 'Next →') : pendingSync ? 'Saving…' : 'Check'}
+                      {isReviewing ? 'Next →' : 'Check'}
                     </button>
                   </form>
                 )}
@@ -689,7 +685,7 @@ export default function DrillApp() {
                 <p className="drill-hint">
                   {!voiceMode && phase === 'answering' && 'Enter to check · blank Enter to skip & reveal'}
                   {!voiceMode && phase === 'wrong-first' && 'Last chance · blank Enter to reveal answer'}
-                  {isReviewing && (pendingSync ? 'Saving result…' : 'Enter or click Next to continue')}
+                  {isReviewing && 'Enter or click Next to continue'}
                 </p>
               </section>
             )}
