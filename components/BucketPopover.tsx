@@ -77,19 +77,20 @@ export default function BucketPopover({ username, bucket, mode, excludeId, ancho
   if (!anchorRect) return null
 
   // Position: below anchor, left-aligned, but clamp to viewport
-  const top = anchorRect.bottom + window.scrollY + 6
-  let left = anchorRect.left + window.scrollX - 10
+  const top = anchorRect.bottom + 6
+  let left = anchorRect.left - 10
   const popoverWidth = 320
   if (left + popoverWidth > window.innerWidth - 16) {
     left = window.innerWidth - popoverWidth - 16
   }
+  if (left < 8) left = 8
 
   return (
     <div
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       style={{
-        position: 'absolute',
+        position: 'fixed',
         top,
         left,
         width: popoverWidth,
