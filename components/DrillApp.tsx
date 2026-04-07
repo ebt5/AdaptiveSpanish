@@ -781,23 +781,25 @@ export default function DrillApp() {
               />
             ))}
           </div>
-          <div className="level-up-badge">🎉</div>
-          <div className="level-up-title">Level {showLevelUp.totalLevel}!</div>
-          <div className="level-up-subtitle">New scene unlocked</div>
-          {showLevelUp.currentBg?.image && (
-            <div
-              className="level-up-bg-preview"
-              style={{ backgroundImage: `url('${showLevelUp.currentBg.image}')` }}
-            />
-          )}
-          <div className="level-up-location">{showLevelUp.currentBg?.name}</div>
-          <div className="level-up-dismiss">tap to continue</div>
+          <div className="level-up-content">
+            <div className="level-up-badge">🎉</div>
+            <div className="level-up-title">Level {showLevelUp.totalLevel}!</div>
+            <div className="level-up-subtitle">New scene unlocked</div>
+            {showLevelUp.currentBg?.image && (
+              <div
+                className="level-up-bg-preview"
+                style={{ backgroundImage: `url('${showLevelUp.currentBg.image}')` }}
+              />
+            )}
+            <div className="level-up-location">{showLevelUp.currentBg?.name}</div>
+            <div className="level-up-dismiss">tap to continue</div>
+          </div>
         </div>
       )}
 
       {/* Background showcase overlay with paging */}
       {showBgInfo && (() => {
-        const maxUnlocked = levelState ? Math.min(levelState.totalLevel - 1, LEVEL_BACKGROUNDS.length - 1) : 0
+        const maxUnlocked = Math.min(activeBgIndex, LEVEL_BACKGROUNDS.length - 1)
         const bg = LEVEL_BACKGROUNDS[showcaseIndex]
         const closeShowcase = () => {
           setActiveBgIndex(showcaseIndex)
