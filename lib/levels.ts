@@ -69,6 +69,12 @@ export const LEVEL_BACKGROUNDS: LevelBackground[] = [
     name: 'La Habana, Cuba',
     description: 'Pastel colonial facades, classic American cars, and salsa rhythms on the Malecón. Old Havana is a time capsule where Caribbean warmth meets crumbling grandeur beneath the dome of El Capitolio.',
   },
+  {
+    level: 11,
+    image: '/backgrounds/level-11.jpg',
+    name: 'Plaza San Martín, Buenos Aires',
+    description: 'Jacaranda and flowering trees frame the Torre Monumental through a canopy of clay foliage, with the lush grounds of Plaza San Martín stretching below. Buenos Aires in spring is something else entirely.',
+  },
 ]
 
 // Level-up triggers:
