@@ -36,8 +36,9 @@ function randomPick(items: VerbDrillItem[], excludeId?: string | null): VerbDril
   if (items.length === 0) return null
   const pool = excludeId ? items.filter(i => i.id !== excludeId) : items
   const draw = pool.length > 0 ? pool : items
-  // Inverse-score weighting: lower score = higher chance
-  const weights = draw.map(i => 1 / (i.score + 1))
+  // Steep inverse weighting: score 0 = weight 1024, score 10 = weight 1
+  // 2^(10-score) gives ~1000x advantage to score-0 over score-10
+  const weights = draw.map(i => Math.pow(2, Math.max(0, 10 - i.score)))
   const total = weights.reduce((a, b) => a + b, 0)
   let rand = Math.random() * total
   for (let i = 0; i < draw.length; i++) {
