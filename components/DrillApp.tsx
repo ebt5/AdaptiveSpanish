@@ -30,6 +30,7 @@ type DrillItem = {
   emoji: string | null
   exampleEs?: string | null
   exampleEn?: string | null
+  imageUrl?: string | null
   bucket: Bucket | string
   score: number
 }
@@ -627,7 +628,24 @@ export default function DrillApp() {
               <section className="drill-panel">
                 {drill.lastMove && <div key={toastKey} className={`move-toast move-toast-${drill.lastMoveType}`}>{drill.lastMove}</div>}
                 <div className="drill-card">
-                  <div className="drill-emoji">{item.emoji}</div>
+                  {item.imageUrl ? (
+                    <div style={{
+                      background: '#fff',
+                      borderRadius: 12,
+                      padding: 8,
+                      marginBottom: 12,
+                      boxShadow: '0 4px 16px rgba(0,0,0,0.18), 0 1px 4px rgba(0,0,0,0.10)',
+                      display: 'inline-block',
+                    }}>
+                      <img
+                        src={item.imageUrl}
+                        alt={item.english}
+                        style={{ width: 140, height: 140, borderRadius: 8, display: 'block', objectFit: 'cover' }}
+                      />
+                    </div>
+                  ) : (
+                    <div className="drill-emoji">{item.emoji}</div>
+                  )}
                   <div className="drill-prompt">{item.english}</div>
                   {item.exampleEn && <div style={{ fontSize: 13, fontStyle: 'italic', color: 'var(--text-muted)', marginTop: 6, opacity: 0.8 }}>"{item.exampleEn}"</div>}
                   <div className={`drill-bucket-tag bucket-tag-${currentBucket}`}>{cap(currentBucket!)}</div>

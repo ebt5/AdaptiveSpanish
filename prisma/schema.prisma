@@ -94,6 +94,7 @@ model DictionaryEntry {
   category            String  @default("vocabulary")
   exampleEs           String?
   exampleEn           String?
+  imageUrl            String?
 
   vocabProgress  UserVocabProgress[]
   drillAttempts  DrillAttempt[]

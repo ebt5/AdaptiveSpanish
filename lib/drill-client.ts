@@ -9,6 +9,7 @@ export type DrillItem = {
   emoji: string | null
   exampleEs?: string | null
   exampleEn?: string | null
+  imageUrl?: string | null
   bucket: string
   score: number
 }

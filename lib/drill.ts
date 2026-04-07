@@ -14,6 +14,7 @@ export interface DrillItem {
   emoji: string | null
   exampleEs: string | null
   exampleEn: string | null
+  imageUrl: string | null
   bucket: Bucket
   score: number
 }
@@ -118,6 +119,7 @@ async function fetchCandidateItems(userId: string, excludeId?: string | null): P
     emoji: row.entry.emoji,
     exampleEs: row.entry.exampleEs ?? null,
     exampleEn: row.entry.exampleEn ?? null,
+    imageUrl: row.entry.imageUrl ?? null,
     bucket: row.bucket as Bucket,
     score: row.score,
   }))
