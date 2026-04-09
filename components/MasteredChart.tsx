@@ -108,50 +108,41 @@ export default function MasteredChart({ username }: { username: string | null })
         <StatTile value={stats.avgPerDay30}  label="Avg / day (30d)"  color="#fcd34d" />
       </div>
 
-      {/* Mastered score distribution */}
+      {/* Mastered score distribution — stacked horizontal bar */}
       {stats.scoreDist.length > 0 && (() => {
         const total = stats.scoreDist.reduce((s, b) => s + b.count, 0)
-        const maxScore = 10
-        // Fill gaps so all scores 1-10 are shown
-        const bins: ScoreBin[] = Array.from({ length: maxScore }, (_, i) => ({
-          score: i + 1,
-          count: stats.scoreDist.find(b => b.score === i + 1)?.count ?? 0,
-        }))
-        const maxCount = Math.max(...bins.map(b => b.count), 1)
-        // Color: low scores warm/amber, high scores bright green
-        const binColor = (score: number) => {
-          if (score <= 2) return '#f59e0b'   // amber — recently promoted
-          if (score <= 5) return '#22c55e'   // green — solid
-          return '#42affa'                   // blue — deeply ingrained
-        }
+        if (total === 0) return null
+
+        // Group into 3 tiers
+        const fragile  = stats.scoreDist.filter(b => b.score <= 2).reduce((s, b) => s + b.count, 0)
+        const solid    = stats.scoreDist.filter(b => b.score >= 3 && b.score <= 5).reduce((s, b) => s + b.count, 0)
+        const deep     = stats.scoreDist.filter(b => b.score >= 6).reduce((s, b) => s + b.count, 0)
+
+        const pct = (n: number) => `${((n / total) * 100).toFixed(0)}%`
+
         return (
           <div style={{ marginTop: 16 }}>
             <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6, display: 'flex', justifyContent: 'space-between' }}>
               <span>Mastered word strength</span>
               <span style={{ opacity: 0.6 }}>{total} words</span>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-              {bins.map(b => (
-                <div key={b.score} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <div style={{ width: 14, textAlign: 'right', fontSize: 9, color: 'var(--text-muted)', flexShrink: 0 }}>{b.score}</div>
-                  <div style={{ flex: 1, background: 'rgba(255,255,255,0.06)', borderRadius: 3, height: 10, overflow: 'hidden' }}>
-                    <div style={{
-                      width: `${(b.count / maxCount) * 100}%`,
-                      height: '100%',
-                      background: binColor(b.score),
-                      borderRadius: 3,
-                      transition: 'width 0.4s ease',
-                      opacity: b.count === 0 ? 0 : 0.85,
-                    }} />
-                  </div>
-                  {b.count > 0 && <div style={{ width: 28, textAlign: 'left', fontSize: 9, color: 'var(--text-muted)', flexShrink: 0 }}>{b.count}</div>}
-                </div>
-              ))}
+            {/* Stacked bar */}
+            <div style={{ display: 'flex', height: 18, borderRadius: 6, overflow: 'hidden', gap: 1 }}>
+              {fragile > 0 && (
+                <div title={`Fragile (score 1-2): ${fragile} words`} style={{ flex: fragile, background: '#f59e0b', opacity: 0.85 }} />
+              )}
+              {solid > 0 && (
+                <div title={`Solid (score 3-5): ${solid} words`} style={{ flex: solid, background: '#22c55e', opacity: 0.85 }} />
+              )}
+              {deep > 0 && (
+                <div title={`Deep (score 6+): ${deep} words`} style={{ flex: deep, background: '#42affa', opacity: 0.85 }} />
+              )}
             </div>
-            <div style={{ display: 'flex', gap: 12, marginTop: 6, fontSize: 9, color: 'var(--text-muted)' }}>
-              <span>🟡 1-2: recently mastered</span>
-              <span>🟢 3-5: solid</span>
-              <span>🔵 6+: deeply ingrained</span>
+            {/* Legend */}
+            <div style={{ display: 'flex', gap: 14, marginTop: 5, fontSize: 10, color: 'var(--text-muted)' }}>
+              {fragile > 0 && <span><span style={{ color: '#f59e0b' }}>■</span> New ({fragile}, {pct(fragile)})</span>}
+              {solid   > 0 && <span><span style={{ color: '#22c55e' }}>■</span> Solid ({solid}, {pct(solid)})</span>}
+              {deep    > 0 && <span><span style={{ color: '#42affa' }}>■</span> Deep ({deep}, {pct(deep)})</span>}
             </div>
           </div>
         )
