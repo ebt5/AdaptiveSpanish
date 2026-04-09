@@ -51,5 +51,14 @@ export async function GET(request: NextRequest) {
   const mastered30 = allDays.filter(d => new Date(d.date).getTime() >= now - ms30).reduce((s, d) => s + d.count, 0)
   const avgPerDay30 = allDays.length > 0 ? +(mastered30 / 30).toFixed(1) : 0
 
-  return NextResponse.json({ daily: allDays, cumulative, mastered7, mastered30, avgPerDay30 })
+  // Mastered score distribution (bucket=mastered, scores 0-10+)
+  const scoreRows = await prisma.userVocabProgress.groupBy({
+    by: ['score'],
+    where: { userId: user.id, bucket: 'mastered' },
+    _count: { _all: true },
+    orderBy: { score: 'asc' },
+  })
+  const scoreDist = scoreRows.map(r => ({ score: r.score, count: r._count._all }))
+
+  return NextResponse.json({ daily: allDays, cumulative, mastered7, mastered30, avgPerDay30, scoreDist })
 }

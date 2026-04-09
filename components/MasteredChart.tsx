@@ -3,12 +3,14 @@
 import { useEffect, useState } from 'react'
 
 type DayData = { date: string; count: number }
+type ScoreBin = { score: number; count: number }
 type StatsData = {
   daily: DayData[]
   cumulative: DayData[]
   mastered7: number
   mastered30: number
   avgPerDay30: number
+  scoreDist: ScoreBin[]
 }
 
 function StatTile({ value, label, color }: { value: string | number; label: string; color?: string }) {
@@ -105,6 +107,55 @@ export default function MasteredChart({ username }: { username: string | null })
         <StatTile value={stats.mastered30}   label="New last 30d"     color="#42affa" />
         <StatTile value={stats.avgPerDay30}  label="Avg / day (30d)"  color="#fcd34d" />
       </div>
+
+      {/* Mastered score distribution */}
+      {stats.scoreDist.length > 0 && (() => {
+        const total = stats.scoreDist.reduce((s, b) => s + b.count, 0)
+        const maxScore = 10
+        // Fill gaps so all scores 1-10 are shown
+        const bins: ScoreBin[] = Array.from({ length: maxScore }, (_, i) => ({
+          score: i + 1,
+          count: stats.scoreDist.find(b => b.score === i + 1)?.count ?? 0,
+        }))
+        const maxCount = Math.max(...bins.map(b => b.count), 1)
+        // Color: low scores warm/amber, high scores bright green
+        const binColor = (score: number) => {
+          if (score <= 2) return '#f59e0b'   // amber — recently promoted
+          if (score <= 5) return '#22c55e'   // green — solid
+          return '#42affa'                   // blue — deeply ingrained
+        }
+        return (
+          <div style={{ marginTop: 16 }}>
+            <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6, display: 'flex', justifyContent: 'space-between' }}>
+              <span>Mastered word strength</span>
+              <span style={{ opacity: 0.6 }}>{total} words</span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              {bins.map(b => (
+                <div key={b.score} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <div style={{ width: 14, textAlign: 'right', fontSize: 9, color: 'var(--text-muted)', flexShrink: 0 }}>{b.score}</div>
+                  <div style={{ flex: 1, background: 'rgba(255,255,255,0.06)', borderRadius: 3, height: 10, overflow: 'hidden' }}>
+                    <div style={{
+                      width: `${(b.count / maxCount) * 100}%`,
+                      height: '100%',
+                      background: binColor(b.score),
+                      borderRadius: 3,
+                      transition: 'width 0.4s ease',
+                      opacity: b.count === 0 ? 0 : 0.85,
+                    }} />
+                  </div>
+                  {b.count > 0 && <div style={{ width: 28, textAlign: 'left', fontSize: 9, color: 'var(--text-muted)', flexShrink: 0 }}>{b.count}</div>}
+                </div>
+              ))}
+            </div>
+            <div style={{ display: 'flex', gap: 12, marginTop: 6, fontSize: 9, color: 'var(--text-muted)' }}>
+              <span>🟡 1-2: recently mastered</span>
+              <span>🟢 3-5: solid</span>
+              <span>🔵 6+: deeply ingrained</span>
+            </div>
+          </div>
+        )
+      })()}
 
       {/* Daily bar chart */}
       <BarChart data={stats.daily}      label="New words mastered — daily (last 30 days)" color="var(--green)" />
