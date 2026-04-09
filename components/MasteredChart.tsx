@@ -119,18 +119,18 @@ export default function MasteredChart({ username }: { username: string | null })
           count: stats.scoreDist.find(b => b.score === i + 1)?.count ?? 0,
         }))
 
-        // Spectrum: red → orange → yellow → lime → green → teal → blue → indigo
+        // Each score 1-6 gets its own color; 7-10 all the same deep blue
         const SCORE_COLORS = [
           '#ef4444', // 1  — red
           '#f97316', // 2  — orange
-          '#fb923c', // 3  — light orange
-          '#facc15', // 4  — yellow
-          '#a3e635', // 5  — lime
-          '#4ade80', // 6  — light green
-          '#22c55e', // 7  — green
-          '#2dd4bf', // 8  — teal
-          '#38bdf8', // 9  — sky blue
-          '#818cf8', // 10 — indigo
+          '#facc15', // 3  — yellow
+          '#a3e635', // 4  — lime
+          '#22c55e', // 5  — green
+          '#2dd4bf', // 6  — teal
+          '#818cf8', // 7  — deep blue (mastered)
+          '#818cf8', // 8  — same
+          '#818cf8', // 9  — same
+          '#818cf8', // 10 — same
         ]
 
         return (
