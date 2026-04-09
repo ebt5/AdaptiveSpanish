@@ -108,17 +108,30 @@ export default function MasteredChart({ username }: { username: string | null })
         <StatTile value={stats.avgPerDay30}  label="Avg / day (30d)"  color="#fcd34d" />
       </div>
 
-      {/* Mastered score distribution — stacked horizontal bar */}
+      {/* Mastered score distribution — per-score stacked bar */}
       {stats.scoreDist.length > 0 && (() => {
         const total = stats.scoreDist.reduce((s, b) => s + b.count, 0)
         if (total === 0) return null
 
-        // Group into 3 tiers
-        const fragile  = stats.scoreDist.filter(b => b.score <= 2).reduce((s, b) => s + b.count, 0)
-        const solid    = stats.scoreDist.filter(b => b.score >= 3 && b.score <= 5).reduce((s, b) => s + b.count, 0)
-        const deep     = stats.scoreDist.filter(b => b.score >= 6).reduce((s, b) => s + b.count, 0)
+        // All 10 score slots, fill 0 for missing
+        const bins: ScoreBin[] = Array.from({ length: 10 }, (_, i) => ({
+          score: i + 1,
+          count: stats.scoreDist.find(b => b.score === i + 1)?.count ?? 0,
+        }))
 
-        const pct = (n: number) => `${((n / total) * 100).toFixed(0)}%`
+        // Spectrum: red → orange → yellow → lime → green → teal → blue → indigo
+        const SCORE_COLORS = [
+          '#ef4444', // 1  — red
+          '#f97316', // 2  — orange
+          '#fb923c', // 3  — light orange
+          '#facc15', // 4  — yellow
+          '#a3e635', // 5  — lime
+          '#4ade80', // 6  — light green
+          '#22c55e', // 7  — green
+          '#2dd4bf', // 8  — teal
+          '#38bdf8', // 9  — sky blue
+          '#818cf8', // 10 — indigo
+        ]
 
         return (
           <div style={{ marginTop: 16 }}>
@@ -127,22 +140,22 @@ export default function MasteredChart({ username }: { username: string | null })
               <span style={{ opacity: 0.6 }}>{total} words</span>
             </div>
             {/* Stacked bar */}
-            <div style={{ display: 'flex', height: 18, borderRadius: 6, overflow: 'hidden', gap: 1 }}>
-              {fragile > 0 && (
-                <div title={`Fragile (score 1-2): ${fragile} words`} style={{ flex: fragile, background: '#f59e0b', opacity: 0.85 }} />
-              )}
-              {solid > 0 && (
-                <div title={`Solid (score 3-5): ${solid} words`} style={{ flex: solid, background: '#22c55e', opacity: 0.85 }} />
-              )}
-              {deep > 0 && (
-                <div title={`Deep (score 6+): ${deep} words`} style={{ flex: deep, background: '#42affa', opacity: 0.85 }} />
-              )}
+            <div style={{ display: 'flex', height: 20, borderRadius: 6, overflow: 'hidden', gap: 1 }}>
+              {bins.filter(b => b.count > 0).map(b => (
+                <div
+                  key={b.score}
+                  title={`Score ${b.score}: ${b.count} word${b.count !== 1 ? 's' : ''}`}
+                  style={{ flex: b.count, background: SCORE_COLORS[b.score - 1], opacity: 0.9 }}
+                />
+              ))}
             </div>
-            {/* Legend */}
-            <div style={{ display: 'flex', gap: 14, marginTop: 5, fontSize: 10, color: 'var(--text-muted)' }}>
-              {fragile > 0 && <span><span style={{ color: '#f59e0b' }}>■</span> New ({fragile}, {pct(fragile)})</span>}
-              {solid   > 0 && <span><span style={{ color: '#22c55e' }}>■</span> Solid ({solid}, {pct(solid)})</span>}
-              {deep    > 0 && <span><span style={{ color: '#42affa' }}>■</span> Deep ({deep}, {pct(deep)})</span>}
+            {/* Mini legend — only show scores that have words */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 10px', marginTop: 6, fontSize: 10, color: 'var(--text-muted)' }}>
+              {bins.filter(b => b.count > 0).map(b => (
+                <span key={b.score}>
+                  <span style={{ color: SCORE_COLORS[b.score - 1] }}>■</span> {b.score} ({b.count})
+                </span>
+              ))}
             </div>
           </div>
         )
