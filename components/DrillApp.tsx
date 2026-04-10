@@ -79,6 +79,7 @@ export default function DrillApp() {
   const [queuedNext, setQueuedNext] = useState<DrillState | null>(null)
   const [pool, setPool] = useState<DrillItem[]>([])
   const [serverSynced, setServerSynced] = useState(true)
+  const [masteredOnly, setMasteredOnly] = useState(false)
   const [showBgInfo, setShowBgInfo] = useState(false)
   const [levelState, setLevelState] = useState<LevelState | null>(null)
   const [showLevelUp, setShowLevelUp] = useState<LevelState | null>(null)
@@ -265,7 +266,8 @@ export default function DrillApp() {
 
     // Pick next item from pool instantly — exclude current item
     const isMasteredMiss = optimisticState?.lastMoveType === 'demote' && item.bucket === 'mastered'
-    const nextItem = clientWeightedPick(pool, currentItemId, isMasteredMiss)
+    const activePool = masteredOnly ? pool.filter(p => p.bucket === 'mastered') : pool
+    const nextItem = clientWeightedPick(activePool, currentItemId, isMasteredMiss)
 
     // Also remove current item from pool to prevent repeats
     setPool(prev => prev.filter(p => p.id !== currentItemId))
@@ -618,6 +620,19 @@ export default function DrillApp() {
         </div>}
 
         {mode === 'vocab' && drill.unseenCount > 0 && <p className="unseen-note">{drill.unseenCount} words not yet introduced</p>}
+        {mode === 'vocab' && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4, fontSize: 12, color: 'var(--text-muted)' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 5, cursor: 'pointer', userSelect: 'none' }}>
+              <input
+                type="checkbox"
+                checked={masteredOnly}
+                onChange={e => setMasteredOnly(e.target.checked)}
+                style={{ accentColor: 'var(--green)', width: 13, height: 13 }}
+              />
+              Drill mastered words only
+            </label>
+          </div>
+        )}
         {mode === 'phrases' && phraseCounts.unseen > 0 && <p className="unseen-note">{phraseCounts.unseen} phrases not yet introduced</p>}
 
         {mode === 'vocab' ? (
