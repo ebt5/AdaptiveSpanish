@@ -11,6 +11,7 @@ import GrammarHeatmap from './GrammarHeatmap'
 import MasteredChartPhrases from './MasteredChartPhrases'
 import AdminPanel from './AdminPanel'
 import VoiceInput from './VoiceInput'
+import WordSearch from './WordSearch'
 import { playMasteredSound, playLearnedSound, playWrongSound, playLevelUpSound } from '@/lib/sounds'
 import { clientWeightedPick, clientNormalize } from '@/lib/drill-client'
 import type { LevelState } from '@/lib/levels'
@@ -619,6 +620,7 @@ export default function DrillApp() {
           })}
         </div>}
 
+        {mode === 'vocab' && username && <WordSearch username={username} />}
         {mode === 'vocab' && drill.unseenCount > 0 && <p className="unseen-note">{drill.unseenCount} words not yet introduced</p>}
         {mode === 'vocab' && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4, fontSize: 12, color: 'var(--text-muted)' }}>
