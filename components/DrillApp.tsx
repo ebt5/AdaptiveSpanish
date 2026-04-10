@@ -663,7 +663,12 @@ export default function DrillApp() {
                   )}
                   <div className="drill-prompt">{item.english}</div>
                   {item.exampleEn && <div style={{ fontSize: 13, fontStyle: 'italic', color: 'var(--text-muted)', marginTop: 6, opacity: 0.8 }}>"{item.exampleEn}"</div>}
-                  <div className={`drill-bucket-tag bucket-tag-${currentBucket}`}>{cap(currentBucket!)}</div>
+                  <div className={`drill-bucket-tag bucket-tag-${currentBucket}`}>
+                    {cap(currentBucket!)}
+                    {currentBucket === 'mastered' && item.score != null && (
+                      <span style={{ opacity: 0.6, fontSize: '0.8em', marginLeft: 5 }}>·{item.score}</span>
+                    )}
+                  </div>
                 </div>
 
                 {phase === 'wrong-first' && <div className="feedback feedback-wrong"><span className="feedback-icon">✗</span><span>Not quite — one more chance</span><span className="feedback-attempt">2 / 2</span></div>}
