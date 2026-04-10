@@ -626,7 +626,20 @@ export default function DrillApp() {
               <input
                 type="checkbox"
                 checked={masteredOnly}
-                onChange={e => setMasteredOnly(e.target.checked)}
+                onChange={e => {
+                  const val = e.target.checked
+                  setMasteredOnly(val)
+                  // Re-init pool from server with mastered-only flag for proper sampling
+                  if (username) {
+                    const url = val
+                      ? `/api/drill/init?username=${encodeURIComponent(username)}&masteredOnly=true`
+                      : `/api/drill/init?username=${encodeURIComponent(username)}`
+                    fetch(url).then(r => r.json()).then(data => {
+                      if (data.pool) setPool(data.pool)
+                      if (data.item) setDrill(prev => ({ ...prev, item: data.item }))
+                    })
+                  }
+                }}
                 style={{ accentColor: 'var(--green)', width: 13, height: 13 }}
               />
               Drill mastered words only

@@ -99,16 +99,16 @@ async function fetchCounts(userId: string): Promise<ProgressCounts> {
 }
 
 // Single query for all candidate items instead of 3 separate queries
-async function fetchCandidateItems(userId: string, excludeId?: string | null): Promise<DrillItem[]> {
+async function fetchCandidateItems(userId: string, excludeId?: string | null, masteredOnly = false): Promise<DrillItem[]> {
   const rows = await prisma.userVocabProgress.findMany({
     where: {
       userId,
-      bucket: { in: ['learning', 'learned', 'mastered'] },
+      bucket: masteredOnly ? 'mastered' : { in: ['learning', 'learned', 'mastered'] },
       ...(excludeId ? { NOT: { entryId: excludeId } } : {}),
     },
     include: { entry: true },
     orderBy: [{ score: 'asc' }, { lastSeenAt: 'asc' }],
-    take: 66, // ~24 learning + 18 learned + 24 mastered
+    take: masteredOnly ? 150 : 66, // larger pool for mastered-only to sample all score levels
   })
   return rows.map((row) => ({
     id: row.entry.id,
@@ -125,9 +125,9 @@ async function fetchCandidateItems(userId: string, excludeId?: string | null): P
   }))
 }
 
-export async function initializeDrillState(username: string): Promise<DrillState> {
+export async function initializeDrillState(username: string, masteredOnly = false): Promise<DrillState> {
   const user = await getCurrentUser(username)
-  const [counts, items] = await Promise.all([fetchCounts(user.id), fetchCandidateItems(user.id)])
+  const [counts, items] = await Promise.all([fetchCounts(user.id), fetchCandidateItems(user.id, null, masteredOnly)])
   const item = weightedPick(items)
   return { item, counts, unseenCount: counts.unseen, stats: { correct: 0, wrong: 0, promoted: 0, demoted: 0 }, lastMove: null, lastMoveType: null, pool: items }
 }
