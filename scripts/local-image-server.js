@@ -102,7 +102,7 @@ app.post('/generate-image', async (req, res) => {
 
 app.get('/health', (req, res) => res.json({ ok: true }))
 
-app.listen(PORT, () => {
-  console.log(`Local image server running on http://localhost:${PORT}`)
-  console.log('Admin panel will call this for image generation.')
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Local image server running on http://0.0.0.0:${PORT}`)
+  console.log('Accessible at http://192.168.0.101:3099 on local network')
 })

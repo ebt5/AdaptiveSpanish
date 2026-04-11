@@ -128,7 +128,7 @@ export default function AdminPanel({ username, mode, item, onImageGenerated }: P
     setError(null)
     try {
       // Call local Mac mini server (fast, can write files, no timeout)
-      const res = await fetch('http://localhost:3099/generate-image', {
+      const res = await fetch('http://192.168.0.101:3099/generate-image', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ entryId: item.id }),
