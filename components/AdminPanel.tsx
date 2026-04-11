@@ -50,6 +50,9 @@ export default function AdminPanel({ username, mode, item }: Props) {
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [collapsed, setCollapsed] = useState(false)
+  const [genImageState, setGenImageState] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
+  const [generatedUrl, setGeneratedUrl] = useState<string | null>(null)
 
   // Reset fields when item changes
   useEffect(() => {
@@ -117,13 +120,39 @@ export default function AdminPanel({ username, mode, item }: Props) {
   const isVerb = mode === 'verbs'
   const verbItem = isVerb ? item as VerbItem : null
 
+  async function handleGenerateImage() {
+    if (!item || mode !== 'vocab') return
+    setGenImageState('loading')
+    try {
+      const res = await fetch('/api/admin/generate-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, entryId: item.id }),
+      })
+      const data = await res.json()
+      if (data.ok) {
+        setGeneratedUrl(data.imageUrl + '?t=' + Date.now())
+        setGenImageState('done')
+      } else {
+        setGenImageState('error')
+        setError(data.error ?? 'Image generation failed')
+      }
+    } catch {
+      setGenImageState('error')
+    }
+  }
+
   return (
     <div style={panelStyle}>
-      <div style={headerStyle}>
-        ✏️ Admin
-        <span style={{ fontSize: 10, color: 'var(--text-muted)', marginLeft: 6, fontWeight: 400 }}>{mode}</span>
+      <div
+        style={{ ...headerStyle, cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+        onClick={() => setCollapsed(c => !c)}
+      >
+        <span>✏️ Admin <span style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 400 }}>{mode}</span></span>
+        <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>{collapsed ? '▼' : '▲'}</span>
       </div>
 
+      {collapsed ? null : <>
       {isVerb && verbItem && (
         <div style={infoRowStyle}>
           <span style={{ fontWeight: 700 }}>{verbItem.infinitive}</span>
@@ -184,7 +213,39 @@ export default function AdminPanel({ username, mode, item }: Props) {
         </button>
 
         {error && <p style={{ fontSize: 11, color: '#f87171', margin: 0 }}>{error}</p>}
+
+        {/* Image generation — vocab only */}
+        {mode === 'vocab' && (
+          <div style={{ borderTop: '1px solid var(--border)', paddingTop: 10, marginTop: 6 }}>
+            {(generatedUrl || (item as VocabItem & { imageUrl?: string }).imageUrl) && (
+              <img
+                src={generatedUrl ?? (item as any).imageUrl}
+                alt="vocab"
+                style={{ width: '100%', borderRadius: 6, marginBottom: 6 }}
+              />
+            )}
+            <button
+              onClick={handleGenerateImage}
+              disabled={genImageState === 'loading'}
+              style={{
+                width: '100%',
+                padding: '7px 0',
+                borderRadius: 7,
+                border: 'none',
+                background: genImageState === 'done' ? '#16a34a' : '#7c3aed',
+                color: '#fff',
+                fontWeight: 700,
+                fontSize: 12,
+                cursor: genImageState === 'loading' ? 'not-allowed' : 'pointer',
+                opacity: genImageState === 'loading' ? 0.7 : 1,
+              }}
+            >
+              {genImageState === 'loading' ? '⏳ Generating…' : genImageState === 'done' ? '✓ Image saved' : '🎨 Generate Image'}
+            </button>
+          </div>
+        )}
       </div>
+      </>}
     </div>
   )
 }

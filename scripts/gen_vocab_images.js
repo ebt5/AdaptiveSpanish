@@ -17,7 +17,7 @@ const prisma = new PrismaClient()
 const OUT_DIR = path.join(__dirname, '../public/vocab')
 const API_KEY = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || 'AIzaSyAIJ91EkrHFYw7gZcdYgRkbH4VvonnDD9Y'
 const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${API_KEY}`
-const STYLE = 'Claymation stop-motion illustration style. Single subject centered on clean white background. Charming handcrafted clay aesthetic, visible clay textures, warm soft studio lighting, slight depth of field. Square 1:1 composition, no text, no labels, no shadows extending outside subject.'
+const STYLE = 'Claymation stop-motion illustration style. Single subject centered on clean white background. Charming handcrafted clay aesthetic, visible clay textures, warm soft studio lighting, slight depth of field. Square 1:1 composition. IMPORTANT: Do NOT include any text, letters, words, labels, signs, or written characters anywhere in the image.'
 
 // Visual prompt strategies for different word types
 const PROMPT_OVERRIDES = {
