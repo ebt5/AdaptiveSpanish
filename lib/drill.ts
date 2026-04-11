@@ -99,7 +99,7 @@ async function fetchCounts(userId: string): Promise<ProgressCounts> {
 }
 
 // Single query for all candidate items instead of 3 separate queries
-async function fetchCandidateItems(userId: string, excludeId?: string | null, masteredOnly = false): Promise<DrillItem[]> {
+async function fetchCandidateItems(userId: string, excludeId?: string | null, masteredOnly = false, tags: string[] = []): Promise<DrillItem[]> {
   const rows = await prisma.userVocabProgress.findMany({
     where: {
       userId,
@@ -108,9 +108,17 @@ async function fetchCandidateItems(userId: string, excludeId?: string | null, ma
     },
     include: { entry: true },
     orderBy: [{ score: 'asc' }, { lastSeenAt: 'asc' }],
-    take: masteredOnly ? 150 : 66, // larger pool for mastered-only to sample all score levels
+    take: masteredOnly ? 150 : 66,
   })
-  return rows.map((row) => ({
+  // Filter by tags client-side (JSON array contains check)
+  const filtered = tags.length > 0
+    ? rows.filter(r => {
+        const entryTags = r.entry.tags as string[] | null
+        if (!entryTags) return false
+        return tags.some(t => entryTags.includes(t))
+      })
+    : rows
+  return filtered.map((row) => ({
     id: row.entry.id,
     english: row.entry.englishPrimary ?? row.entry.spanish,
     spanish: row.entry.spanish,
@@ -125,9 +133,9 @@ async function fetchCandidateItems(userId: string, excludeId?: string | null, ma
   }))
 }
 
-export async function initializeDrillState(username: string, masteredOnly = false): Promise<DrillState> {
+export async function initializeDrillState(username: string, masteredOnly = false, tags: string[] = []): Promise<DrillState> {
   const user = await getCurrentUser(username)
-  const [counts, items] = await Promise.all([fetchCounts(user.id), fetchCandidateItems(user.id, null, masteredOnly)])
+  const [counts, items] = await Promise.all([fetchCounts(user.id), fetchCandidateItems(user.id, null, masteredOnly, tags)])
   const item = weightedPick(items)
   return { item, counts, unseenCount: counts.unseen, stats: { correct: 0, wrong: 0, promoted: 0, demoted: 0 }, lastMove: null, lastMoveType: null, pool: items }
 }

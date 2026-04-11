@@ -14,6 +14,29 @@ import VoiceInput from './VoiceInput'
 import WordSearch from './WordSearch'
 import { playMasteredSound, playLearnedSound, playWrongSound, playLevelUpSound } from '@/lib/sounds'
 import { clientWeightedPick, clientNormalize } from '@/lib/drill-client'
+
+const VOCAB_CATEGORIES: { id: string; label: string }[] = [
+  { id: 'essentials',    label: 'Essentials' },
+  { id: 'pronouns',     label: 'Pronouns' },
+  { id: 'connectors',   label: 'Connectors' },
+  { id: 'numbers',      label: 'Numbers' },
+  { id: 'time',         label: 'Time' },
+  { id: 'place',        label: 'Place' },
+  { id: 'people',       label: 'People' },
+  { id: 'body',         label: 'Body' },
+  { id: 'food',         label: 'Food' },
+  { id: 'home',         label: 'Home' },
+  { id: 'work',         label: 'Work' },
+  { id: 'travel',       label: 'Travel' },
+  { id: 'nature',       label: 'Nature' },
+  { id: 'health',       label: 'Health' },
+  { id: 'emotions',     label: 'Emotions' },
+  { id: 'communication',label: 'Communication' },
+  { id: 'actions',      label: 'Actions' },
+  { id: 'descriptions', label: 'Descriptions' },
+  { id: 'money',        label: 'Money' },
+  { id: 'social',       label: 'Social' },
+]
 import type { LevelState } from '@/lib/levels'
 import { LEVEL_BACKGROUNDS } from '@/lib/levels'
 
@@ -81,6 +104,7 @@ export default function DrillApp() {
   const [pool, setPool] = useState<DrillItem[]>([])
   const [serverSynced, setServerSynced] = useState(true)
   const [masteredOnly, setMasteredOnly] = useState(false)
+  const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [showBgInfo, setShowBgInfo] = useState(false)
   const [levelState, setLevelState] = useState<LevelState | null>(null)
   const [showLevelUp, setShowLevelUp] = useState<LevelState | null>(null)
@@ -186,7 +210,7 @@ export default function DrillApp() {
     setLoading(true)
     // Load drill state + check admin status in parallel
     Promise.all([
-      fetch(`/api/drill/init?username=${encodeURIComponent(username)}`).then(r => r.json()),
+      fetch(`/api/drill/init?username=${encodeURIComponent(username)}${selectedTags.length > 0 ? `&tags=${selectedTags.join(',')}` : ''}`).then(r => r.json()),
       fetch('/api/user/bootstrap', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username }) }).then(r => r.json()),
     ]).then(([drillData, userData]) => {
       setDrill(drillData)
@@ -764,6 +788,59 @@ export default function DrillApp() {
 
       {/* Vocab tab: mastered-by-day bar chart only */}
       {mode === 'vocab' && <MasteredChart username={username} />}
+
+      {/* Vocabulary category filter — at the bottom, out of the way */}
+      {mode === 'vocab' && (
+        <div style={{ marginTop: 20, padding: '12px 0', borderTop: '1px solid var(--border)' }}>
+          <div style={{ fontSize: 10, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 8 }}>
+            Focus on categories {selectedTags.length > 0 && <span style={{ color: 'var(--green)' }}>({selectedTags.length} active)</span>}
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            {VOCAB_CATEGORIES.map(cat => {
+              const active = selectedTags.includes(cat.id)
+              return (
+                <button
+                  key={cat.id}
+                  className={`category-toggle${active ? ' category-toggle-active' : ' category-toggle-soon'}`}
+                  style={{ fontSize: 11 }}
+                  onClick={() => {
+                    const next = active
+                      ? selectedTags.filter(t => t !== cat.id)
+                      : [...selectedTags, cat.id]
+                    setSelectedTags(next)
+                    if (username) {
+                      const url = `/api/drill/init?username=${encodeURIComponent(username)}${next.length > 0 ? `&tags=${next.join(',')}` : ''}${masteredOnly ? '&masteredOnly=true' : ''}`
+                      fetch(url).then(r => r.json()).then(data => {
+                        if (data.pool) setPool(data.pool)
+                        setDrill(prev => ({ ...prev, item: data.item ?? prev.item, counts: data.counts ?? prev.counts }))
+                      })
+                    }
+                  }}
+                >
+                  {cat.label}
+                </button>
+              )
+            })}
+            {selectedTags.length > 0 && (
+              <button
+                className="category-toggle category-toggle-soon"
+                style={{ fontSize: 11, opacity: 0.6 }}
+                onClick={() => {
+                  setSelectedTags([])
+                  if (username) {
+                    fetch(`/api/drill/init?username=${encodeURIComponent(username)}`).then(r => r.json()).then(data => {
+                      if (data.pool) setPool(data.pool)
+                      setDrill(prev => ({ ...prev, item: data.item ?? prev.item, counts: data.counts ?? prev.counts }))
+                    })
+                  }
+                }}
+              >
+                ✕ Clear
+              </button>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Verbs tab: conjugation heatmap only */}
       {mode === 'verbs' && <ConjugationHeatmap username={username} refreshKey={heatmapKey} />}

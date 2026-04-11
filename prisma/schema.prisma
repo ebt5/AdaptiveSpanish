@@ -95,6 +95,7 @@ model DictionaryEntry {
   exampleEs           String?
   exampleEn           String?
   imageUrl            String?
+  tags                Json?
 
   vocabProgress  UserVocabProgress[]
   drillAttempts  DrillAttempt[]
