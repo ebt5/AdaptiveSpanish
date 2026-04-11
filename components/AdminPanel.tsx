@@ -8,6 +8,7 @@ interface VocabItem {
   spanish: string
   spanishDisplay?: string
   emoji?: string | null
+  imageUrl?: string | null
 }
 
 interface PhraseItem {
@@ -36,6 +37,7 @@ interface Props {
   username: string
   mode: 'vocab' | 'phrases' | 'verbs'
   item: DrillItem | null
+  onImageGenerated?: (imageUrl: string) => void
 }
 
 const GRAMMAR_TAGS = [
@@ -45,7 +47,7 @@ const GRAMMAR_TAGS = [
   'conditional','idioms-discourse',
 ]
 
-export default function AdminPanel({ username, mode, item }: Props) {
+export default function AdminPanel({ username, mode, item, onImageGenerated }: Props) {
   const [fields, setFields] = useState<Record<string, string>>({})
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -131,8 +133,10 @@ export default function AdminPanel({ username, mode, item }: Props) {
       })
       const data = await res.json()
       if (data.ok) {
-        setGeneratedUrl(data.imageUrl + '?t=' + Date.now())
+        const freshUrl = data.imageUrl + '?t=' + Date.now()
+        setGeneratedUrl(freshUrl)
         setGenImageState('done')
+        onImageGenerated?.(data.imageUrl)
       } else {
         setGenImageState('error')
         setError(data.error ?? 'Image generation failed')
@@ -217,9 +221,9 @@ export default function AdminPanel({ username, mode, item }: Props) {
         {/* Image generation — vocab only */}
         {mode === 'vocab' && (
           <div style={{ borderTop: '1px solid var(--border)', paddingTop: 10, marginTop: 6 }}>
-            {(generatedUrl || (item as VocabItem & { imageUrl?: string }).imageUrl) && (
+            {(generatedUrl || (item as VocabItem).imageUrl) && (
               <img
-                src={generatedUrl ?? (item as any).imageUrl}
+                src={generatedUrl ?? ((item as VocabItem).imageUrl ?? '')}
                 alt="vocab"
                 style={{ width: '100%', borderRadius: 6, marginBottom: 6 }}
               />

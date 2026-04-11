@@ -859,7 +859,10 @@ export default function DrillApp() {
           mode={mode}
           item={mode === 'phrases'
             ? currentPhraseItem
-            : item ? { id: item.id, english: item.english, spanish: item.spanish, spanishDisplay: item.spanishDisplay, emoji: item.emoji } : null}
+            : item ? { id: item.id, english: item.english, spanish: item.spanish, spanishDisplay: item.spanishDisplay, emoji: item.emoji, imageUrl: item.imageUrl } : null}
+          onImageGenerated={(imageUrl: string) => {
+            setDrill(prev => prev.item ? { ...prev, item: { ...prev.item, imageUrl } } : prev)
+          }}
         />
       )}
 
