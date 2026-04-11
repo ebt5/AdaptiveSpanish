@@ -125,11 +125,13 @@ export default function AdminPanel({ username, mode, item, onImageGenerated }: P
   async function handleGenerateImage() {
     if (!item || mode !== 'vocab') return
     setGenImageState('loading')
+    setError(null)
     try {
-      const res = await fetch('/api/admin/generate-image', {
+      // Call local Mac mini server (fast, can write files, no timeout)
+      const res = await fetch('http://localhost:3099/generate-image', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, entryId: item.id }),
+        body: JSON.stringify({ entryId: item.id }),
       })
       const data = await res.json()
       if (data.ok) {
@@ -139,10 +141,11 @@ export default function AdminPanel({ username, mode, item, onImageGenerated }: P
         onImageGenerated?.(data.imageUrl)
       } else {
         setGenImageState('error')
-        setError(data.error ?? 'Image generation failed')
+        setError(data.error ?? 'Generation failed')
       }
-    } catch {
+    } catch (e) {
       setGenImageState('error')
+      setError('Local server not running. Start with: node scripts/local-image-server.js')
     }
   }
 
