@@ -49,13 +49,18 @@ function BarChart({
   showDateLabels?: boolean
 }) {
   const recentDays = data.slice(-30)
-  const max = Math.max(...recentDays.map(d => d.count), 1)
+  const maxPos = Math.max(...recentDays.map(d => d.count), 1)
+  const maxNeg = Math.abs(Math.min(...recentDays.map(d => d.count), 0))
 
-  const svgH = 70
-  const barH = svgH - 2
+  const svgH = 80
   const barW = 8
   const gap = 2
   const totalW = recentDays.length * (barW + gap)
+
+  // Baseline y position — proportional to positive range
+  const posH = maxNeg > 0 ? Math.round(svgH * maxPos / (maxPos + maxNeg)) : svgH - 4
+  const negH = svgH - posH
+  const baseline = posH
 
   return (
     <div style={{ marginTop: 16 }}>
@@ -63,21 +68,34 @@ function BarChart({
         {label}
       </div>
       <svg width="100%" height={svgH} viewBox={`0 0 ${totalW} ${svgH}`} preserveAspectRatio="none" style={{ display: 'block' }}>
+        {/* Baseline */}
+        <line x1="0" y1={baseline} x2={totalW} y2={baseline} stroke="rgba(255,255,255,0.15)" strokeWidth="0.5" />
         {recentDays.map((d, i) => {
-          const h = Math.max(d.count === 0 ? 2 : (d.count / max) * barH, d.count === 0 ? 2 : 3)
           const x = i * (barW + gap)
-          const y = barH - h
-          return (
-            <g key={d.date}>
-              <rect
-                x={x} y={y} width={barW} height={h}
-                fill={d.count === 0 ? 'rgba(255,255,255,0.08)' : color}
-                opacity={d.count === 0 ? 1 : 0.8}
-                rx="1"
-              />
-              <title>{d.date}: {d.count}</title>
-            </g>
-          )
+          if (d.count === 0) {
+            return (
+              <g key={d.date}>
+                <rect x={x} y={baseline - 1} width={barW} height={2} fill="rgba(255,255,255,0.08)" rx="1" />
+                <title>{d.date}: 0</title>
+              </g>
+            )
+          } else if (d.count > 0) {
+            const h = Math.max((d.count / maxPos) * posH, 3)
+            return (
+              <g key={d.date}>
+                <rect x={x} y={baseline - h} width={barW} height={h} fill={color} opacity={0.8} rx="1" />
+                <title>{d.date}: +{d.count}</title>
+              </g>
+            )
+          } else {
+            const h = Math.max((Math.abs(d.count) / Math.max(maxNeg, 1)) * negH, 3)
+            return (
+              <g key={d.date}>
+                <rect x={x} y={baseline} width={barW} height={h} fill="#ef4444" opacity={0.75} rx="1" />
+                <title>{d.date}: {d.count}</title>
+              </g>
+            )
+          }
         })}
       </svg>
     </div>
