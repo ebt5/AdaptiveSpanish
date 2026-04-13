@@ -644,7 +644,6 @@ export default function DrillApp() {
           })}
         </div>}
 
-        {mode === 'vocab' && username && <WordSearch username={username} />}
         {mode === 'vocab' && drill.unseenCount > 0 && <p className="unseen-note">{drill.unseenCount} words not yet introduced</p>}
         {mode === 'vocab' && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4, fontSize: 12, color: 'var(--text-muted)' }}>
@@ -839,6 +838,12 @@ export default function DrillApp() {
               </button>
             )}
           </div>
+        </div>
+      )}
+
+      {mode === 'vocab' && username && (
+        <div style={{ marginTop: 8, borderTop: '1px solid var(--border)', paddingTop: 12 }}>
+          <WordSearch username={username} />
         </div>
       )}
 
