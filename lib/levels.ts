@@ -75,6 +75,12 @@ export const LEVEL_BACKGROUNDS: LevelBackground[] = [
     name: 'Plaza San Martín, Buenos Aires',
     description: 'Jacaranda and flowering trees frame the Torre Monumental through a canopy of clay foliage, with the lush grounds of Plaza San Martín stretching below. Buenos Aires in spring is something else entirely.',
   },
+  {
+    level: 12,
+    image: '/backgrounds/level-12.jpg',
+    name: 'Santo Domingo, República Dominicana',
+    description: 'Cobblestone streets wind past the Catedral Primada de América — the oldest cathedral in the New World — as the Caribbean shimmers in the distance. The Zona Colonial of Santo Domingo has been alive since 1498.',
+  },
 ]
 
 // Level-up triggers:
